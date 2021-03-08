@@ -1,8 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.dto;
 
-import com.ftn.tseo2021.sf1513282018.studentService.entity.Exam;
-
 import java.time.LocalDate;
+
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
 
 public class ExamDto {
     public int id;

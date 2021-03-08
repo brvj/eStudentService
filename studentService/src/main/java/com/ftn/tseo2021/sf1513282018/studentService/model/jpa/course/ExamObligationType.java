@@ -1,16 +1,16 @@
-package com.ftn.tseo2021.sf1513282018.studentService.entity;
+package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "examObligationType")
+@Table(name = "exam_obligation_type")
 public class ExamObligationType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "examObligationType_id", unique = true)
+    @Column(name = "exam_obligation_type_id", unique = true, nullable = false)
     private int id;
 
-    @Column(name = "examObligationType_name")
+    @Column(name = "name")
     private String name;
 
     public ExamObligationType(){}

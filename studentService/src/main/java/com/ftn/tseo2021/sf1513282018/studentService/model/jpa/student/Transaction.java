@@ -1,4 +1,4 @@
-package com.ftn.tseo2021.sf1513282018.studentService.entity;
+package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student;
 
 
 
@@ -11,17 +11,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "transaction")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Transaction {
 	
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "student_id", unique = true)
+    @Column(name = "transaction_id", unique = true, nullable = false)
     private int id;
 	
 	@Column(name = "ammount")

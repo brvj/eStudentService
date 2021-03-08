@@ -1,6 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.dto;
 
-import com.ftn.tseo2021.sf1513282018.studentService.entity.ExamObligation;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
 
 public class ExamObligationDto {
     public int id;

@@ -1,23 +1,23 @@
-package com.ftn.tseo2021.sf1513282018.studentService.entity;
+package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "examPeriod")
+@Table(name = "exam_period")
 public class ExamPeriod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "examPeriod_id")
+    @Column(name = "exam_period_id", unique = true, nullable = false)
     private int id;
 
-    @Column(name = "examPeriod_name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "examPeriod_startDate")
+    @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "examPeriod_endDate")
+    @Column(name = "end_date")
     private LocalDate endDate;
 
     public ExamPeriod(){}

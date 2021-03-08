@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Entity
 @Table(name = "teacher_role")
@@ -22,4 +23,7 @@ public class TeacherRole {
     @NotBlank(message = "Teacher's role name is mandatory")
     @Column(name = "name", nullable = false)
     private String name;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "teacherRole")
+    private Set<Teaching> teachings;
 }

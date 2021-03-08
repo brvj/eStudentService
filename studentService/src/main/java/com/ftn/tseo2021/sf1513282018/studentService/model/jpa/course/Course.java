@@ -1,11 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.Institution;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
@@ -24,4 +21,7 @@ public class Course {
 	@Column(name = "name")
 	private String name;
 
+	@ManyToOne
+	@JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
+	private Institution institution;
 }

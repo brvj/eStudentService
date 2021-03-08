@@ -1,9 +1,16 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "exam_obligation_type")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExamObligationType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,26 +20,4 @@ public class ExamObligationType {
     @Column(name = "name")
     private String name;
 
-    public ExamObligationType(){}
-
-    public ExamObligationType(int id, String name){
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

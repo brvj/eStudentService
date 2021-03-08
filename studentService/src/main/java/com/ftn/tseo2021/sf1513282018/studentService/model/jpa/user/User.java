@@ -1,15 +1,9 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.enums.UserType;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 
 import lombok.AllArgsConstructor;
@@ -42,5 +36,9 @@ public class User {
 	@Column(name = "user_type")
 	@Enumerated(EnumType.ORDINAL)
 	private UserType userType;
+
+	@ManyToOne
+	@JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
+	private Institution institution;
 	
 }

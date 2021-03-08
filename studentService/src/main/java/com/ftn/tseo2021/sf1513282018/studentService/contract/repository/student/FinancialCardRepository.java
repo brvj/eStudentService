@@ -1,4 +1,4 @@
-package com.ftn.tseo2021.sf1513282018.studentService.contract.repository;
+package com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

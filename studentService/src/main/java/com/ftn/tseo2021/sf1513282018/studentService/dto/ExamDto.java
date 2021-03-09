@@ -12,6 +12,5 @@ public class ExamDto {
 
     public ExamDto(Exam exam){
         this.id = exam.getId();
-        this.date = exam.getDate();
     }
 }

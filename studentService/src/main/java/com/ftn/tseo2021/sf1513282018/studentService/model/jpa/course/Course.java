@@ -2,8 +2,10 @@ package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course;
 
 import javax.persistence.*;
 
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.Institution;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
@@ -35,4 +37,7 @@ public class Course {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
 	private Set<ExamObligation> examObligations;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
+	private Set<Enrollment> enrollments;
 }

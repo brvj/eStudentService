@@ -1,11 +1,13 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course;
 
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -26,9 +28,6 @@ public class Exam {
     @Column(name = "classroom")
     private String classroom;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "exam")
-    private Set<ExamTaking> examTaking;
-
     @ManyToOne
     @JoinColumn(name = "exam_period_id", referencedColumnName = "exam_period_id", nullable = false)
     private ExamPeriod examPeriod;
@@ -36,4 +35,8 @@ public class Exam {
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "course_id", nullable = false)
     private Course course;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "exam")
+    private Set<ExamTaking> examTakings;
+    
 }

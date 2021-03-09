@@ -1,10 +1,16 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -32,5 +38,10 @@ public class FinancialCard {
 	@Column(name = "total_spent")
 	private double totalSpent;
 	
+	@OneToOne(mappedBy = "financialCard")
+	private Student student;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "financialCard")
+	private Set<Transaction> transactions;
 	
 }

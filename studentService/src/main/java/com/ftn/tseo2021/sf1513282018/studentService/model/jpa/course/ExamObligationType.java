@@ -21,7 +21,6 @@ public class ExamObligationType {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "exam_obligation_id", referencedColumnName = "exam_obligation_id", nullable = false)
-    private ExamObligation examObligation;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "examObligationType")
+    private Set<ExamObligation> examObligations;
 }

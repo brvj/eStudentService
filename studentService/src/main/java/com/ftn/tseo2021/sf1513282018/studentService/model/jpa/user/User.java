@@ -1,10 +1,10 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 
-import com.ftn.tseo2021.sf1513282018.studentService.model.enums.UserType;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.Institution;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
+import com.ftn.tseo2021.sf1513282018.studentService.model.common.UserType;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +32,13 @@ public class User {
 	
 	@Column(name = "last_name")
 	private String lastName;
+	
+	@Email
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "phone_number")
+	private String phoneNumber;
 	
 	@Column(name = "user_type")
 	@Enumerated(EnumType.ORDINAL)

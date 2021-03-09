@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "exam_period")
@@ -14,7 +15,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExamPeriod {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exam_period_id", unique = true, nullable = false)
@@ -33,4 +33,6 @@ public class ExamPeriod {
     @JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
     private Institution institution;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "exam_period")
+    private Set<Exam> exam;
 }

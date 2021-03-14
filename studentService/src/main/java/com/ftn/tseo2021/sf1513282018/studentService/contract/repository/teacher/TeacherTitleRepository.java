@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface TeacherTitleRepository extends JpaRepository<TeacherTitle, Integer> {
 
-    Set<TeacherTitle> findByName(String name);
+    Set<TeacherTitle> findByNameContaining(String name);
 
     @Query(value = "Select * from teacher_title tt where tt.teacher_title_id in (select t.teacher_title_id from teacher t where t.teacher_id = ?1)", nativeQuery = true)
     TeacherTitle findByTeacherId(int teacherId);

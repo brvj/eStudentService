@@ -8,11 +8,11 @@ import java.util.Set;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
-    Set<Teacher> findByFirstName(String firstName);
+    Set<Teacher> findByFirstNameContaining(String firstName);
 
-    Set<Teacher> findByLastName(String lastName);
+    Set<Teacher> findByLastNameContaining(String lastName);
 
-    Set<Teacher> findByAddress(String address);
+    Set<Teacher> findByAddressContaining(String address);
 
     @Query(value = "Select * from teacher t where t.user_id = ?1", nativeQuery = true)
     Teacher findByUserId(int userId);

@@ -8,9 +8,9 @@ import java.util.Set;
 
 public interface InstitutionRepository extends JpaRepository<Institution, Integer> {
 
-    Set<Institution> findByName(String name);
+    Set<Institution> findByNameContaining(String name);
 
-    Set<Institution> findByAddress(String address);
+    Set<Institution> findByAddressContaining(String address);
 
     @Query(value = "Select * from institution i where i.institution_id in (select t.institution_id from teacher t where t.teacher_id = ?1)", nativeQuery = true)
     Institution findByTeacherId(int teacherId);

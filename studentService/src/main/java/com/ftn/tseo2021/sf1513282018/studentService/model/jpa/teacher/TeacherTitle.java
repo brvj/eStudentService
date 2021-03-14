@@ -22,7 +22,7 @@ public class TeacherTitle {
 
     @NotBlank(message = "Teacher's title name is mandatory")
     @Column(name = "name", nullable = false)
-    private String title;
+    private String name;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "teacherTitle")
     private Set<Teacher> teachers;

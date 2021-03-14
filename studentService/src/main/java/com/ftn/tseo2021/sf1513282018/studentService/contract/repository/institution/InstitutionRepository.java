@@ -35,4 +35,10 @@ public interface InstitutionRepository extends JpaRepository<Institution, Intege
     @Query(value = "Select * from institution i where i.institution_id in " +
             "(select u.institution_id from user u where u.first_name like concat('%', ?1 , '%') and u.last_name like concat('%', ?2 , '%') and u.user_type = 0)", nativeQuery = true)
     Set<Institution> findByAdminFirstAndLastName(String firstName, String lastName);
+
+    @Query(value = "Select * from institution i where i.institution_id in (select c.institution_id from course c where c.course_id = ?1)", nativeQuery = true)
+    Institution findByCourseId(int courseId);
+
+    @Query(value = "Select * from institution i where i.institution_id in (select c.institution_id from course c where c.name like concat('%', ?1 , '%'))", nativeQuery = true)
+    Set<Institution> findByCourseName(String name);
 }

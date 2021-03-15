@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligationType;
 
+
 @Repository
 public interface ExamObligationTypeRepository extends JpaRepository<ExamObligationType, Integer> {
 }

@@ -8,4 +8,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Document;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
+    //filter(int studentId, String name);
+
 }

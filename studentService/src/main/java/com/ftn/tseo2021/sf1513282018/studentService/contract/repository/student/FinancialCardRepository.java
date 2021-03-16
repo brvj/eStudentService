@@ -8,4 +8,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialC
 @Repository
 public interface FinancialCardRepository extends JpaRepository<FinancialCard, Integer> {
 
+    //Optional<FinancialCard> findByStudent_Id(int studentId);
+
 }

@@ -1,15 +1,17 @@
-package com.ftn.tseo2021.sf1513282018.studentService.dto;
+package com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course;
+
+import java.io.Serializable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
 
-public class ExamObligationDto {
+public class ExamObligationDTO implements Serializable {
     public int id;
     public int points;
     public String description;
 
-    public ExamObligationDto(){}
+    public ExamObligationDTO(){}
 
-    public ExamObligationDto(ExamObligation examObligation){
+    public ExamObligationDTO(ExamObligation examObligation){
         this.id = examObligation.getId();
         this.points = examObligation.getPoints();
         this.description = examObligation.getDescription();

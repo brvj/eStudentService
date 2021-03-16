@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 			+ "(:username is null OR u.username LIKE CONCAT('%', :username, '%')) AND "
 			+ "(:firstName is null OR lower(u.firstName) LIKE lower(CONCAT('%', :firstName, '%'))) AND "
 			+ "(:lastName is null OR lower(u.lastName) LIKE lower(CONCAT('%', :lastName, '%'))) AND "
-			+ "(:userType is null OR u.userType = userType")
+			+ "(:userType is null OR u.userType = :userType)")
 	Page<User> filterUsers(@Param("institutionId") int institutionId, @Param("username")String username, 
 							@Param("firstName") String firstName, @Param("lastName") String lastName, 
 							@Param("userType") UserType userType, Pageable pageable);

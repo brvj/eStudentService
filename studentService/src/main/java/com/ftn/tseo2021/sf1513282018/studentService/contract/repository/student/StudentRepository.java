@@ -9,7 +9,10 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 public interface StudentRepository extends JpaRepository<Student, Integer>{
 
     //Optional<Student> findByUser_Id(int userId);
-    //filter(institutionId, String firstName, String lastName, String indexNum, String address, LocalDate birthDate, int generation)
+	
+    //filter(int institutionId, String firstName, String lastName, 
+	//String indexNum, String address, LocalDate startBirthDate, LocalDate endBirthDate, 
+	//Integer startGeneration, Integer endGeneration, Pageable pageable)
 
 
 }

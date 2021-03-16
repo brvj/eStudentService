@@ -8,5 +8,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transactio
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer>{
 
-    //filter(int financialCardId, TransactionType type, LocalDate transactionDate, String description);
+    //filter(int financialCardId, TransactionType type, LocalDate startTransactionDate, 
+	//LocalDate endTransactionDate, String description, Pageable pageable);
 }

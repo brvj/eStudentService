@@ -21,7 +21,7 @@ public interface ExamObligationRepository extends JpaRepository<ExamObligation, 
     @Query("select eo from ExamObligation eo where " +
             "eo.course.id = :courseId and " +
             "(:description is null or lower(eo.description) like lower(concat('%', :description, '%'))) and " +
-            "eo.examObligationType.id = :examObligationTypeId")
+            "(:examObligationTypeId is null or eo.examObligationType.id = :examObligationTypeId)")
     Page<ExamObligation> filterExamObligations(@Param("courseId") int courseId, @Param("description") String description,
                                                @Param("examObligationTypeId") Integer examObligationTypeId,
                                                Pageable pageable);

@@ -9,6 +9,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Instit
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Student {
 
 	@Id

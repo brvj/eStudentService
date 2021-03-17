@@ -1,10 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherTitleRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.model.common.UserType;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

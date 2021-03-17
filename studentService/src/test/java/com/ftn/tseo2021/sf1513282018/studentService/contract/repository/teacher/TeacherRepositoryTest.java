@@ -5,6 +5,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.Use
 import com.ftn.tseo2021.sf1513282018.studentService.model.common.UserType;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -35,6 +36,7 @@ class TeacherRepositoryTest {
     private TeacherTitleRepository teacherTitleRepo;
 
     @Test
+    @Order(1)
     final void testCreateTeacher(){
         var user = User.builder()
                 .firstName("Teacher")
@@ -68,6 +70,7 @@ class TeacherRepositoryTest {
     }
 
     @Test
+    @Order(2)
     final void testFindByUserId(){
         var teacher = teacherRepo.findByUser_Id(2);
 
@@ -76,6 +79,7 @@ class TeacherRepositoryTest {
     }
 
     @Test
+    @Order(3)
     final void shouldReturnTeachers_whenInstitutionIdIsPassed(){
         var teachers = teacherRepo.filterTeachers(1, null, null, null, any(Pageable.class));
 
@@ -84,6 +88,7 @@ class TeacherRepositoryTest {
     }
 
     @Test
+    @Order(4)
     final void shouldReturnTeachers_whenInstitutionIdAndTeacherTitleIdArePassed(){
         var teachers = teacherRepo.filterTeachers(1, 1, null, null, any(Pageable.class));
 
@@ -92,6 +97,7 @@ class TeacherRepositoryTest {
     }
 
     @Test
+    @Order(5)
     final void shouldReturnTeachers_whenInstitutionIdAndFirstNameArePassed(){
         var teachers = teacherRepo.filterTeachers(1, null, "Teacher", null, any(Pageable.class));
 

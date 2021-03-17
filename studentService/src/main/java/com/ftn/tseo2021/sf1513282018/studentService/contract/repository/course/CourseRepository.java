@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface CourseRepository extends JpaRepository<Course, Integer> {
+
     Course findByTeachingsContaining(Teaching teachings);
 
     Course findByEnrollmentsContaining(Enrollment enrollment);

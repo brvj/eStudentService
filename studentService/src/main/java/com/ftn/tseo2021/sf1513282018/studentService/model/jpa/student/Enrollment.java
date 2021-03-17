@@ -8,6 +8,7 @@ import javax.persistence.*;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Enrollment {
 	
 	@Id

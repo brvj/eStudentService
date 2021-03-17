@@ -7,6 +7,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Course {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -21,8 +21,8 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
             "e.course.id = :courseId and " +
             "e.examPeriod.id = :examPeriodId and " +
             "(:classroom is null or e.classroom like concat('%', :name, '%')) and " +
-            "(:startDate is null or e.dateTime isAfter :startDate) and " +
-            "(:endDate is null or e.dateTime isBefore :endDate)")
+            "(:startDate is null or e.dateTime >= :startDate) and " +
+            "(:endDate is null or e.dateTime <= :endDate)")
     Page<Exam> filterExams(@Param("courseId") Integer courseId, @Param("examPeriodId") Integer examPeriodId,
                            @Param("classroom") String classroom, @Param("startDate") LocalDate startDate,
                            @Param("endDate") LocalDate endDate, Pageable pageable);

@@ -16,8 +16,8 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
     @Query("SELECT t from Teacher t WHERE " +
             "t.institution.id = :institutionId AND " +
             "(:teacherTitleId is null OR t.teacherTitle.id = :teacherTitleId) AND " +
-            "(:firstName is null OR lower(t.firstName) LIKE lower(CONCAT('%', :firstName,'%'))) AND " +
-            "(:lastName is null OR lower(t.lastName) LIKE lower(CONCAT('%', :lastName,'%')))")
+            "(:firstName is null OR lower(t.firstName) LIKE lower(CONCAT('%', :firstName, '%'))) AND " +
+            "(:lastName is null OR lower(t.lastName) LIKE lower(CONCAT('%', :lastName, '%')))")
     Page<Teacher> filterTeachers(@Param("institutionId") int institutionId, @Param("teacherTitleId") Integer teacherTitleId,
                                  @Param("firstName") String firstName, @Param("lastName") String lastName, Pageable pageable);
 }

@@ -21,11 +21,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 	
 	@Query("SELECT f from FinancialCard f WHERE" +
 			"s.financialCard.id = :financialCardId AND" +
-			"(:userType is null OR u.userType = :userType) AND" + 
+			"(:transactionType is null OR f.transactionType = :transactionType) AND" + 
 			"(:startTransactionDate is null OR f.startTransactionDate isAfter :startTransactionDate) AND" + 
 			"(:endTransactionDate is null OR f.endTransactionDate isBefore :endTransactionDate) AND" +
 			"(:description is null OR lower(f.description) LIKE lower(CONCAT('%', :description,'%'))) AND")
-	Page<Transaction> filterTransaction(@Param("financialCardId") int financialCardId, @Param("type") TransactionType type,
+	Page<Transaction> filterTransaction(@Param("financialCardId") int financialCardId, @Param("transactionType") TransactionType transactionType,
             @Param("startTransactionDate") LocalDate startTransactionDate,@Param("endTransactionDate") LocalDate endTransactionDate,
             @Param("description") String description, Pageable pageable);
 }

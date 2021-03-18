@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import com.ftn.tseo2021.sf1513282018.studentService.model.common.TransactionType;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,8 +27,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Transaction {
-	
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

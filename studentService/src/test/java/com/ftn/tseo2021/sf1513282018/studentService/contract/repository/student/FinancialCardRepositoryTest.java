@@ -18,7 +18,11 @@ class FinancialCardRepositoryTest {
     @Autowired
     private FinancialCardRepository financialCardRepo;
 
-    @Autowired
-    private StudentRepository studentRepo;
+    @Test
+    final void shouldReturnFinancialCard_whenStudentIdIsPassed(){
+        var financialCard = financialCardRepo.findByStudent_Id(1);
 
+        assertThat(financialCard).isPresent();
+        assertThat(financialCard.get().getId()).isGreaterThan(0);
+    }
 }

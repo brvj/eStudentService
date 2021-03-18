@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDate;
@@ -78,4 +79,56 @@ class StudentRepositoryTest {
         assertThat(createdStudent.getId()).isGreaterThan(0);
     }
 
+    @Test
+    final void shouldReturnStudent_whenUserIdIsPassed(){
+        var student = studentRepo.findByUser_Id(3);
+
+        assertThat(student).isPresent();
+        assertThat(student.get().getFirstName()).isEqualTo("Student");
+    }
+
+    @Test
+    final void shouldReturnStudents_whenInstitutionIdFirstAndLastNameArePassed(){
+        var student = studentRepo.filterStudent(1, "student", "stud", null, null,
+                null, null, null, null, any(Pageable.class));
+
+        assertThat(student).isNotEmpty();
+        assertThat(student.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    final void shouldReturnStudents_whenInstitutionIdArePassed(){
+        var student = studentRepo.filterStudent(1, null, null, null, null,
+                null, null, null, null, any(Pageable.class));
+
+        assertThat(student).isNotEmpty();
+        assertThat(student.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    final void shouldReturnStudent_whenInstitutionIdIndexNumArePassed(){
+        var student = studentRepo.filterStudent(1, null, null, "SF151328", null,
+                null, null, null, null, any(Pageable.class));
+
+        assertThat(student).isNotEmpty();
+        assertThat(student.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    final void shouldReturnStudent_whenInstitutionIdGenerationRangeArePassed(){
+        var student = studentRepo.filterStudent(1, null, null, null, null,
+                null, null, 2018, 2020, any(Pageable.class));
+
+        assertThat(student).isNotEmpty();
+        assertThat(student.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    final void shouldReturnStudent_whenInstitutionIdBirthDateRangeArePassed(){
+        var student = studentRepo.filterStudent(1, null, null, null, null,
+                LocalDate.of(1994, 01, 01), LocalDate.of(1996, 01, 01), null, null, any(Pageable.class));
+
+        assertThat(student).isNotEmpty();
+        assertThat(student.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
 }

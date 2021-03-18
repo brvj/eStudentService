@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ExamPeriod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

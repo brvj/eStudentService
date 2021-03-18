@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 import static org.assertj.core.api.Assertions.*;
@@ -38,4 +39,29 @@ class ExamObligationTakingRepositoryTest {
         assertThat(createdExamObligationTaking).isNotNull();
         assertThat(createdExamObligationTaking.getId()).isGreaterThan(0);
     }
+
+    @Test
+    final void shouldReturnExamObligationTakings_whenExamObligationIdIsPassed(){
+        var examObligationTakings = examObligationTakingRepo.filterExamObligationTakings(1, null, null, null, any(Pageable.class));
+
+        assertThat(examObligationTakings).isNotEmpty();
+        assertThat(examObligationTakings.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    final void shouldReturnExamObligationTakings_whenEnrollmentIdIsPassed(){
+        var examObligationTakings = examObligationTakingRepo.filterExamObligationTakings(null, 1, null, null, any(Pageable.class));
+
+        assertThat(examObligationTakings).isNotEmpty();
+        assertThat(examObligationTakings.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    final void shouldReturnExamObligationTakings_whenScoreRangeIsPassed(){
+        var examObligationTakings = examObligationTakingRepo.filterExamObligationTakings(null, null, 30d, 60d, any(Pageable.class));
+
+        assertThat(examObligationTakings).isNotEmpty();
+        assertThat(examObligationTakings.getTotalPages()).isGreaterThanOrEqualTo(1);
+    }
+
 }

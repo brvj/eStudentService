@@ -2,9 +2,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.TransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.TransactionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 
 public class DefaultTransactionService implements TransactionService {
 	
@@ -12,19 +12,19 @@ public class DefaultTransactionService implements TransactionService {
 	TransactionRepository transactionRepo;
 
 	@Override
-	public TransactionDTO getOne(Integer id) {
+	public DefaultTransactionDTO getOne(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer create(TransactionDTO t) {
+	public Integer create(DefaultTransactionDTO t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void update(Integer id, TransactionDTO t) {
+	public void update(Integer id, DefaultTransactionDTO t) {
 		// TODO Auto-generated method stub
 		
 	}

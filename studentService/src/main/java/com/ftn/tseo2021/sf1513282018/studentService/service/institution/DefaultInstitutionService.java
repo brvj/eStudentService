@@ -2,9 +2,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.institution;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 
 public class DefaultInstitutionService implements InstitutionService {
 	
@@ -12,19 +12,19 @@ public class DefaultInstitutionService implements InstitutionService {
 	InstitutionRepository institutionRepo;
 
 	@Override
-	public InstitutionDTO getOne(Integer id) {
+	public DefaultInstitutionDTO getOne(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer create(InstitutionDTO t) {
+	public Integer create(DefaultInstitutionDTO t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void update(Integer id, InstitutionDTO t) {
+	public void update(Integer id, DefaultInstitutionDTO t) {
 		// TODO Auto-generated method stub
 		
 	}

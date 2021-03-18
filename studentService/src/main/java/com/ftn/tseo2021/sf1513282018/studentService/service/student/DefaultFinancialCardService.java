@@ -2,9 +2,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.FinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 
 public class DefaultFinancialCardService implements FinancialCardService {
 	
@@ -12,19 +12,19 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	FinancialCardRepository financialCardRepo;
 
 	@Override
-	public FinancialCardDTO getOne(Integer id) {
+	public DefaultFinancialCardDTO getOne(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer create(FinancialCardDTO t) {
+	public Integer create(DefaultFinancialCardDTO t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void update(Integer id, FinancialCardDTO t) {
+	public void update(Integer id, DefaultFinancialCardDTO t) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,8 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher;
 
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
 
-public interface TeachingService extends BaseService<TeachingDTO, Integer> {
+public interface TeachingService extends BaseService<DefaultTeachingDTO, Integer> {
 
 }

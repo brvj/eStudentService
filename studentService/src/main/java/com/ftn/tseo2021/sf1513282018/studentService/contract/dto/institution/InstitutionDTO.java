@@ -1,7 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution;
 
-import java.io.Serializable;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.common.DTO;
 
-public class InstitutionDTO implements Serializable {
+public interface InstitutionDTO extends DTO {
 
 }

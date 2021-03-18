@@ -2,9 +2,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.ExamTakingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
 
 public class DefaultExamTakingService implements ExamTakingService {
 	
@@ -12,19 +12,19 @@ public class DefaultExamTakingService implements ExamTakingService {
 	ExamTakingRepository examTakingRepo;
 
 	@Override
-	public ExamTakingDTO getOne(Integer id) {
+	public DefaultExamTakingDTO getOne(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer create(ExamTakingDTO t) {
+	public Integer create(DefaultExamTakingDTO t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void update(Integer id, ExamTakingDTO t) {
+	public void update(Integer id, DefaultExamTakingDTO t) {
 		// TODO Auto-generated method stub
 		
 	}

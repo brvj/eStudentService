@@ -12,18 +12,21 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
+
 public interface CourseRepository extends JpaRepository<Course, Integer> {
-    Course findByTeachingsContaining(Teaching teachings);
+    Optional<Course> findByTeachingsContaining(Teaching teachings);
 
-    Course findByEnrollmentsContaining(Enrollment enrollment);
+    Optional<Course> findByEnrollmentsContaining(Enrollment enrollment);
 
-    Course findByExamObligationsContaining(ExamObligation examObligation);
+    Optional<Course> findByExamObligationsContaining(ExamObligation examObligation);
 
-    Course findByExamsContaining(Exam exam);
+    Optional<Course> findByExamsContaining(Exam exam);
 
-    @Query("select c from course c where " +
+    @Query("select c from Course c where " +
             "c.institution.id = :institutionId and " +
             "(:name is null or lower(c.name) like lower(concat('%', :name, '%')))")
-    Page<Course> filterCourses(@Param("institutionId") int institutionId, @Param("name") String name,
+    Page<Course> filterCourses(@Param("institutionId") Integer institutionId, @Param("name") String name,
                                Pageable pageable);
 }

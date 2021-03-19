@@ -12,7 +12,8 @@ import lombok.Data;
 
 import java.util.Set;
 
-@Entity(name = "course")
+@Entity
+@Table(name = "course")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

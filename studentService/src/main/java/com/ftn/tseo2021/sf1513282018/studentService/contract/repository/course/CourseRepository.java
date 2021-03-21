@@ -29,4 +29,5 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
             "(:name is null or lower(c.name) like lower(concat('%', :name, '%')))")
     Page<Course> filterCourses(@Param("institutionId") int institutionId, @Param("name") String name,
                                Pageable pageable);
+
 }

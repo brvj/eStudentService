@@ -18,12 +18,14 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
     Optional<Exam> findByExamTakingsContaining(ExamTaking examTaking);
 
     @Query("select e from Exam e where " +
-            "e.course.id = :courseId and " +
-            "e.examPeriod.id = :examPeriodId and " +
+            "(:courseId is null or e.course.id = :courseId) and " +
+            "(:examPeriodId is null or e.examPeriod.id = :examPeriodId) and " +
+            "(:description is null or lower(e.description) like lower(concat('%', :description, '%'))) and " +
             "(:classroom is null or e.classroom like concat('%', :name, '%')) and " +
             "(:startDate is null or e.dateTime >= :startDate) and " +
             "(:endDate is null or e.dateTime <= :endDate)")
-    Page<Exam> filterExams(@Param("courseId") int courseId, @Param("examPeriodId") int examPeriodId,
+    Page<Exam> filterExams(@Param("courseId") Integer courseId, @Param("examPeriodId") Integer examPeriodId,
+    		 				@Param("description") String description,
                            @Param("classroom") String classroom, @Param("startDate") LocalDateTime startDate,
                            @Param("endDate") LocalDateTime endDate, Pageable pageable);
 }

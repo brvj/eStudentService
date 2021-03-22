@@ -15,13 +15,13 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
 	@Query("SELECT e from Enrollment e WHERE "
 			+ "(:studentId is null OR e.student.id = :studentId) AND "
 			+ "(:courseId is null OR e.course.id = :courseId) AND "
-			+ "(:startDate is null OR e.startDate isAfter :startDate) AND "
-			+ "(:endDate is null OR e.startDate isBefore :endDate) AND "
+			+ "(:startDate is null OR e.startDate >= :startDate) AND "
+			+ "(:endDate is null OR e.startDate <= :endDate) AND "
 			+ "(:passed is null OR e.passed = passed) AND "
-			+ "(:scoreFrom is null OR e.score > scoreFrom) AND "
-			+ "(:scoreTo is null OR e.score < scoreTo) AND "
-			+ "(:gradeFrom is null OR e.grade > gradeFrom) AND "
-			+ "(:gradeTo is null OR e.grade < gradeTo)")
+			+ "(:scoreFrom is null OR e.score >= scoreFrom) AND "
+			+ "(:scoreTo is null OR e.score <= scoreTo) AND "
+			+ "(:gradeFrom is null OR e.grade >= gradeFrom) AND "
+			+ "(:gradeTo is null OR e.grade <= gradeTo)")
 	Page<Enrollment> filterEnrollments(@Param("studentId") Integer studentId, 
 							@Param("courseId") Integer courseId, 
 							@Param("startDate") LocalDate startStartDate, 

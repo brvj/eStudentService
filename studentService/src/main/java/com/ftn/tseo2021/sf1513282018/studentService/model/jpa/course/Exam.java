@@ -27,6 +27,12 @@ public class Exam {
 
     @Column(name = "classroom")
     private String classroom;
+    
+    @Column(name = "points")
+    private int points;
+
+    @Column(name = "description")
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "exam_period_id", referencedColumnName = "exam_period_id", nullable = false)

@@ -13,8 +13,8 @@ public interface ExamObligationTakingRepository extends JpaRepository<ExamObliga
 	@Query("SELECT eot from ExamObligationTaking eot WHERE "
 			+ "(:examObligationId is null OR eot.examObligation.id = :examObligationId) AND "
 			+ "(:enrollmentId is null OR eot.enrollment.id = :enrollmentId) AND "
-			+ "(:scoreFrom is null OR eot.score > :scoreFrom) AND "
-			+ "(:scoreTo is null OR eot.score < :scoreTo)")
+			+ "(:scoreFrom is null OR eot.score >= :scoreFrom) AND "
+			+ "(:scoreTo is null OR eot.score <= :scoreTo)")
 	Page<ExamObligationTaking> filterExamObligationTakings(@Param("examObligationId") Integer examObligationId, 
 									@Param("enrollmentId") Integer enrollmentId, 
 									@Param("scoreFrom") Double scoreFrom, @Param("scoreTo") Double scoreTo, 

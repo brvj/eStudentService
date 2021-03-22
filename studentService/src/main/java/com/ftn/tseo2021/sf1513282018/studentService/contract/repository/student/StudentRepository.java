@@ -18,19 +18,19 @@ public interface StudentRepository extends JpaRepository<Student, Integer>{
 
 	Optional<Student> findByUser_Id(int userId);
 	
-	@Query("SELECT s from Student s WHERE" +
-			"s.institution.id = :institutionId AND" +
-			"(:firstName is null OR lower(s.firstName) LIKE lower(CONCAT('%', :firstName,'%'))) AND" +
-			"(:lastName is null OR lower(s.lastName) LIKE lower(CONCAT('%', :lastName,'%'))) AND" +
-			"(:indexNum is null OR lower(s.indexNum) LIKE lower(CONCAT('%', :indexNum,'%'))) AND" +
-			"(:address is null OR lower(s.address) LIKE lower(CONCAT('%', :address,'%'))) AND" +
-			"(:startDate is null OR s.startBirthDate isAfter :startDate) AND" + 
-			"(:endDate is null OR s.endBirthDate isBefore :startDate) AND" +
-			"(:startGeneration is null OR s.startGeneration isAfter :startGeneration) AND" + 
-			"(:endGeneration is null OR s.endGeneration isBefore :endGeneration)")
+	@Query("SELECT s from Student s WHERE " +
+			"s.institution.id = :institutionId AND " +
+			"(:firstName is null OR lower(s.firstName) LIKE lower(CONCAT('%', :firstName,'%'))) AND " +
+			"(:lastName is null OR lower(s.lastName) LIKE lower(CONCAT('%', :lastName,'%'))) AND " +
+			"(:indexNum is null OR lower(s.indexNum) LIKE lower(CONCAT('%', :indexNum,'%'))) AND " +
+			"(:address is null OR lower(s.address) LIKE lower(CONCAT('%', :address,'%'))) AND " +
+			"(:startBirthDate is null OR s.dateOfBirth >= :startBirthDate) AND " + 
+			"(:endBirthDate is null OR s.dateOfBirth <= :endBirthDate) AND " +
+			"(:startGeneration is null OR s.generation >= :startGeneration) AND " + 
+			"(:endGeneration is null OR s.generation <= :endGeneration)")
 	Page<Student> filterStudent(@Param("institutionId") int institutionId,
-            @Param("firstName") String firstName, @Param("lastName") String lastName,@Param("indexNum") String indexNum,
-            @Param("address") String address,@Param("startBirthDate") LocalDate startBirthDate,@Param("endBirthDate") LocalDate endBirthDate,
-            @Param("startGeneration") Integer startGeneration,@Param("endGeneration") Integer endGeneration, Pageable pageable);
+            @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("indexNum") String indexNum,
+            @Param("address") String address, @Param("startBirthDate") LocalDate startBirthDate, @Param("endBirthDate") LocalDate endBirthDate,
+            @Param("startGeneration") Integer startGeneration, @Param("endGeneration") Integer endGeneration, Pageable pageable);
 
 }

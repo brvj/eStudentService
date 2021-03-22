@@ -16,16 +16,13 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transactio
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer>{
 
-    //filter(int financialCardId, TransactionType type, LocalDate startTransactionDate, 
-	//LocalDate endTransactionDate, String description, Pageable pageable);
-	
-	@Query("SELECT f from FinancialCard f WHERE" +
-			"s.financialCard.id = :financialCardId AND" +
-			"(:transactionType is null OR f.transactionType = :transactionType) AND" + 
-			"(:startTransactionDate is null OR f.startTransactionDate isAfter :startTransactionDate) AND" + 
-			"(:endTransactionDate is null OR f.endTransactionDate isBefore :endTransactionDate) AND" +
-			"(:description is null OR lower(f.description) LIKE lower(CONCAT('%', :description,'%'))) AND")
+	@Query("SELECT t from Transaction t WHERE " +
+			"t.financialCard.id = :financialCardId AND " +
+			"(:transactionType is null OR t.transactionType = :transactionType) AND " + 
+			"(:startTransactionDate is null OR t.date >= :startTransactionDate) AND " + 
+			"(:endTransactionDate is null OR t.date >= :endTransactionDate) AND " +
+			"(:description is null OR lower(t.description) LIKE lower(CONCAT('%', :description,'%')))")
 	Page<Transaction> filterTransaction(@Param("financialCardId") int financialCardId, @Param("transactionType") TransactionType transactionType,
-            @Param("startTransactionDate") LocalDate startTransactionDate,@Param("endTransactionDate") LocalDate endTransactionDate,
+            @Param("startTransactionDate") LocalDate startTransactionDate, @Param("endTransactionDate") LocalDate endTransactionDate,
             @Param("description") String description, Pageable pageable);
 }

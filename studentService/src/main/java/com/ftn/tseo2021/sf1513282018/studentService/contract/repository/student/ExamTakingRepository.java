@@ -13,8 +13,8 @@ public interface ExamTakingRepository extends JpaRepository<ExamTaking, Integer>
 	@Query("SELECT et from ExamTaking et WHERE "
 			+ "(:examId is null OR et.exam.id = :examId) AND "
 			+ "(:enrollmentId is null OR et.enrollment.id = :enrollmentId) AND "
-			+ "(:scoreFrom is null OR et.score > :scoreFrom) AND "
-			+ "(:scoreTo is null OR et.score < :scoreTo)")
+			+ "(:scoreFrom is null OR et.score >= :scoreFrom) AND "
+			+ "(:scoreTo is null OR et.score <= :scoreTo)")
 	Page<ExamTaking> filterExamTakings(@Param("examId") Integer examId, 
 			@Param("enrollmentId") Integer enrollmentId, 
 			@Param("scoreFrom") Double scoreFrom, @Param("scoreTo") Double scoreTo, Pageable pageable);

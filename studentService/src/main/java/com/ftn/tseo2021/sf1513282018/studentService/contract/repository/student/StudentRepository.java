@@ -22,14 +22,14 @@ public interface StudentRepository extends JpaRepository<Student, Integer>{
 			"s.institution.id = :institutionId AND " +
 			"(:firstName is null OR lower(s.firstName) LIKE lower(CONCAT('%', :firstName,'%'))) AND " +
 			"(:lastName is null OR lower(s.lastName) LIKE lower(CONCAT('%', :lastName,'%'))) AND " +
-			"(:indexNum is null OR lower(s.indexNum) LIKE lower(CONCAT('%', :indexNum,'%'))) AND " +
+			"(:studentCard is null OR lower(s.studentCard) LIKE lower(CONCAT('%', :studentCard,'%'))) AND " +
 			"(:address is null OR lower(s.address) LIKE lower(CONCAT('%', :address,'%'))) AND " +
 			"(:startBirthDate is null OR s.dateOfBirth >= :startBirthDate) AND " + 
 			"(:endBirthDate is null OR s.dateOfBirth <= :endBirthDate) AND " +
 			"(:startGeneration is null OR s.generation >= :startGeneration) AND " + 
 			"(:endGeneration is null OR s.generation <= :endGeneration)")
 	Page<Student> filterStudent(@Param("institutionId") int institutionId,
-            @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("indexNum") String indexNum,
+            @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("studentCard") String studentCard,
             @Param("address") String address, @Param("startBirthDate") LocalDate startBirthDate, @Param("endBirthDate") LocalDate endBirthDate,
             @Param("startGeneration") Integer startGeneration, @Param("endGeneration") Integer endGeneration, Pageable pageable);
 

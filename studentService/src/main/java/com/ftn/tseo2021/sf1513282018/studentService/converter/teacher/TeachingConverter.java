@@ -20,7 +20,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherRole;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> {
 
 	@Autowired

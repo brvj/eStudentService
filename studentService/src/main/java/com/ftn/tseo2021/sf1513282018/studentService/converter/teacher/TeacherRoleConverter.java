@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherRoleDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherRoleDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherRole;
 
+@Component
 public class TeacherRoleConverter implements DtoConverter<TeacherRole, TeacherRoleDTO, DefaultTeacherRoleDTO> {
 
 	@Override

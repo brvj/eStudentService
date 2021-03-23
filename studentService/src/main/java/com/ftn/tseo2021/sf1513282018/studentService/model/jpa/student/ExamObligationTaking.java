@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
 
@@ -14,7 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "exam_obligation_taking")
+@Entity
+@Table(name = "exam_obligation_taking")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
@@ -16,6 +17,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDT
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 
+@Component
 public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO> {
 	
 	@Autowired

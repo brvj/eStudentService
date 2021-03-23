@@ -6,18 +6,23 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.common.UserType;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 
 public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO> {
 	
 	@Autowired
 	InstitutionRepository institutionRepo;
+	
+	@Autowired
+	DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 
 	@Override
 	public User convertToJPA(UserDTO source) {
@@ -75,7 +80,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 		
 		DefaultUserDTO dto = new DefaultUserDTO(source.getId(), source.getUsername(), "", 
 				source.getFirstName(), source.getLastName(), source.getEmail(), source.getPhoneNumber(), 
-				source.getUserType().toString(), new DefaultInstitutionDTO());
+				source.getUserType().toString(), institutionConverter.convertToDTO(source.getInstitution()));
 		
 		return dto;
 	}
@@ -83,9 +88,13 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	private User convertToJPA(DefaultUserDTO source) {
 		if (source == null) return null;
 		
+		if (!institutionRepo.existsById(source.getInstitution().getId()))
+			throw new IllegalArgumentException();
+		
 		User user = new User(source.getId(), source.getUsername(), source.getPassword(), 
 				source.getFirstName(), source.getLastName(), source.getEmail(), source.getPhoneNumber(), 
-				UserType.valueOf(source.getUserType()), institutionRepo.findById(0).get());
+				UserType.valueOf(source.getUserType()), 
+				institutionRepo.findById(source.getInstitution().getId()).get());
 		
 		return user;
 	}

@@ -44,7 +44,7 @@ public class DefaultUserService implements UserService {
 
 	@Override
 	public void update(Integer id, DefaultUserDTO dto) {
-		if (getOne(id) == null) throw new EntityNotFoundException();
+		if (!userRepo.existsById(id)) throw new EntityNotFoundException();
 		
 		dto.setId(id);
 		User user = userConverter.convertToJPA(dto);

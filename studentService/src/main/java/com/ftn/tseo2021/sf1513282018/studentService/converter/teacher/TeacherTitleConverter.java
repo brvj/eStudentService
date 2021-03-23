@@ -39,7 +39,7 @@ public class TeacherTitleConverter implements DtoConverter<TeacherTitle, Teacher
 
 	@Override
 	public <T extends TeacherTitleDTO> T convertToDTO(TeacherTitle source, Class<? extends TeacherTitleDTO> returnType) {
-		if(returnType == DefaultTeacherTitleDTO.class) return (T) convertToDTO(source);
+		if(returnType == DefaultTeacherTitleDTO.class) return (T) convertToDefaultTeacherTitleDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}

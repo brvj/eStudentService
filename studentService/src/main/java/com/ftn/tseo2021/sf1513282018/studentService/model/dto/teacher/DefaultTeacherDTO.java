@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +23,5 @@ public class DefaultTeacherDTO implements TeacherDTO {
     private LocalDate dateOfBirth;
     private DefaultTeacherTitleDTO teacherTitle;
     private DefaultUserDTO user;
-    private List<DefaultTeachingDTO> teacherTeachingCourse;
     private DefaultInstitutionDTO institution;
 }

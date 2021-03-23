@@ -1,23 +1,18 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.teacher;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherTitleDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherTitleDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherTitle;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TeacherTitleConverter implements DtoConverter<TeacherTitle, TeacherTitleDTO, DefaultTeacherTitleDTO> {
-
-	@Autowired
-	private TeacherConverter teacherConverter;
 
 	@Override
 	public TeacherTitle convertToJPA(TeacherTitleDTO source) {
@@ -78,25 +73,17 @@ public class TeacherTitleConverter implements DtoConverter<TeacherTitle, Teacher
 	private DefaultTeacherTitleDTO convertToDefaultTeacherTitleDTO(TeacherTitle source){
 		if(source == null) throw new NullPointerException();
 
-		if(source.getTeachers() != null) {
-			List<DefaultTeacherDTO> teachers = teacherConverter.convertToDTO(new ArrayList<>(source.getTeachers()));
-			DefaultTeacherTitleDTO dto = new DefaultTeacherTitleDTO(source.getId(), source.getName(), teachers);
+		DefaultTeacherTitleDTO dto = new DefaultTeacherTitleDTO(source.getId(), source.getName());
 
-			return dto;
-		}
-		return null;
+		return dto;
 	}
 
 	private TeacherTitle convertToJPA(DefaultTeacherTitleDTO source){
 		if(source == null) throw new NullPointerException();
 
-		if(source.getTeachers() != null){
-			Set<Teacher> teachers = (Set<Teacher>) teacherConverter.convertToJPA(source.getTeachers());
-			TeacherTitle teacherTitle = new TeacherTitle(source.getId(), source.getName(), teachers);
+		TeacherTitle teacherTitle = new TeacherTitle(source.getId(), source.getName(), new HashSet<>());
 
-			return teacherTitle;
-		}
-		return null;
+		return teacherTitle;
 	}
 
 }

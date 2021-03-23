@@ -25,7 +25,7 @@ public class Institution {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "institution_id", unique = true, nullable = false)
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Institution name is mandatory")
     @Column(name = "name", nullable = false)

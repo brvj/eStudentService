@@ -18,7 +18,7 @@ public class TeacherTitle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "teacher_title_id", unique = true, nullable = false)
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Teacher's title name is mandatory")
     @Column(name = "name", nullable = false)

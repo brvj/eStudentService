@@ -20,7 +20,7 @@ public class Teaching {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "teaching_id", unique = true, nullable = false)
-    private int id;
+    private Integer id;
     
     @Column(name = "start_date")
 	private LocalDate startDate;

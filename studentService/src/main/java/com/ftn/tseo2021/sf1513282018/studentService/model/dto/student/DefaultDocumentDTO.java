@@ -4,4 +4,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Documen
 
 public class DefaultDocumentDTO implements DocumentDTO {
 
+	private Integer id;
+	private String name;
+	private String type;
+	private String path;
+	private DefaultStudentDTO student;
 }

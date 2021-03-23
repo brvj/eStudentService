@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,5 +15,4 @@ public class DefaultTeacherTitleDTO implements TeacherTitleDTO {
 
     private Integer id;
     private String name;
-    private List<DefaultTeacherDTO> teachers;
 }

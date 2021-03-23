@@ -3,13 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.converter.institution;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import com.ftn.tseo2021.sf1513282018.studentService.converter.teacher.TeacherConverter;
-import com.ftn.tseo2021.sf1513282018.studentService.converter.user.UserConverter;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
@@ -19,12 +13,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Instit
 
 @Component
 public class InstitutionConverter implements DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> {
-
-	@Autowired
-	private UserConverter userConverter;
-
-	@Autowired
-	private TeacherConverter teacherConverter;
 
 	@Override
 	public Institution convertToJPA(InstitutionDTO source) {
@@ -43,45 +31,53 @@ public class InstitutionConverter implements DtoConverter<Institution, Instituti
 					result.add(convertToJPA((DefaultInstitutionDTO) institutionDTO));
 				});
 			}
-			else {
-				throw new IllegalArgumentException(String.format("Converting from %s type is not supported!", sources.get(0).getClass().toString()));
-			}
+			else throw new IllegalArgumentException(String.format("Converting from %s type is not supported!", sources.get(0).getClass().toString()));
 		}
 		return result;
 	}
 
 	@Override
 	public <T extends InstitutionDTO> T convertToDTO(Institution source, Class<? extends InstitutionDTO> returnType) {
-		// TODO Auto-generated method stub
-		return null;
+		if(returnType == DefaultInstitutionDTO.class) return (T) convertToDefaultInstitutionDTO(source);
+		else throw new IllegalArgumentException(String.format(
+				"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
-	public List<? extends InstitutionDTO> convertToDTO(List<Institution> sources,
-			Class<? extends InstitutionDTO> returnType) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<? extends InstitutionDTO> convertToDTO(List<Institution> sources, Class<? extends InstitutionDTO> returnType) {
+		if(returnType == DefaultInstitutionDTO.class){
+			List<DefaultInstitutionDTO> result = new ArrayList<>();
+			sources.stream().forEach(institution -> {
+				result.add(convertToDefaultInstitutionDTO(institution));
+			});
+			return result;
+
+		}else throw new IllegalArgumentException(String.format(
+				"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
 	public DefaultInstitutionDTO convertToDTO(Institution source) {
-		// TODO Auto-generated method stub
-		return null;
+		return convertToDefaultInstitutionDTO(source);
 	}
 
 	@Override
 	public List<DefaultInstitutionDTO> convertToDTO(List<Institution> sources) {
-		// TODO Auto-generated method stub
-		return null;
+		return (List<DefaultInstitutionDTO>) convertToDTO(sources, DefaultInstitutionDTO.class);
+	}
+
+	private DefaultInstitutionDTO convertToDefaultInstitutionDTO(Institution source){
+		if(source == null) throw new NullPointerException();
+
+		DefaultInstitutionDTO dto = new DefaultInstitutionDTO(source.getId(), source.getName(), source.getAddress(), source.getPhoneNumber());
+
+		return dto;
 	}
 
 	private Institution convertToJPA(DefaultInstitutionDTO source){
 		if(source == null) throw new NullPointerException();
 
-		//Student, ExamPeriod and Course converters have not been implemented yet
-		Set<User> users = (Set<User>) userConverter.convertToJPA(source.getUsers());
-		Set<Teacher> teachers = (Set<Teacher>) teacherConverter.convertToJPA(source.getTeachers());
-		Institution institution = new Institution(source.getId(), source.getName(), source.getAddress(), source.getPhoneNumber(), users, teachers,
+		Institution institution = new Institution(source.getId(), source.getName(), source.getAddress(), source.getPhoneNumber(), new HashSet<>(), new HashSet<>(),
 				new HashSet<>(), new HashSet<>(), new HashSet<>());
 
 		return institution;

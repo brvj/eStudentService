@@ -1,52 +1,119 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.student;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.EnrollmentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 
 @Component
 public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentDTO, DefaultEnrollmentDTO> {
-
+	
+	@Autowired
+	DtoConverter<Student, StudentDTO, DefaultStudentDTO> studentConverter;
+	
+	@Autowired
+	DtoConverter<Course, CourseDTO, DefaultCourseDTO> courseConverter;
+	
+	@Autowired
+	StudentRepository studentRepo;
+	
+	@Autowired
+	CourseRepository courseRepo;
+	
 	@Override
 	public Enrollment convertToJPA(EnrollmentDTO source) {
-		// TODO Auto-generated method stub
-		return null;
+		if (source instanceof DefaultEnrollmentDTO) return convertToJPA((DefaultEnrollmentDTO) source);
+		else throw new IllegalArgumentException(String.format(
+				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
 	public List<Enrollment> convertToJPA(List<? extends EnrollmentDTO> sources) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Enrollment> result = new ArrayList<Enrollment>();
+		
+		if (sources.get(0) instanceof DefaultEnrollmentDTO) {
+			for (EnrollmentDTO dto : sources) result.add(convertToJPA((DefaultEnrollmentDTO) dto));
+			return result;
+		}
+		else throw new IllegalArgumentException(String.format(
+				"Converting from %s type is not supported", sources.get(0).getClass().toString()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends EnrollmentDTO> T convertToDTO(Enrollment source, Class<? extends EnrollmentDTO> returnType) {
-		// TODO Auto-generated method stub
-		return null;
+		if (returnType == DefaultEnrollmentDTO.class) return (T) convertToDefaultEnrollmentDTO(source);
+		else throw new IllegalArgumentException(String.format(
+				"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
 	public List<? extends EnrollmentDTO> convertToDTO(List<Enrollment> sources,
 			Class<? extends EnrollmentDTO> returnType) {
-		// TODO Auto-generated method stub
-		return null;
+		if (returnType == DefaultEnrollmentDTO.class) {
+			List<DefaultEnrollmentDTO> result = new ArrayList<DefaultEnrollmentDTO>();
+			for (Enrollment jpa : sources) result.add(convertToDefaultEnrollmentDTO(jpa));
+			return result;
+		}
+		else throw new IllegalArgumentException(String.format(
+				"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
 	public DefaultEnrollmentDTO convertToDTO(Enrollment source) {
-		// TODO Auto-generated method stub
-		return null;
+		return convertToDefaultEnrollmentDTO(source);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DefaultEnrollmentDTO> convertToDTO(List<Enrollment> sources) {
-		// TODO Auto-generated method stub
-		return null;
+		return (List<DefaultEnrollmentDTO>) convertToDTO(sources, DefaultEnrollmentDTO.class);
+	}
+	
+	private DefaultEnrollmentDTO convertToDefaultEnrollmentDTO(Enrollment source) {
+		if (source == null) return null;
+		
+		DefaultEnrollmentDTO dto = new DefaultEnrollmentDTO(source.getId(), source.getStartDate(), 
+				source.isPassed(), source.getScore(), source.getGrade(), 
+				studentConverter.convertToDTO(source.getStudent()), 
+				courseConverter.convertToDTO(source.getCourse()));
+		
+		return dto;
+	}
+	
+	private Enrollment convertToJPA(DefaultEnrollmentDTO source) {
+		if (source == null) return null;
+		
+		if (source.getStudent() == null || source.getCourse() == null || 
+				!studentRepo.existsById(source.getStudent().getId()) || 
+				!courseRepo.existsById(source.getCourse().getId()))
+			throw new IllegalArgumentException();
+		
+		Enrollment enrollment = new Enrollment(source.getId(), source.getStartDate(), source.isPassed(), 
+				source.getScore(), source.getGrade(), 
+				studentRepo.findById(source.getStudent().getId()).get(), 
+				courseRepo.findById(source.getCourse().getId()).get(), 
+				new HashSet<ExamObligationTaking>(),
+				new HashSet<ExamTaking>());
+		
+		return enrollment;
 	}
 
 }

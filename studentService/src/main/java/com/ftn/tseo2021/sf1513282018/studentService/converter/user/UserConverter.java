@@ -55,9 +55,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	public List<? extends UserDTO> convertToDTO(List<User> sources, Class<? extends UserDTO> returnType) {
 		if (returnType == DefaultUserDTO.class) {
 			List<DefaultUserDTO> result = new ArrayList<DefaultUserDTO>();
-			for (User jpa : sources) {
-				result.add(convertToDefaultUserDTO(jpa));
-			}
+			for (User jpa : sources) result.add(convertToDefaultUserDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -88,7 +86,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	private User convertToJPA(DefaultUserDTO source) {
 		if (source == null) return null;
 		
-		if (!institutionRepo.existsById(source.getInstitution().getId()))
+		if (source.getInstitution() == null || !institutionRepo.existsById(source.getInstitution().getId()))
 			throw new IllegalArgumentException();
 		
 		User user = new User(source.getId(), source.getUsername(), source.getPassword(), 

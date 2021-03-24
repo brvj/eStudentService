@@ -1,7 +1,9 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.course;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
@@ -25,6 +27,9 @@ public class CourseConverter implements DtoConverter<Course, CourseDTO, DefaultC
 
 	@Autowired
 	InstitutionRepository institutionRepository;
+
+	@Autowired
+	CourseRepository courseRepository;
 
 	@Autowired
 	TeachingRepository teachingRepository;
@@ -67,8 +72,6 @@ public class CourseConverter implements DtoConverter<Course, CourseDTO, DefaultC
 				"Converting from %s type is not supported", returnType.toString()));
 	}
 
-
-
 	@Override
 	public List<? extends CourseDTO> convertToDTO(List<Course> sources, Class<? extends CourseDTO> returnType) {
 		if(returnType == DefaultCourseDTO.class){
@@ -105,8 +108,9 @@ public class CourseConverter implements DtoConverter<Course, CourseDTO, DefaultC
 		if(!institutionRepository.existsById(source.getInstitution().getId()))
 			throw new IllegalArgumentException();
 
-		//Course course = new Course(source.getId(), source.getName(), institutionRepository.findById(source.getInstitution().getId()),
+		Course course = new Course(source.getId(), source.getName(), institutionRepository.findById(source.getInstitution().getId()).get(),
+				new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
 
-		return null;
+		return course;
 	}
 }

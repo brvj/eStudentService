@@ -22,6 +22,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFin
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Document;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
@@ -104,12 +105,32 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 		if (source == null) return null;
 		
 		DefaultStudentDTO dto = new DefaultStudentDTO(source.getId(), source.getFirstName(), 
-				source.getLastName(), source.getStudentCard(), source.getAddress(), source.getGeneration(), 
+				source.getLastName(), source.getStudentCard(), source.getAddress(), source.getGeneration(), source.getDateOfBirth(), 
 				institutionConverter.convertToDTO(source.getInstitution()), 
 				userConverter.convertToDTO(source.getUser()), 
 				financialCardConverter.convertToDTO(source.getFinancialCard()));
 		
 		return dto;
+	}
+	
+	private Student convertToJPA(DefaultStudentDTO source) {
+		if (source == null) return null;
+		
+		if (source.getInstitution() == null || source.getUser() == null || source.getFinancialCard() == null ||
+				!institutionRepo.existsById(source.getInstitution().getId()) || 
+				!userRepo.existsById(source.getUser().getId()) ||
+				!financialCardRepo.existsById(source.getFinancialCard().getId()))
+			throw new IllegalArgumentException();
+		
+		Student student = new Student(source.getId(), source.getFirstName(), source.getLastName(), 
+				source.getStudentCard(), source.getAddress(), source.getDateOfBirth(), source.getGeneration(), 
+				institutionRepo.findById(source.getInstitution().getId()).get(), 
+				userRepo.findById(source.getUser().getId()).get(),
+				new HashSet<Document>(),
+				financialCardRepo.findById(source.getFinancialCard().getId()).get(),
+				new HashSet<Enrollment>());
+		
+		return student;
 	}
 	
 

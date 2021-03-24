@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.student;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -10,8 +11,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Enrollm
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.FinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
 
 @Component
 public class FinancialCardConverter implements DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> {
@@ -76,5 +80,15 @@ public class FinancialCardConverter implements DtoConverter<FinancialCard, Finan
 				source.getTotalDeposit(), source.getTotalSpent());
 		
 		return dto;
+	}
+	
+	private FinancialCard convertToJPA(DefaultFinancialCardDTO source) {
+		if (source == null) return null;
+		
+		FinancialCard financialCard = new FinancialCard(source.getId(), source.getCurrentAmmount(), source.getTotalDeposit(), 
+				source.getTotalSpent(), new Student(), 
+				new HashSet<Transaction>());
+		
+		return financialCard;
 	}
 }

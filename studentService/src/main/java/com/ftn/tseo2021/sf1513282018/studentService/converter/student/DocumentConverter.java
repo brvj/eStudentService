@@ -14,9 +14,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Document;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
 
 @Component
 public class DocumentConverter implements DtoConverter<Document, DocumentDTO , DefaultDocumentDTO> {
@@ -86,5 +88,18 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 		return dto;
 	}
 
+	private Document convertToJPA(DefaultDocumentDTO source) {
+		if (source == null) return null;
+		
+		if (source.getStudent() == null || 
+				!studentRepo.existsById(source.getStudent().getId()))
+			throw new IllegalArgumentException();
+		
+		Document document = new Document(source.getId(), source.getName(), source.getType(), 
+				source.getPath(), 
+				studentRepo.findById(source.getStudent().getId()).get());
+		
+		return document;
+	}
 
 }

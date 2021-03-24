@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.student;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFin
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
@@ -91,4 +94,17 @@ public class TransactionConverter implements DtoConverter<Transaction, Transacti
 		return dto;
 	}
 
+	private Transaction convertToJPA(DefaultTransactionDTO source) {
+		if (source == null) return null;
+		
+		if (source.getFinancialCard() == null || 
+				!financialCardRepo.existsById(source.getFinancialCard().getId()))
+			throw new IllegalArgumentException();
+		
+		Transaction transaction = new Transaction(source.getId(), source.getAmmount(), source.getDate(), 
+				source.getDescription(), source.getType(), 
+				financialCardRepo.findById(source.getFinancialCard().getId()).get());
+		
+		return transaction;
+	}
 }

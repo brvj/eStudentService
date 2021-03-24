@@ -1,5 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.dto.student;
 
+import java.time.LocalDate;
+
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
@@ -21,6 +23,7 @@ public class DefaultStudentDTO implements StudentDTO{
 	private String studentCard;
 	private String address;
 	private int generation;
+	private LocalDate dateOfBirth;
 	private DefaultInstitutionDTO institution;
 	private DefaultUserDTO user;
 	private DefaultFinancialCardDTO financialCard;

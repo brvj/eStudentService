@@ -4,13 +4,22 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,5 +62,40 @@ public class DefaultInstitutionService implements InstitutionService {
 
 		institutionRepo.deleteById(id);
 		return true;
+	}
+
+	@Override
+	public List<DefaultUserDTO> getInstitutionUsers(int institutionId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

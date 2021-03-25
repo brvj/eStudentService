@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -82,5 +84,12 @@ public class DefaultTeacherService implements TeacherService {
 		Page<Teacher> page = teacherRepo.filterTeachers(institutionId, null, null, null, pageable);
 
 		return teacherConverter.convertToDTO(page.getContent());
+	}
+
+	@Override
+	public List<DefaultTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

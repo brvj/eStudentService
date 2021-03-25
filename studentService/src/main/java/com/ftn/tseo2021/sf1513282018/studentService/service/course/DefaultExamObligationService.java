@@ -78,4 +78,17 @@ public class DefaultExamObligationService implements ExamObligationService {
 
 		return examObligationConverter.convertToDTO(page.getContent());
 	}
+
+	@Override
+	public List<DefaultExamObligationDTO> getByCourseId(int courseId, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -14,7 +14,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.EnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.EnrollmentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 
 @Service
@@ -25,6 +29,12 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	
 	@Autowired
 	DtoConverter<Enrollment, EnrollmentDTO, DefaultEnrollmentDTO> enrollmentConverter;
+	
+	@Autowired
+	ExamObligationTakingService examObligationTakingService;
+	
+	@Autowired
+	ExamTakingService examTakingService;
 
 	@Override
 	public DefaultEnrollmentDTO getOne(Integer id) {
@@ -74,6 +84,19 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	public List<DefaultEnrollmentDTO> getByCourseId(int courseId, Pageable pageable) {
 		Page<Enrollment> page = enrollmentRepo.filterEnrollments(null, courseId, null, null, null, null, null, null, null, pageable);
 		return enrollmentConverter.convertToDTO(page.getContent());
+	}
+
+	@Override
+	public List<DefaultExamObligationTakingDTO> getEnrollmentExamObligationTakings(int enrollmentId,
+			Pageable pageable) throws EntityNotFoundException {
+		if (!enrollmentRepo.existsById(enrollmentId)) throw new EntityNotFoundException();
+		return examObligationTakingService.getByEnrollmentId(enrollmentId, pageable);
+	}
+
+	@Override
+	public List<DefaultExamTakingDTO> getEnrollmentExamTakings(int enrollmentId, Pageable pageable) throws EntityNotFoundException {
+		if (!enrollmentRepo.existsById(enrollmentId)) throw new EntityNotFoundException();
+		return examTakingService.getByEnrollmentId(enrollmentId, pageable);
 	}
 
 }

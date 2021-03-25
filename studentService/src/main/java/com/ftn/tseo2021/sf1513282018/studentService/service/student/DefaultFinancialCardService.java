@@ -1,11 +1,17 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 
 @Service
 public class DefaultFinancialCardService implements FinancialCardService {
@@ -39,6 +45,13 @@ public class DefaultFinancialCardService implements FinancialCardService {
 
 	@Override
 	public DefaultFinancialCardDTO getByStudentId(int sutdentId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable)
+			throws EntityNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}

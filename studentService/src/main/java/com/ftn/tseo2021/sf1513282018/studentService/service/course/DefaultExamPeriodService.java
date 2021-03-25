@@ -71,8 +71,8 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	}
 
 	@Override
-	public List<DefaultExamPeriodDTO> getAllByInstitution(DefaultInstitutionDTO t) {
-		Set<ExamPeriod> examPeriods = examPeriodRepo.findAllByInstitution(institutionRepo.getOne(t.getId()));
+	public List<DefaultExamPeriodDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+		Set<ExamPeriod> examPeriods = examPeriodRepo.findAllByInstitution(institutionRepo.getOne(institutionId));
 		List<ExamPeriod> examPeriodsList = new ArrayList<ExamPeriod>();
 
 		examPeriodsList.addAll(examPeriods);
@@ -93,5 +93,11 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 				t.getEndDate(), pageable);
 
 		return examPeriodConverter.convertToDTO(page.getContent());
+	}
+
+	@Override
+	public List<DefaultExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -77,4 +77,22 @@ public class DefaultExamService implements ExamService {
 
 		return examConverter.convertToDTO(page.getContent());
 	}
+
+	@Override
+	public List<DefaultExamDTO> getByExamPeriodId(int examPeriodId, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultExamDTO> getByCourseId(int courseId, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultExamTakingDTO> getExamExamTakings(int examId, Pageable pageable) throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

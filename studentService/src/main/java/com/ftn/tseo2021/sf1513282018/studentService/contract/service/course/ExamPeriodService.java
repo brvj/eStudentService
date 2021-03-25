@@ -8,10 +8,14 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 public interface ExamPeriodService extends BaseService<DefaultExamPeriodDTO, Integer>{
-    List<DefaultExamPeriodDTO> getAllByInstitution(DefaultInstitutionDTO t);
+    List<DefaultExamPeriodDTO> getByInstitutionId(int institutionId, Pageable pageable);
 
     DefaultExamPeriodDTO getByExam(DefaultExamDTO t);
 
     List<DefaultExamPeriodDTO> filterExamPeriods(DefaultExamPeriodDTO t, Pageable pageable);
+    
+    List<DefaultExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException;
 }

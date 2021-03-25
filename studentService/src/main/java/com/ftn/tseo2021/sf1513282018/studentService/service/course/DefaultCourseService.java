@@ -113,4 +113,36 @@ public class DefaultCourseService implements CourseService {
 
 		return courseConverter.convertToDTO(page.getContent());
 	}
+
+	@Override
+	public List<DefaultCourseDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable)
+			throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

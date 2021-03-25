@@ -1,6 +1,9 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
@@ -33,6 +36,18 @@ public class DefaultStudentService implements StudentService {
 	public boolean delete(Integer id) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public DefaultStudentDTO getByUserId(int userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DefaultStudentDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

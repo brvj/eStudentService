@@ -35,4 +35,10 @@ public class DefaultFinancialCardService implements FinancialCardService {
 		return false;
 	}
 
+	@Override
+	public DefaultFinancialCardDTO getByStudentId(int sutdentId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

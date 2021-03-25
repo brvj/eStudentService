@@ -1,6 +1,9 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.TransactionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
@@ -33,6 +36,12 @@ public class DefaultTransactionService implements TransactionService {
 	public boolean delete(Integer id) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public List<DefaultTransactionDTO> getByFinancialCardId(int financialCardId, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

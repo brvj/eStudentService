@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface DtoConverter<JPA, DTO, DefaultDTO extends DTO> {
 	
-	JPA convertToJPA(DTO source);
+	JPA convertToJPA(DTO source) throws IllegalArgumentException;
 	
-	List<JPA> convertToJPA(List<? extends DTO> sources);
+	List<JPA> convertToJPA(List<? extends DTO> sources) throws IllegalArgumentException;
 	
 	<T extends DTO> T convertToDTO(JPA source, Class<? extends DTO> returnType);
 	

@@ -38,14 +38,14 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 	CourseRepository courseRepo;
 	
 	@Override
-	public Enrollment convertToJPA(EnrollmentDTO source) {
+	public Enrollment convertToJPA(EnrollmentDTO source) throws IllegalArgumentException {
 		if (source instanceof DefaultEnrollmentDTO) return convertToJPA((DefaultEnrollmentDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<Enrollment> convertToJPA(List<? extends EnrollmentDTO> sources) {
+	public List<Enrollment> convertToJPA(List<? extends EnrollmentDTO> sources) throws IllegalArgumentException {
 		List<Enrollment> result = new ArrayList<Enrollment>();
 		
 		if (sources.get(0) instanceof DefaultEnrollmentDTO) {
@@ -98,7 +98,7 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 		return dto;
 	}
 	
-	private Enrollment convertToJPA(DefaultEnrollmentDTO source) {
+	private Enrollment convertToJPA(DefaultEnrollmentDTO source) throws IllegalArgumentException {
 		if (source == null) return null;
 		
 		if (source.getStudent() == null || source.getCourse() == null || 
@@ -106,12 +106,14 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 				!courseRepo.existsById(source.getCourse().getId()))
 			throw new IllegalArgumentException();
 		
-		Enrollment enrollment = new Enrollment(source.getId(), source.getStartDate(), source.isPassed(), 
-				source.getScore(), source.getGrade(), 
-				studentRepo.findById(source.getStudent().getId()).get(), 
-				courseRepo.findById(source.getCourse().getId()).get(), 
-				new HashSet<ExamObligationTaking>(),
-				new HashSet<ExamTaking>());
+		Enrollment enrollment = new Enrollment();
+		enrollment.setId(source.getId());
+		enrollment.setStartDate(source.getStartDate());
+		enrollment.setPassed(source.isPassed());
+		enrollment.setScore(source.getScore());
+		enrollment.setGrade(source.getGrade());
+		enrollment.setStudent(studentRepo.findById(source.getStudent().getId()).get());
+		enrollment.setCourse(courseRepo.findById(source.getCourse().getId()).get());
 		
 		return enrollment;
 	}

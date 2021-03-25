@@ -31,7 +31,7 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	}
 
 	@Override
-	public Integer create(DefaultEnrollmentDTO dto) {
+	public Integer create(DefaultEnrollmentDTO dto) throws IllegalArgumentException {
 		Enrollment e = enrollmentConverter.convertToJPA(dto);
 		
 		e = enrollmentRepo.save(e);
@@ -40,14 +40,19 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultEnrollmentDTO dto) {
+	public void update(Integer id, DefaultEnrollmentDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if (!enrollmentRepo.existsById(id)) throw new EntityNotFoundException();
+
+		Enrollment eNew = enrollmentConverter.convertToJPA(dto);
 		
-		dto.setId(id);
-		Enrollment e = enrollmentConverter.convertToJPA(dto);
+//		REAL PUT
+//		eNew.setId(id);
+//		enrollmentRepo.save(eNew);
 		
+//		SIMULATE PATCH
+		Enrollment e = enrollmentRepo.getOne(id);
+		e.setStartDate(eNew.getStartDate());
 		enrollmentRepo.save(e);
-		
 	}
 
 	@Override

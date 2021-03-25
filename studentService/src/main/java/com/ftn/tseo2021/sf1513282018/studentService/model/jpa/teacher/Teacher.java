@@ -1,8 +1,9 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -14,7 +15,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 
 @Entity
 @Table(name = "teacher")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Teacher {

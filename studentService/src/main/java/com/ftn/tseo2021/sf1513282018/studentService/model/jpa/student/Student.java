@@ -10,11 +10,13 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.Data;
+import lombok.Setter;
+import lombok.Getter;
 
 @Entity
 @Table(name = "student")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Student {

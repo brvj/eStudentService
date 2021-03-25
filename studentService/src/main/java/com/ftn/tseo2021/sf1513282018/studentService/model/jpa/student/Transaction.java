@@ -1,7 +1,5 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student;
 
-
-
 import java.time.LocalDate;
 
 import javax.persistence.Column;
@@ -18,12 +16,14 @@ import javax.persistence.Table;
 import com.ftn.tseo2021.sf1513282018.studentService.model.common.TransactionType;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "transaction")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Transaction {

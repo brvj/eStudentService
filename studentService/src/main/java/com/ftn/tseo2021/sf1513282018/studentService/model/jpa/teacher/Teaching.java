@@ -1,8 +1,9 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -12,9 +13,10 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 
 @Entity
 @Table(name = "teacher_teaching_course")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Teaching {
 
     @Id

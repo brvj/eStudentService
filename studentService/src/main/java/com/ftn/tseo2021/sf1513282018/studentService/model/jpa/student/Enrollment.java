@@ -18,12 +18,14 @@ import javax.persistence.Table;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "enrollment")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Enrollment {

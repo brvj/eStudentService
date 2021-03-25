@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,12 +13,14 @@ import javax.persistence.Table;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "exam_taking")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExamTaking {

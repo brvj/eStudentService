@@ -7,14 +7,16 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.common.UserType;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class User {
 	
 	@Id

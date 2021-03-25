@@ -31,7 +31,7 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 	}
 
 	@Override
-	public Integer create(DefaultExamObligationTakingDTO dto) {
+	public Integer create(DefaultExamObligationTakingDTO dto) throws IllegalArgumentException {
 		ExamObligationTaking taking = examObligationTakingConverter.convertToJPA(dto);
 		
 		taking = examObligationTakingRepo.save(taking);
@@ -40,13 +40,19 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 	}
 
 	@Override
-	public void update(Integer id, DefaultExamObligationTakingDTO dto) {
+	public void update(Integer id, DefaultExamObligationTakingDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if (!examObligationTakingRepo.existsById(id)) throw new EntityNotFoundException();
 		
-		dto.setId(id);
-		ExamObligationTaking taking = examObligationTakingConverter.convertToJPA(dto);
+		ExamObligationTaking tNew = examObligationTakingConverter.convertToJPA(dto);
+
+//		REAL PUT
+//		tNew.setId(id);
+//		examObligationTakingRepo.save(tNew);
 		
-		examObligationTakingRepo.save(taking);
+//		SIMULATE PATCH
+		ExamObligationTaking t = examObligationTakingRepo.getOne(id);
+		t.setScore(tNew.getScore());
+		examObligationTakingRepo.save(t);
 		
 	}
 

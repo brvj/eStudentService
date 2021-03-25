@@ -35,14 +35,14 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 	ExamObligationRepository examObligationRepo;
 	
 	@Override
-	public ExamObligationTaking convertToJPA(ExamObligationTakingDTO source) {
+	public ExamObligationTaking convertToJPA(ExamObligationTakingDTO source) throws IllegalArgumentException {
 		if (source instanceof DefaultExamObligationTakingDTO) return convertToJPA((DefaultExamObligationTakingDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<ExamObligationTaking> convertToJPA(List<? extends ExamObligationTakingDTO> sources) {
+	public List<ExamObligationTaking> convertToJPA(List<? extends ExamObligationTakingDTO> sources) throws IllegalArgumentException {
 		List<ExamObligationTaking> result = new ArrayList<ExamObligationTaking>();
 		
 		if (sources.get(0) instanceof DefaultExamObligationTakingDTO) {
@@ -96,7 +96,7 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 		return dto;
 	}
 	
-	private ExamObligationTaking convertToJPA(DefaultExamObligationTakingDTO source) {
+	private ExamObligationTaking convertToJPA(DefaultExamObligationTakingDTO source) throws IllegalArgumentException {
 		if (source == null) return null;
 		
 		if (source.getEnrollment() == null || source.getExamObligation() == null || 

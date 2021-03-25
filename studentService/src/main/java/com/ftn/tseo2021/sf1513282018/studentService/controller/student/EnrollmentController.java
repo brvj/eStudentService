@@ -1,5 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.student;
 
+import java.util.List;
+
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
 
 @RestController
 @RequestMapping(value = "api/enrollments")
@@ -62,6 +65,11 @@ public class EnrollmentController {
 		
 		if (enrollment == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<>(enrollment, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/{id}/examObligationTakings", produces = "application/json")
+	public ResponseEntity<List<DefaultExamObligationTakingDTO>> getEnrollmentExamObligationTakings(@PathVariable("id") int id) {
+		return null;
 	}
 	
 }

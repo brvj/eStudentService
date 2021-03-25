@@ -1,11 +1,13 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 
+@Service
 public class DefaultFinancialCardService implements FinancialCardService {
 	
 	@Autowired

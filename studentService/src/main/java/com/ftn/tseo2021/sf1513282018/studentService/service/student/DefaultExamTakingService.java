@@ -8,6 +8,7 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamTakingDTO;
@@ -16,6 +17,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Exa
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
 
+@Service
 public class DefaultExamTakingService implements ExamTakingService {
 	
 	@Autowired

@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 
+@Service
 public class DefaultStudentService implements StudentService {
 	
 	@Autowired

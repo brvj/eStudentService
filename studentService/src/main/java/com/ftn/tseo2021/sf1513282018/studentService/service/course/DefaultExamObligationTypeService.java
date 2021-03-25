@@ -4,6 +4,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationTypeDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligationType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationTypeRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamObligationTypeService;
@@ -12,6 +13,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExam
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
+@Service
 public class DefaultExamObligationTypeService implements ExamObligationTypeService {
 	
 	@Autowired

@@ -115,7 +115,7 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		Page<User> page = userRepo.filterUsers(institutionId, null, null, null, null, pageable);
+		Page<User> page = userRepo.filterUsers(institutionId, null, null, null, pageable);
 
 		return userConverter.convertToDTO(page.getContent());
 	}

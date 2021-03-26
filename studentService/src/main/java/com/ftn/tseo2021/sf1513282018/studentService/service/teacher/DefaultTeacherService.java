@@ -25,15 +25,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultTeacherService implements TeacherService {
 
-	private final TeacherRepository teacherRepo;
+	private TeacherRepository teacherRepo;
 
-	private final UserService userService;
+	private UserService userService;
 
-	private final TeachingService teachingService;
+	private TeachingService teachingService;
 
-	private final InstitutionService institutionService;
+	private InstitutionService institutionService;
 
-	private final DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
+	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
 
 	@Override
 	public DefaultTeacherDTO getOne(Integer id) {

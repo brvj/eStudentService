@@ -33,7 +33,7 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 
 	@Override
 	public Exam convertToJPA(ExamDTO source) {
-		if(source instanceof DefaultCourseDTO) return convertToJPA((DefaultExamDTO) source);
+		if(source instanceof DefaultExamDTO) return convertToJPA((DefaultExamDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
@@ -52,7 +52,7 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 
 	@Override
 	public <T extends ExamDTO> T convertToDTO(Exam source, Class<? extends ExamDTO> returnType) {
-		if(returnType == DefaultCourseDTO.class) return (T) convertToDefaultExamDTO(source);
+		if(returnType == DefaultExamDTO.class) return (T) convertToDefaultExamDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", returnType.toString()));
 	}

@@ -23,7 +23,7 @@ import java.util.List;
 public class InstitutionController {
 	
 	@Autowired
-	private InstitutionService institutionService;
+	InstitutionService institutionService;
 
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createInstitution(@NotNull @RequestBody DefaultInstitutionDTO institutionDTO){

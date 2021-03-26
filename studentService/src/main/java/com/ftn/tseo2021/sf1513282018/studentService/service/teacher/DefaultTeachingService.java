@@ -22,13 +22,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultTeachingService implements TeachingService {
 
-	private final TeachingRepository teachingRepo;
+	private TeachingRepository teachingRepo;
 
-	private final TeacherService teacherService;
+	private TeacherService teacherService;
 
-	private final CourseService courseService;
+	private CourseService courseService;
 
-	private final DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
+	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
 
 	@Override
 	public DefaultTeachingDTO getOne(Integer id) {

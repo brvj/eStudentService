@@ -2,13 +2,11 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
@@ -24,25 +22,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class DefaultTeacherService implements TeacherService {
-	
-	@Autowired
+
 	private TeacherRepository teacherRepo;
 
-	@Autowired
-	private UserRepository userRepo;
+	private UserService userService;
 
-	@Autowired
-	private InstitutionRepository institutionRepo;
+	private TeachingService teachingService;
 
-	@Autowired
-	private TeachingRepository teachingRepo;
+	private InstitutionService institutionService;
 
-	@Autowired
 	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
-
-	@Autowired
-	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
 
 	@Override
 	public DefaultTeacherDTO getOne(Integer id) {
@@ -79,7 +70,7 @@ public class DefaultTeacherService implements TeacherService {
 
 	@Override
 	public DefaultTeacherDTO getByUserId(int userId, Pageable pageable) {
-		if(!userRepo.existsById(userId)) throw new EntityNotFoundException();
+		if(userService.getOne(userId) == null) throw new EntityNotFoundException();
 
 		Optional<Teacher> teacher = teacherRepo.findByUser_Id(userId);
 
@@ -88,7 +79,7 @@ public class DefaultTeacherService implements TeacherService {
 
 	@Override
 	public List<DefaultTeacherDTO> getByInstitutionId(int institutionId, Pageable pageable) {
-		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+		if(institutionService.getOne(institutionId) == null) throw new EntityNotFoundException();
 
 		Page<Teacher> page = teacherRepo.filterTeachers(institutionId, null, null, null, pageable);
 
@@ -100,8 +91,8 @@ public class DefaultTeacherService implements TeacherService {
 			throws EntityNotFoundException {
 		if(!teacherRepo.existsById(teacherId)) throw new EntityNotFoundException();
 
-		Page<Teaching> page = teachingRepo.filterTeachings(teacherId, null, null, pageable);
+		List<DefaultTeachingDTO> teachings = teachingService.getByTeacherId(teacherId, pageable);
 
-		return teachingConverter.convertToDTO(page.getContent());
+		return teachings;
 	}
 }

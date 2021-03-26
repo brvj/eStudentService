@@ -1,25 +1,14 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.institution;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamPeriodRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamPeriodService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
@@ -39,43 +28,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class DefaultInstitutionService implements InstitutionService {
-	
-	@Autowired
-	private InstitutionRepository institutionRepo;
 
-	@Autowired
-	private UserRepository userRepo;
+	private final InstitutionRepository institutionRepo;
 
-	@Autowired
-	private TeacherRepository teacherRepo;
+	private final UserService userService;
 
-	@Autowired
-	private StudentRepository studentRepo;
+	private final StudentService studentService;
 
-	@Autowired
-	private CourseRepository courseRepo;
+	private final TeacherService teacherService;
 
-	@Autowired
-	private ExamPeriodRepository examPeriodRepo;
+	private final CourseService courseService;
 
-	@Autowired
-	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
+	private final ExamPeriodService examPeriodService;
 
-	@Autowired
-	private DtoConverter<User, UserDTO, DefaultUserDTO> userConverter;
-
-	@Autowired
-	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
-
-	@Autowired
-	private DtoConverter<Student, StudentDTO, DefaultStudentDTO> studentConverter;
-
-	@Autowired
-	private DtoConverter<Course, CourseDTO, DefaultCourseDTO> courseConverter;
-
-	@Autowired
-	private DtoConverter<ExamPeriod, ExamPeriodDTO, DefaultExamPeriodDTO> examPeriodConverter;
+	private final DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 
 	@Override
 	public DefaultInstitutionDTO getOne(Integer id) {
@@ -115,9 +83,9 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		Page<User> page = userRepo.filterUsers(institutionId, null, null, null, pageable);
+		List<DefaultUserDTO> users = userService.getByInstitutionId(institutionId, pageable);
 
-		return userConverter.convertToDTO(page.getContent());
+		return users;
 	}
 
 	@Override
@@ -125,9 +93,9 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		Page<Teacher> page = teacherRepo.filterTeachers(institutionId, null, null, null, pageable);
+		List<DefaultTeacherDTO> teachers = teacherService.getByInstitutionId(institutionId, pageable);
 
-		return teacherConverter.convertToDTO(page.getContent());
+		return teachers;
 	}
 
 	@Override
@@ -135,10 +103,9 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		Page<Student> page = studentRepo.filterStudent(institutionId, null, null, null, null,
-				null, null, null, null, pageable);
+		List<DefaultStudentDTO> students = studentService.getByInstitutionId(institutionId, pageable);
 
-		return studentConverter.convertToDTO(page.getContent());
+		return students;
 	}
 
 	@Override
@@ -146,9 +113,9 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		Page<Course> page = courseRepo.filterCourses(institutionId, null, pageable);
+		List<DefaultCourseDTO> courses = courseService.getByInstitutionId(institutionId, pageable);
 
-		return courseConverter.convertToDTO(page.getContent());
+		return courses;
 	}
 
 	@Override
@@ -156,8 +123,8 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		Page<ExamPeriod> page = examPeriodRepo.filterExamPeriods(institutionId, null, null, null, pageable);
+		List<DefaultExamPeriodDTO> examPeriods = examPeriodService.getByInstitutionId(institutionId, pageable);
 
-		return examPeriodConverter.convertToDTO(page.getContent());
+		return examPeriods;
 	}
 }

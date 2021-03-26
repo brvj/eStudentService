@@ -2,9 +2,12 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
@@ -33,7 +36,13 @@ public class DefaultTeacherService implements TeacherService {
 	private InstitutionRepository institutionRepo;
 
 	@Autowired
+	private TeachingRepository teachingRepo;
+
+	@Autowired
 	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
+
+	@Autowired
+	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
 
 	@Override
 	public DefaultTeacherDTO getOne(Integer id) {
@@ -89,7 +98,10 @@ public class DefaultTeacherService implements TeacherService {
 	@Override
 	public List<DefaultTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable)
 			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		if(!teacherRepo.existsById(teacherId)) throw new EntityNotFoundException();
+
+		Page<Teaching> page = teachingRepo.filterTeachings(teacherId, null, null, pageable);
+
+		return teachingConverter.convertToDTO(page.getContent());
 	}
 }

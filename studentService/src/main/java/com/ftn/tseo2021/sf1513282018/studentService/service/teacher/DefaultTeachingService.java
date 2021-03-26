@@ -2,10 +2,10 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
@@ -19,19 +19,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class DefaultTeachingService implements TeachingService {
-	
-	@Autowired
-	private TeachingRepository teachingRepo;
 
-	@Autowired
-	private TeacherRepository teacherRepo;
+	private final TeachingRepository teachingRepo;
 
-	@Autowired
-	private CourseRepository courseRepo;
+	private final TeacherService teacherService;
 
-	@Autowired
-	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
+	private final CourseService courseService;
+
+	private final DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
 
 	@Override
 	public DefaultTeachingDTO getOne(Integer id) {
@@ -68,7 +65,7 @@ public class DefaultTeachingService implements TeachingService {
 
 	@Override
 	public List<DefaultTeachingDTO> getByTeacherId(int teacherId, Pageable pageable) {
-		if(!teacherRepo.existsById(teacherId)) throw new EntityNotFoundException();
+		if(teacherService.getOne(teacherId) == null) throw new EntityNotFoundException();
 
 		Page<Teaching> page = teachingRepo.filterTeachings(teacherId, null, null, pageable);
 
@@ -77,7 +74,7 @@ public class DefaultTeachingService implements TeachingService {
 
 	@Override
 	public List<DefaultTeachingDTO> getByCourseId(int courseId, Pageable pageable) {
-		if(!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
+		if(courseService.getOne(courseId) == null) throw new EntityNotFoundException();
 
 		Page<Teaching> page = teachingRepo.filterTeachings(null, courseId, null, pageable);
 

@@ -4,19 +4,16 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.FinancialCardDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 
 @Service
 public class DefaultFinancialCardService implements FinancialCardService {
@@ -25,7 +22,7 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	FinancialCardRepository financialCardRepo;
 	
 	@Autowired
-	StudentRepository studentRepo;
+	StudentService studentService;
 	
 	@Autowired
 	DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> financialCardConverter;
@@ -65,7 +62,7 @@ public class DefaultFinancialCardService implements FinancialCardService {
 
 	@Override
 	public DefaultFinancialCardDTO getByStudentId(int studentId) {
-		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
+		if(studentService.getOne(studentId) == null) throw new EntityNotFoundException();
 
 		Optional<FinancialCard> fc = financialCardRepo.findByStudent_Id(studentId);
 

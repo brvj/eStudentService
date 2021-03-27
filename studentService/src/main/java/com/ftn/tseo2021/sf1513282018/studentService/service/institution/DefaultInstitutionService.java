@@ -31,19 +31,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultInstitutionService implements InstitutionService {
 
-	private final InstitutionRepository institutionRepo;
+	private InstitutionRepository institutionRepo;
 
-	private final UserService userService;
+	private UserService userService;
 
-	private final StudentService studentService;
+	private  StudentService studentService;
 
-	private final TeacherService teacherService;
+	private TeacherService teacherService;
 
-	private final CourseService courseService;
+	private CourseService courseService;
 
-	private final ExamPeriodService examPeriodService;
+	private ExamPeriodService examPeriodService;
 
-	private final DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
+	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 
 	@Override
 	public DefaultInstitutionDTO getOne(Integer id) {

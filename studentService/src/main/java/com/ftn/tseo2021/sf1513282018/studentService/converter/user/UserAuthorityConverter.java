@@ -17,7 +17,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDT
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.Authority;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserAuthorityConverter implements DtoConverter<UserAuthority, UserAuthorityDTO, DefaultUserAuthorityDTO> {
 	
 	@Autowired

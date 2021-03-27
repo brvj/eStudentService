@@ -27,6 +27,7 @@ public class Authority {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "authority_id", nullable = false, unique = true)
 	private Integer id;
 	
 	@Column(name = "name")

@@ -1,10 +1,18 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.teacher;
 
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
+
+import javax.persistence.EntityNotFoundException;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/teachers")
@@ -13,4 +21,68 @@ public class TeacherController {
 	@Autowired
 	TeacherService teacherService;
 
+	@PostMapping(consumes = "application/json")
+	public ResponseEntity<Integer> createTeacher(@NotNull @RequestBody DefaultTeacherDTO teacherDTO){
+		try{
+			int teacherId = teacherService.create(teacherDTO);
+			return new ResponseEntity<>(teacherId, HttpStatus.CREATED);
+
+		}catch(IllegalArgumentException e){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PutMapping(value = "/{id}", consumes = "application/json")
+	public ResponseEntity<Void> updateTeacher(@PathVariable("id") int id, @NotNull @RequestBody DefaultTeacherDTO teacherDTO){
+		try{
+			teacherService.update(id, teacherDTO);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+		}catch(EntityNotFoundException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}catch (IllegalArgumentException e){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> deleteTeacher(@PathVariable("id") int id){
+		if(teacherService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
+	@GetMapping(value = "/{id}", produces = "application/json")
+	public ResponseEntity<DefaultTeacherDTO> getTeacherById(@PathVariable("id") int id){
+		DefaultTeacherDTO teacherDTO = teacherService.getOne(id);
+
+		if(teacherDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/user/{id}", produces = "application/json")
+	public ResponseEntity<DefaultTeacherDTO> getTeacherByUserId(@PathVariable("id") int id){
+		try{
+			DefaultTeacherDTO teacherDTO = teacherService.getByUserId(id, Pageable.unpaged());
+			return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
+
+		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+	}
+
+	@GetMapping(value = "/institution/{id}", produces = "application/json")
+	public ResponseEntity<List<DefaultTeacherDTO>> getTeachersByInstitutionId(@PathVariable("id") int id){
+		try{
+			List<DefaultTeacherDTO> teachers = teacherService.getByInstitutionId(id, Pageable.unpaged());
+			return new ResponseEntity<>(teachers, HttpStatus.OK);
+
+		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+	}
+
+	@GetMapping(value = "/{id}/teachings", produces = "application/json")
+	public ResponseEntity<List<DefaultTeachingDTO>> getTeacherTeachings(@PathVariable("id") int id){
+		try{
+			List<DefaultTeachingDTO> teachings = teacherService.getTeacherTeachings(id, Pageable.unpaged());
+			return new ResponseEntity<>(teachings, HttpStatus.OK);
+
+		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+	}
 }

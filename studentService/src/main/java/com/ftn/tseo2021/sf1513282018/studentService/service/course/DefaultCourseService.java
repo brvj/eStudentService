@@ -2,15 +2,23 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.EnrollmentRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.EnrollmentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamObligationService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,22 +36,34 @@ import java.util.Optional;
 public class DefaultCourseService implements CourseService {
 	
 	@Autowired
-	CourseRepository courseRepo;
+	private CourseRepository courseRepo;
 
 	@Autowired
-	DtoConverter<Course, CourseDTO, DefaultCourseDTO> courseConverter;
+	private DtoConverter<Course, CourseDTO, DefaultCourseDTO> courseConverter;
 
 	@Autowired
-	TeachingRepository teachingRepo;
+	private TeachingService teachingService;
 
 	@Autowired
-	EnrollmentRepository enrollmentRepo;
+	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
 
 	@Autowired
-	ExamObligationRepository examObligationRepo;
+	private EnrollmentService enrollmentService;
 
 	@Autowired
-	ExamRepository examRepo;
+	private DtoConverter<Enrollment, EnrollmentDTO, DefaultEnrollmentDTO> enrollmentConverter;
+
+	@Autowired
+	private ExamObligationService examObligationService;
+
+	@Autowired
+	private DtoConverter<ExamObligation, ExamObligationDTO, DefaultExamObligationDTO> examObligationConverter;
+
+	@Autowired
+	private ExamService examService;
+
+	@Autowired
+	private DtoConverter<Exam, ExamDTO, DefaultExamDTO> examConverter;
 
 	@Override
 	public DefaultCourseDTO getOne(Integer id) {
@@ -80,28 +100,32 @@ public class DefaultCourseService implements CourseService {
 
 	@Override
 	public DefaultCourseDTO getByTeaching(DefaultTeachingDTO t) {
-		Optional<Course> course = courseRepo.findByTeachingsContaining(teachingRepo.getOne(t.getId()));
+		Optional<Course> course = courseRepo.findByTeachingsContaining(teachingConverter.convertToJPA
+				(teachingService.getOne(t.getId())));
 
 		return courseConverter.convertToDTO(course.get());
 	}
 
 	@Override
 	public DefaultCourseDTO getByEnrollment(DefaultEnrollmentDTO t) {
-		Optional<Course> course = courseRepo.findByEnrollmentsContaining(enrollmentRepo.getOne(t.getId()));
+		Optional<Course> course = courseRepo.findByEnrollmentsContaining(enrollmentConverter.convertToJPA
+				(enrollmentService.getOne(t.getId())));
 
 		return courseConverter.convertToDTO(course.get());
 	}
 
 	@Override
 	public DefaultCourseDTO getByExamObligation(DefaultExamObligationDTO t) {
-		Optional<Course> course = courseRepo.findByExamObligationsContaining(examObligationRepo.getOne(t.getId()));
+		Optional<Course> course = courseRepo.findByExamObligationsContaining(examObligationConverter.convertToJPA
+				(examObligationService.getOne(t.getId())));
 
 		return courseConverter.convertToDTO(course.get());
 	}
 
 	@Override
 	public DefaultCourseDTO getByExam(DefaultExamDTO t) {
-		Optional<Course> course = courseRepo.findByExamsContaining(examRepo.getOne(t.getId()));
+		Optional<Course> course = courseRepo.findByExamsContaining(examConverter.convertToJPA
+				(examService.getOne(t.getId())));
 
 		return courseConverter.convertToDTO(course.get());
 	}

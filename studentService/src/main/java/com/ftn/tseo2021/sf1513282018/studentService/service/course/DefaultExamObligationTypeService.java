@@ -17,10 +17,10 @@ import java.util.Optional;
 public class DefaultExamObligationTypeService implements ExamObligationTypeService {
 	
 	@Autowired
-	ExamObligationTypeRepository examObligationTypeRepo;
+	private ExamObligationTypeRepository examObligationTypeRepo;
 
 	@Autowired
-	DtoConverter<ExamObligationType, ExamObligationTypeDTO, DefaultExamObligationTypeDTO> examObligationTypeConverter;
+	private DtoConverter<ExamObligationType, ExamObligationTypeDTO, DefaultExamObligationTypeDTO> examObligationTypeConverter;
 
 	@Override
 	public DefaultExamObligationTypeDTO getOne(Integer id) {

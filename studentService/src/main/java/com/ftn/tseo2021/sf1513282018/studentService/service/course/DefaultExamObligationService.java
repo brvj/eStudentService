@@ -2,9 +2,11 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.ExamObligationTakingRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamObligationTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
@@ -22,13 +24,16 @@ import java.util.Optional;
 public class DefaultExamObligationService implements ExamObligationService {
 	
 	@Autowired
-	ExamObligationRepository examObligationRepo;
+	private ExamObligationRepository examObligationRepo;
 
 	@Autowired
-	DtoConverter<ExamObligation, ExamObligationDTO, DefaultExamObligationDTO> examObligationConverter;
+	private DtoConverter<ExamObligation, ExamObligationDTO, DefaultExamObligationDTO> examObligationConverter;
 
 	@Autowired
-	ExamObligationTakingRepository examObligationTakingRepo;
+	private ExamObligationTakingService examObligationTakingService;
+
+	@Autowired
+	private DtoConverter<ExamObligationTaking, ExamObligationTakingDTO, DefaultExamObligationTakingDTO> examObligationTakingConverter;
 
 	@Override
 	public DefaultExamObligationDTO getOne(Integer id) {
@@ -65,8 +70,8 @@ public class DefaultExamObligationService implements ExamObligationService {
 
 	@Override
 	public DefaultExamObligationDTO getByExamObligationTaking(DefaultExamObligationTakingDTO t) {
-		Optional<ExamObligation> examObligation = examObligationRepo.findByExamObligationTaking(
-				examObligationTakingRepo.getOne(t.getId()));
+		Optional<ExamObligation> examObligation = examObligationRepo.findByExamObligationTaking(examObligationTakingConverter
+				.convertToJPA(examObligationTakingService.getOne(t.getId())));
 
 		return examObligationConverter.convertToDTO(examObligation.get());
 	}
@@ -81,8 +86,9 @@ public class DefaultExamObligationService implements ExamObligationService {
 
 	@Override
 	public List<DefaultExamObligationDTO> getByCourseId(int courseId, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+		Page<ExamObligation> page = examObligationRepo.filterExamObligations(courseId, null, null, pageable);
+
+		return examObligationConverter.convertToDTO(page.getContent());
 	}
 
 	@Override

@@ -1,11 +1,12 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,16 +27,19 @@ import java.util.Set;
 public class DefaultExamPeriodService implements ExamPeriodService {
 	
 	@Autowired
-	ExamPeriodRepository examPeriodRepo;
+	private ExamPeriodRepository examPeriodRepo;
 
 	@Autowired
-	DtoConverter<ExamPeriod, ExamPeriodDTO, DefaultExamPeriodDTO> examPeriodConverter;
+	private DtoConverter<ExamPeriod, ExamPeriodDTO, DefaultExamPeriodDTO> examPeriodConverter;
 
 	@Autowired
-	InstitutionRepository institutionRepo;
+	private InstitutionRepository institutionRepo;
 
 	@Autowired
-	ExamRepository examRepo;
+	private ExamService examService;
+
+	@Autowired
+	private DtoConverter<Exam, ExamDTO, DefaultExamDTO> examConverter;
 
 	@Override
 	public DefaultExamPeriodDTO getOne(Integer id) {
@@ -82,7 +86,8 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@Override
 	public DefaultExamPeriodDTO getByExam(DefaultExamDTO t) {
-		Optional<ExamPeriod> examPeriod = examPeriodRepo.findByExamsContaining(examRepo.getOne(t.getId()));
+		Optional<ExamPeriod> examPeriod = examPeriodRepo.findByExamsContaining(examConverter.convertToJPA
+				(examService.getOne(t.getId())));
 
 		return examPeriodConverter.convertToDTO(examPeriod.get());
 	}

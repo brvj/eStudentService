@@ -2,9 +2,11 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.ExamTakingRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;
@@ -22,13 +24,16 @@ import java.util.Optional;
 public class DefaultExamService implements ExamService {
 	
 	@Autowired
-	ExamRepository examRepo;
+	private ExamRepository examRepo;
 
 	@Autowired
-	DtoConverter<Exam, ExamDTO, DefaultExamDTO> examConverter;
+	private DtoConverter<Exam, ExamDTO, DefaultExamDTO> examConverter;
 
 	@Autowired
-	ExamTakingRepository examTakingRepo;
+	private ExamTakingService examTakingService;
+
+	@Autowired
+	private DtoConverter<ExamTaking, ExamTakingDTO, DefaultExamTakingDTO> examTakingConverter;
 
 	@Override
 	public DefaultExamDTO getOne(Integer id) {
@@ -65,7 +70,8 @@ public class DefaultExamService implements ExamService {
 
 	@Override
 	public DefaultExamDTO getByExamTaking(DefaultExamTakingDTO t) {
-		Optional<Exam> exam = examRepo.findByExamTakingsContaining(examTakingRepo.getOne(t.getId()));
+		Optional<Exam> exam = examRepo.findByExamTakingsContaining(examTakingConverter.convertToJPA
+				(examTakingService.getOne(t.getId())));
 
 		return examConverter.convertToDTO(exam.get());
 	}

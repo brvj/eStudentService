@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,9 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	
 	@Autowired
 	StudentService studentService;
+
+	@Autowired
+	TransactionService transactionService;
 	
 	@Autowired
 	DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> financialCardConverter;
@@ -75,10 +79,11 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	}
 
 	@Override
-	public List<DefaultTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable)
-			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public List<DefaultTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable) throws EntityNotFoundException {
+		if(!financialCardRepo.existsById(cardId)) throw new EntityNotFoundException();
 
+		List<DefaultTransactionDTO> transactions = transactionService.getByFinancialCardId(cardId, pageable);
+
+		return transactions;
+	}
 }

@@ -6,6 +6,9 @@ import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.DocumentService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,15 @@ public class DefaultStudentService implements StudentService {
 	
 	@Autowired
 	private InstitutionService institutionService;
+
+	@Autowired
+	private EnrollmentService enrollmentService;
+
+	@Autowired
+	private DocumentService documentService;
+
+	@Autowired
+	private FinancialCardService financialCardService;
 	
 	@Autowired
 	private DtoConverter<Student, StudentDTO, DefaultStudentDTO> studentConverter;
@@ -90,23 +102,30 @@ public class DefaultStudentService implements StudentService {
 	}
 
 	@Override
-	public List<DefaultEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable)
-			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<DefaultEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException {
+		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
+
+		List<DefaultEnrollmentDTO> enrollments = enrollmentService.getByStudentId(studentId, pageable);
+
+		return enrollments;
 	}
 
 	@Override
-	public List<DefaultDocumentDTO> getStudentDocuments(int studentId, Pageable pageable)
-			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<DefaultDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException {
+		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
+
+		List<DefaultDocumentDTO> documents = documentService.getByStudentId(studentId, pageable);
+
+		return documents;
 	}
 
 	@Override
 	public DefaultFinancialCardDTO getStudentFinancialCard(int studentId) throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
+
+		DefaultFinancialCardDTO financialCard = financialCardService.getByStudentId(studentId);
+
+		return financialCard;
 	}
 
 }

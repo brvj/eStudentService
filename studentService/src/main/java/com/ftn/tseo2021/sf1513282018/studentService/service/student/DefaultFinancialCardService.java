@@ -35,6 +35,11 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	
 	@Autowired
 	DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> financialCardConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return financialCardRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultFinancialCardDTO getOne(Integer id) {

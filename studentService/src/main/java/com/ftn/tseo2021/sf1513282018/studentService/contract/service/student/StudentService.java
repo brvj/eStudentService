@@ -11,12 +11,13 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDoc
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
 
 public interface StudentService extends BaseService<DefaultStudentDTO, Integer> {
 	
 	DefaultStudentDTO getByUserId(int userId);
 	
-	List<DefaultStudentDTO> getByInstitutionId(int institutionId, Pageable pageable);
+	List<InstitutionStudentDTO> getByInstitutionId(int institutionId, Pageable pageable);
 	
 	List<DefaultEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException;
 	

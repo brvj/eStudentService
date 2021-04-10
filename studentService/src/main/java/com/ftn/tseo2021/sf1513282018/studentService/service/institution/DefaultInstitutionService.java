@@ -13,12 +13,12 @@ import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	private UserService userService;
 
-	private  StudentService studentService;
+	private StudentService studentService;
 
 	private TeacherService teacherService;
 
@@ -46,14 +46,19 @@ public class DefaultInstitutionService implements InstitutionService {
 	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 
 	@Override
+	public boolean existsById(Integer id) {
+		return institutionRepo.existsById(id);
+	}
+	
+	@Override
 	public DefaultInstitutionDTO getOne(Integer id) {
 		Optional<Institution> institution = institutionRepo.findById(id);
 		return institutionConverter.convertToDTO(institution.orElse(null));
 	}
 
 	@Override
-	public Integer create(DefaultInstitutionDTO t) {
-		Institution institution = institutionConverter.convertToJPA(t);
+	public Integer create(DefaultInstitutionDTO dto) throws IllegalArgumentException {
+		Institution institution = institutionConverter.convertToJPA(dto);
 
 		institution = institutionRepo.save(institution);
 
@@ -61,13 +66,22 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultInstitutionDTO t) {
+	public void update(Integer id, DefaultInstitutionDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!institutionRepo.existsById(id)) throw new EntityNotFoundException();
+		
+		Institution iNew = institutionConverter.convertToJPA(dto);
+		
+//		REAL PUT
+//		iNew.setId(id);
+//		institutionRepo.save(iNew);
+		
+//		SIMULATE PATCH
+		Institution i = institutionRepo.getOne(id);
+		i.setName(iNew.getName());
+		i.setAddress(iNew.getAddress());
+		i.setPhoneNumber(iNew.getPhoneNumber());
+		institutionRepo.save(i);
 
-		t.setId(id);
-		Institution institution = institutionConverter.convertToJPA(t);
-
-		institutionRepo.save(institution);
 	}
 
 	@Override
@@ -79,52 +93,53 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public List<DefaultUserDTO> getInstitutionUsers(int institutionId, Pageable pageable)
+	public List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable)
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		List<DefaultUserDTO> users = userService.getByInstitutionId(institutionId, pageable);
+		List<InstitutionUserDTO> users = userService.getByInstitutionId(institutionId, pageable);
 
 		return users;
 	}
 
 	@Override
-	public List<DefaultTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable)
+	public List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable)
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		List<DefaultTeacherDTO> teachers = teacherService.getByInstitutionId(institutionId, pageable);
+		List<InstitutionTeacherDTO> teachers = teacherService.getByInstitutionId(institutionId, pageable);
 
 		return teachers;
 	}
 
 	@Override
-	public List<DefaultStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable)
+	public List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable)
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		List<DefaultStudentDTO> students = studentService.getByInstitutionId(institutionId, pageable);
+		List<InstitutionStudentDTO> students = studentService.getByInstitutionId(institutionId, pageable);
 
 		return students;
 	}
 
 	@Override
-	public List<DefaultCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable)
+	public List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable)
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		List<DefaultCourseDTO> courses = courseService.getByInstitutionId(institutionId, pageable);
+		List<InstitutionCourseDTO> courses = courseService.getByInstitutionId(institutionId, pageable);
 
 		return courses;
 	}
 
 	@Override
-	public List<DefaultExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable)
+	public List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable)
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		List<DefaultExamPeriodDTO> examPeriods = examPeriodService.getByInstitutionId(institutionId, pageable);
+		List<InstitutionExamPeriodDTO> examPeriods = examPeriodService.getByInstitutionId(institutionId, pageable);
 
 		return examPeriods;
 	}
+
 }

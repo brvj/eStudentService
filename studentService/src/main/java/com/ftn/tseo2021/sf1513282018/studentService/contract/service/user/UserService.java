@@ -9,12 +9,13 @@ import org.springframework.data.domain.Pageable;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 
 public interface UserService extends BaseService<DefaultUserDTO, Integer> {
 	
 	DefaultUserDTO getByUsername(String username);
 	
-	List<DefaultUserDTO> getByInstitutionId(int institutionId, Pageable pageable);
+	List<InstitutionUserDTO> getByInstitutionId(int institutionId, Pageable pageable);
 	
 	List<DefaultUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable) throws EntityNotFoundException;
 	

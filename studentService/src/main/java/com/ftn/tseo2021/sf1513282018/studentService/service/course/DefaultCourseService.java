@@ -12,6 +12,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Enr
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
@@ -64,6 +65,11 @@ public class DefaultCourseService implements CourseService {
 
 	@Autowired
 	private DtoConverter<Exam, ExamDTO, DefaultExamDTO> examConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return courseRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultCourseDTO getOne(Integer id) {
@@ -139,7 +145,7 @@ public class DefaultCourseService implements CourseService {
 	}
 
 	@Override
-	public List<DefaultCourseDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+	public List<InstitutionCourseDTO> getByInstitutionId(int institutionId, Pageable pageable) {
 		// TODO Auto-generated method stub
 		return null;
 	}

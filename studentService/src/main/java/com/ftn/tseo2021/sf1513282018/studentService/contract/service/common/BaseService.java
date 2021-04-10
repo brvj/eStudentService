@@ -8,6 +8,8 @@ public interface BaseService<T, ID> {
 	
 //    public List<T> getAll();
 	
+	public boolean existsById(ID id);
+	
     public T getOne(ID id);
     
     public ID create(T t) throws IllegalArgumentException;

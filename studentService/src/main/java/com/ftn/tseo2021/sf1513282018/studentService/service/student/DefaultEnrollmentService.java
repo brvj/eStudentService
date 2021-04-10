@@ -35,6 +35,11 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	
 	@Autowired
 	ExamTakingService examTakingService;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return enrollmentRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultEnrollmentDTO getOne(Integer id) {

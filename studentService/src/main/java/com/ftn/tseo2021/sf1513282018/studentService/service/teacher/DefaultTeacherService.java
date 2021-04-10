@@ -12,6 +12,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,11 @@ public class DefaultTeacherService implements TeacherService {
 	private InstitutionService institutionService;
 
 	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return teacherRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultTeacherDTO getOne(Integer id) {
@@ -77,13 +83,14 @@ public class DefaultTeacherService implements TeacherService {
 		return teacherConverter.convertToDTO(teacher.orElse(null));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultTeacherDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+	public List<InstitutionTeacherDTO> getByInstitutionId(int institutionId, Pageable pageable) {
 		if(institutionService.getOne(institutionId) == null) throw new EntityNotFoundException();
 
 		Page<Teacher> page = teacherRepo.filterTeachers(institutionId, null, null, null, pageable);
 
-		return teacherConverter.convertToDTO(page.getContent());
+		return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
 	}
 
 	@Override

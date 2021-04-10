@@ -34,6 +34,11 @@ public class DefaultExamService implements ExamService {
 
 	@Autowired
 	private DtoConverter<ExamTaking, ExamTakingDTO, DefaultExamTakingDTO> examTakingConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return examRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultExamDTO getOne(Integer id) {

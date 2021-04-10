@@ -23,6 +23,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAu
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
 
@@ -37,6 +38,11 @@ public class DefaultUserService implements UserService, UserDetailsService {
 	
 	@Autowired
 	UserAuthorityService userAuthorityService;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return userRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultUserDTO getOne(Integer id) {
@@ -89,16 +95,17 @@ public class DefaultUserService implements UserService, UserDetailsService {
 		return userConverter.convertToDTO(u.orElse(null));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultUserDTO> getByInstitutionId(int institutionId, Pageable pageable) {
-		Page<User> page = userRepo.filterUsers(institutionId, null, null, null, pageable);
-		return userConverter.convertToDTO(page.getContent());
+	public List<InstitutionUserDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+		Page<User> page = userRepo.filterUsers(institutionId, null, null, null, null, pageable);
+		return (List<InstitutionUserDTO>) userConverter.convertToDTO(page.getContent(), InstitutionUserDTO.class);
 	}
 
 	@Override
 	public List<DefaultUserDTO> filterUsers(DefaultUserDTO filterOptions, Pageable pageable) {
 		Page<User> page = userRepo.filterUsers(0, filterOptions.getUsername(), filterOptions.getFirstName(), 
-				filterOptions.getLastName(), pageable);
+				filterOptions.getLastName(), filterOptions.getEmail() , pageable);
 		return userConverter.convertToDTO(page.getContent());
 	}
 	

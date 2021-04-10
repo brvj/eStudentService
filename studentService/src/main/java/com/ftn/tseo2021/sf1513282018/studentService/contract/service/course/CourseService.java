@@ -5,6 +5,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.Base
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public interface CourseService extends BaseService<DefaultCourseDTO, Integer> {
 
 	List<DefaultCourseDTO> filterCourses(DefaultCourseDTO filterOptions, Pageable pageable);
 	
-	List<DefaultCourseDTO> getByInstitutionId(int institutionId, Pageable pageable);
+	List<InstitutionCourseDTO> getByInstitutionId(int institutionId, Pageable pageable);
 	
 	List<DefaultTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException;
 	

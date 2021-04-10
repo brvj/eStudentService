@@ -14,6 +14,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institut
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.Authority;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
@@ -23,13 +24,13 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority
 public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO> {
 	
 	@Autowired
-	InstitutionRepository institutionRepo;
+	private InstitutionRepository institutionRepo;
 	
 	@Autowired
-	DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
+	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 	
 	@Autowired
-	DtoConverter<Authority, AuthorityDTO, DefaultAuthorityDTO> authorityConverter;
+	private DtoConverter<Authority, AuthorityDTO, DefaultAuthorityDTO> authorityConverter;
 
 	@Override
 	public User convertToJPA(UserDTO source) throws IllegalArgumentException {
@@ -54,6 +55,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	@Override
 	public <T extends UserDTO> T convertToDTO(User source, Class<? extends UserDTO> returnType) {
 		if (returnType == DefaultUserDTO.class) return (T) convertToDefaultUserDTO(source);
+		else if (returnType == InstitutionUserDTO.class) return (T) convertToInstitutionUserDTO(source);
 		else throw new IllegalArgumentException(String.format(
 					"Converting to %s type is not supported", returnType.toString()));
 	}
@@ -61,8 +63,13 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	@Override
 	public List<? extends UserDTO> convertToDTO(List<User> sources, Class<? extends UserDTO> returnType) {
 		if (returnType == DefaultUserDTO.class) {
-			List<DefaultUserDTO> result = new ArrayList<DefaultUserDTO>();
+			List<DefaultUserDTO> result = new ArrayList<>();
 			for (User jpa : sources) result.add(convertToDefaultUserDTO(jpa));
+			return result;
+		}
+		else if (returnType == InstitutionUserDTO.class) {
+			List<InstitutionUserDTO> result = new ArrayList<>();
+			for (User jpa : sources) result.add(convertToInstitutionUserDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -91,6 +98,20 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 		DefaultUserDTO dto = new DefaultUserDTO(source.getId(), source.getUsername(), source.getPassword(), 
 				source.getFirstName(), source.getLastName(), source.getEmail(), source.getPhoneNumber(), 
 				institutionConverter.convertToDTO(source.getInstitution()), authorities);
+		
+		return dto;
+	}
+	
+	private InstitutionUserDTO convertToInstitutionUserDTO(User source) {
+		if (source == null) return null;
+		
+		List<DefaultAuthorityDTO> authorities = new ArrayList<>();
+		for (UserAuthority ua : source.getUserAuthorities()) {
+			authorities.add(authorityConverter.convertToDTO(ua.getAuthority()));
+		}
+		
+		InstitutionUserDTO dto = new InstitutionUserDTO(source.getId(), source.getUsername(), source.getFirstName(), 
+				source.getLastName(), source.getEmail(), source.getPhoneNumber(), authorities);
 		
 		return dto;
 	}

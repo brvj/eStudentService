@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 
 @Component
@@ -65,9 +66,11 @@ public class CourseConverter implements DtoConverter<Course, CourseDTO, DefaultC
 				"Converting from %s type is not supported", sources.get(0).getClass().toString()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends CourseDTO> T convertToDTO(Course source, Class<? extends CourseDTO> returnType) {
 		if(returnType == DefaultCourseDTO.class) return (T) convertToDefaultCourseDTO(source);
+		else if (returnType == InstitutionCourseDTO.class) return (T) convertToInstitutionCourseDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", returnType.toString()));
 	}
@@ -75,8 +78,13 @@ public class CourseConverter implements DtoConverter<Course, CourseDTO, DefaultC
 	@Override
 	public List<? extends CourseDTO> convertToDTO(List<Course> sources, Class<? extends CourseDTO> returnType) {
 		if(returnType == DefaultCourseDTO.class){
-			List<DefaultCourseDTO> result = new ArrayList<DefaultCourseDTO>();
+			List<DefaultCourseDTO> result = new ArrayList<>();
 			for(Course jpa : sources) result.add(convertToDefaultCourseDTO(jpa));
+			return  result;
+		}
+		else if(returnType == InstitutionCourseDTO.class){
+			List<InstitutionCourseDTO> result = new ArrayList<>();
+			for(Course jpa : sources) result.add(convertToInstitutionCourseDTO(jpa));
 			return  result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -99,6 +107,14 @@ public class CourseConverter implements DtoConverter<Course, CourseDTO, DefaultC
 		DefaultCourseDTO dto = new DefaultCourseDTO(source.getId(), source.getName(), institutionConverter.convertToDTO(
 				source.getInstitution()));
 
+		return dto;
+	}
+	
+	private InstitutionCourseDTO convertToInstitutionCourseDTO(Course source) {
+		if (source == null) return null;
+		
+		InstitutionCourseDTO dto = new InstitutionCourseDTO(source.getId(), source.getName());
+		
 		return dto;
 	}
 

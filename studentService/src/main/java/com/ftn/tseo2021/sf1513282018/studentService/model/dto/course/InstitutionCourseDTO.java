@@ -1,7 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.dto.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +11,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DefaultCourseDTO implements CourseDTO{
+public class InstitutionCourseDTO implements CourseDTO {
 
-	private static final long serialVersionUID = -5783615270048736103L;
+	private static final long serialVersionUID = 6156672809618937824L;
 	
 	public Integer id;
     public String name;
-    public DefaultInstitutionDTO institution;
+
 }

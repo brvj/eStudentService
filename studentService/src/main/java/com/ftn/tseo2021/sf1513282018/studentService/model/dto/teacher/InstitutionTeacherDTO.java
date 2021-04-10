@@ -1,22 +1,21 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher;
 
+import java.time.LocalDate;
+
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class DefaultTeacherDTO implements TeacherDTO {
+public class InstitutionTeacherDTO implements TeacherDTO {
 
-	private static final long serialVersionUID = 2264720562718253956L;
+	private static final long serialVersionUID = -4864878291792529041L;
 	
 	private Integer id;
     private String firstName;
@@ -24,6 +23,5 @@ public class DefaultTeacherDTO implements TeacherDTO {
     private String address;
     private LocalDate dateOfBirth;
     private DefaultTeacherTitleDTO teacherTitle;
-    private DefaultUserDTO user;
-    private DefaultInstitutionDTO institution;
+
 }

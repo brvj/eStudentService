@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamPeriodRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamPeriodService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionExamPeriodDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,11 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@Autowired
 	private DtoConverter<Exam, ExamDTO, DefaultExamDTO> examConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return examPeriodRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultExamPeriodDTO getOne(Integer id) {
@@ -74,14 +81,12 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultExamPeriodDTO> getByInstitutionId(int institutionId, Pageable pageable) {
-		Set<ExamPeriod> examPeriods = examPeriodRepo.findAllByInstitution(institutionRepo.getOne(institutionId));
-		List<ExamPeriod> examPeriodsList = new ArrayList<ExamPeriod>();
+	public List<InstitutionExamPeriodDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+		Page<ExamPeriod> examPeriods = examPeriodRepo.findAllByInstitution(institutionRepo.getOne(institutionId), pageable);
 
-		examPeriodsList.addAll(examPeriods);
-
-		return examPeriodConverter.convertToDTO(examPeriodsList);
+		return (List<InstitutionExamPeriodDTO>) examPeriodConverter.convertToDTO(examPeriods.getContent(), InstitutionExamPeriodDTO.class);
 	}
 
 	@Override

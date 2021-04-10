@@ -24,6 +24,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDoc
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 
 @Service
@@ -49,6 +50,11 @@ public class DefaultStudentService implements StudentService {
 	
 	@Autowired
 	private DtoConverter<Student, StudentDTO, DefaultStudentDTO> studentConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return studentRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultStudentDTO getOne(Integer id) {
@@ -92,13 +98,14 @@ public class DefaultStudentService implements StudentService {
 		return studentConverter.convertToDTO(student.orElse(null));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultStudentDTO> getByInstitutionId(int institutionId, Pageable pageable) {
+	public List<InstitutionStudentDTO> getByInstitutionId(int institutionId, Pageable pageable) {
 		if(institutionService.getOne(institutionId) == null) throw new EntityNotFoundException();
 
 		Page<Student> page = studentRepo.filterStudent(institutionId, null, null, null, null, null, null, null, null, pageable);
 
-		return studentConverter.convertToDTO(page.getContent());
+		return (List<InstitutionStudentDTO>) studentConverter.convertToDTO(page.getContent(), InstitutionStudentDTO.class);
 	}
 
 	@Override

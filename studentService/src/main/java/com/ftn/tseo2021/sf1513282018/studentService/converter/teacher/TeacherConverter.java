@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.AnotherTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 
@@ -59,9 +59,6 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 		if (source instanceof DefaultTeacherDTO) {
 			return convertToJPA((DefaultTeacherDTO) source);
 		}
-		else if (source instanceof AnotherTeacherDTO) {
-			return convertToJPA((AnotherTeacherDTO) source);
-		}
 		else {
 			throw new IllegalArgumentException(String.format(
 					"Converting from %s type is not supported", source.getClass().toString()));
@@ -78,12 +75,6 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 			}
 			return result;
 		}
-		else if (sources.get(0) instanceof AnotherTeacherDTO) {
-			for (TeacherDTO dto : sources) {
-				result.add(convertToJPA((AnotherTeacherDTO) dto));
-			}
-			return result;
-		}
 		else {
 			throw new IllegalArgumentException(String.format(
 					"Converting from %s type is not supported", sources.get(0).getClass().toString()));
@@ -96,8 +87,8 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 		if (returnType == DefaultTeacherDTO.class) {
 			return (T) convertToDefaultTeacherDTO(source);
 		}
-		else if (returnType == AnotherTeacherDTO.class) {
-			return (T) convertToAnotherTeacherDTO(source);
+		else if (returnType == InstitutionTeacherDTO.class) {
+			return (T) convertToInstitutionTeacherDTO(source);
 		}
 		else {
 			throw new IllegalArgumentException(String.format(
@@ -108,16 +99,16 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 	@Override
 	public List<? extends TeacherDTO> convertToDTO(List<Teacher> sources, Class<? extends TeacherDTO> returnType) {
 		if (returnType == DefaultTeacherDTO.class) {
-			List<DefaultTeacherDTO> result = new ArrayList<DefaultTeacherDTO>();
+			List<DefaultTeacherDTO> result = new ArrayList<>();
 			for (Teacher jpa : sources) {
 				result.add(convertToDefaultTeacherDTO(jpa));
 			}
 			return result;
 		}
-		else if (returnType == AnotherTeacherDTO.class) {
-			List<AnotherTeacherDTO> result = new ArrayList<AnotherTeacherDTO>();
+		else if (returnType == InstitutionTeacherDTO.class) {
+			List<InstitutionTeacherDTO> result = new ArrayList<>();
 			for (Teacher jpa : sources) {
-				result.add(convertToAnotherTeacherDTO(jpa));
+				result.add(convertToInstitutionTeacherDTO(jpa));
 			}
 			return result;
 		}
@@ -161,11 +152,6 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 
 		return teacher;
 	}
-	
-	private Teacher convertToJPA(AnotherTeacherDTO source) {
-		return null;
-	}
-	
 	private DefaultTeacherDTO convertToDefaultTeacherDTO(Teacher source) {
 		if(source == null) throw new NullPointerException();
 
@@ -179,8 +165,13 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 		return dto;
 	}
 	
-	private AnotherTeacherDTO convertToAnotherTeacherDTO(Teacher source) {
-		return null;
+	private InstitutionTeacherDTO convertToInstitutionTeacherDTO(Teacher source) {
+		if (source == null) return null;
+		
+		InstitutionTeacherDTO dto = new InstitutionTeacherDTO(source.getId(), source.getFirstName(), source.getLastName(), source.getAddress(), 
+				source.getDateOfBirth(), teacherTitleConverter.convertToDTO(source.getTeacherTitle()));
+		
+		return dto;
 	}
-
+	
 }

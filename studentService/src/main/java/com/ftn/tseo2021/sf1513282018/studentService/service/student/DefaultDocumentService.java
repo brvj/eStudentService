@@ -29,6 +29,11 @@ public class DefaultDocumentService implements DocumentService {
 	
 	@Autowired
 	DtoConverter<Document, DocumentDTO, DefaultDocumentDTO> documentConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return documentRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultDocumentDTO getOne(Integer id) {

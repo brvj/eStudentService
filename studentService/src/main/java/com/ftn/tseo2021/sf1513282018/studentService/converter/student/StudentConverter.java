@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.EnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.FinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
@@ -17,15 +16,13 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institut
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Document;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
@@ -75,6 +72,7 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 	@Override
 	public <T extends StudentDTO> T convertToDTO(Student source, Class<? extends StudentDTO> returnType) {
 		if (returnType == DefaultStudentDTO.class) return (T) convertToDefaultStudentDTO(source);
+		else if (returnType == InstitutionStudentDTO.class) return (T) convertToInstitutionStudentDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
@@ -82,8 +80,13 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 	@Override
 	public List<? extends StudentDTO> convertToDTO(List<Student> sources, Class<? extends StudentDTO> returnType) {
 		if (returnType == DefaultStudentDTO.class) {
-			List<DefaultStudentDTO> result = new ArrayList<DefaultStudentDTO>();
+			List<DefaultStudentDTO> result = new ArrayList<>();
 			for (Student jpa : sources) result.add(convertToDefaultStudentDTO(jpa));
+			return result;
+		}
+		else if (returnType == InstitutionStudentDTO.class) {
+			List<InstitutionStudentDTO> result = new ArrayList<>();
+			for (Student jpa : sources) result.add(convertToInstitutionStudentDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -109,6 +112,15 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 				institutionConverter.convertToDTO(source.getInstitution()), 
 				userConverter.convertToDTO(source.getUser()), 
 				financialCardConverter.convertToDTO(source.getFinancialCard()));
+		
+		return dto;
+	}
+	
+	private InstitutionStudentDTO convertToInstitutionStudentDTO(Student source) {
+		if (source == null) return null;
+		
+		InstitutionStudentDTO dto = new InstitutionStudentDTO(source.getId(), source.getFirstName(), source.getLastName(), 
+				source.getStudentCard(), source.getAddress(), source.getGeneration(), source.getDateOfBirth());
 		
 		return dto;
 	}

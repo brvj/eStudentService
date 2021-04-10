@@ -7,23 +7,23 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 
 public interface InstitutionService extends BaseService<DefaultInstitutionDTO, Integer> {
 	
-	List<DefaultUserDTO> getInstitutionUsers(int institutionId, Pageable pageable) throws EntityNotFoundException;
+	List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<DefaultTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable) throws EntityNotFoundException;
+	List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<DefaultStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) throws EntityNotFoundException;
+	List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<DefaultCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) throws EntityNotFoundException;
+	List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<DefaultExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) throws EntityNotFoundException;
+	List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) throws EntityNotFoundException;
 	
 }

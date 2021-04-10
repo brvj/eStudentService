@@ -25,6 +25,11 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 	
 	@Autowired
 	DtoConverter<ExamObligationTaking, ExamObligationTakingDTO, DefaultExamObligationTakingDTO> examObligationTakingConverter;
+	
+	@Override
+	public boolean existsById(Integer id) {
+		return examObligationTakingRepo.existsById(id);
+	}
 
 	@Override
 	public DefaultExamObligationTakingDTO getOne(Integer id) {

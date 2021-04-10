@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	
 	Optional<User> findByUsername(String username);
 	
+	Page<User> findByInstitution_Id(int institutionId, Pageable pageable);
+	
 	@Query("SELECT u from User u WHERE "
 			+ "u.institution.id = :institutionId AND "
 			+ "(:username is null OR u.username LIKE CONCAT('%', :username, '%')) AND "

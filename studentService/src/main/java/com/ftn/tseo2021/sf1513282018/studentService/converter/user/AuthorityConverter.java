@@ -34,7 +34,7 @@ public class AuthorityConverter implements DtoConverter<Authority, AuthorityDTO,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends AuthorityDTO> T convertToDTO(Authority source, Class<? extends AuthorityDTO> returnType) {
+	public <T extends AuthorityDTO> T convertToDTO(Authority source, Class<? extends AuthorityDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultAuthorityDTO.class) return (T) convertToDefaultAuthorityDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
@@ -42,7 +42,7 @@ public class AuthorityConverter implements DtoConverter<Authority, AuthorityDTO,
 
 	@Override
 	public List<? extends AuthorityDTO> convertToDTO(List<Authority> sources,
-			Class<? extends AuthorityDTO> returnType) {
+			Class<? extends AuthorityDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultAuthorityDTO.class) {
 			List<DefaultAuthorityDTO> result = new ArrayList<>();
 			for (Authority jpa : sources) result.add(convertToDefaultAuthorityDTO(jpa));

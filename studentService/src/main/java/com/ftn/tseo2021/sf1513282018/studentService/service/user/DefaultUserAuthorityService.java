@@ -15,6 +15,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserAuthor
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserAuthorityRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserAuthorityDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
 
 @Service
@@ -69,16 +70,11 @@ public class DefaultUserAuthorityService implements UserAuthorityService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultUserAuthorityDTO> getByUserId(int userId, Pageable pageable) {
+	public List<UserUserAuthorityDTO> getByUserId(int userId, Pageable pageable) {
 		Page<UserAuthority> page = userAuthorityRepo.findByUser_id(userId, pageable);
-		return userAuthorityConverter.convertToDTO(page.getContent());
-	}
-
-	@Override
-	public List<DefaultUserAuthorityDTO> getByAuthorityId(int authorityId, Pageable pageable) {
-		Page<UserAuthority> page = userAuthorityRepo.findByAuthority_id(authorityId, pageable);
-		return userAuthorityConverter.convertToDTO(page.getContent());
+		return (List<UserUserAuthorityDTO>) userAuthorityConverter.convertToDTO(page.getContent(), UserUserAuthorityDTO.class);
 	}
 
 }

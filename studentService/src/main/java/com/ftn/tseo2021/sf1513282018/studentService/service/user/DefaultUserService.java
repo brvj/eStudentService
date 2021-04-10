@@ -24,6 +24,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserSe
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
 
@@ -97,20 +98,20 @@ public class DefaultUserService implements UserService, UserDetailsService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InstitutionUserDTO> getByInstitutionId(int institutionId, Pageable pageable) {
-		Page<User> page = userRepo.filterUsers(institutionId, null, null, null, null, pageable);
-		return (List<InstitutionUserDTO>) userConverter.convertToDTO(page.getContent(), InstitutionUserDTO.class);
-	}
-
-	@Override
-	public List<DefaultUserDTO> filterUsers(DefaultUserDTO filterOptions, Pageable pageable) {
-		Page<User> page = userRepo.filterUsers(0, filterOptions.getUsername(), filterOptions.getFirstName(), 
-				filterOptions.getLastName(), filterOptions.getEmail() , pageable);
-		return userConverter.convertToDTO(page.getContent());
+	public List<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<User> page = userRepo.findByInstitution_Id(institutionId, pageable);
+			return (List<InstitutionUserDTO>) userConverter.convertToDTO(page.getContent(), InstitutionUserDTO.class);
+		}
+		else {
+			Page<User> page = userRepo.filterUsers(institutionId, filterOptions.getUsername(), filterOptions.getFirstName(), 
+					filterOptions.getLastName(), filterOptions.getEmail() , pageable);
+			return (List<InstitutionUserDTO>) userConverter.convertToDTO(page.getContent(), InstitutionUserDTO.class);
+		}
 	}
 	
 	@Override
-	public List<DefaultUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable) throws EntityNotFoundException {
+	public List<UserUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable) throws EntityNotFoundException {
 		if (!userRepo.existsById(userId)) throw new EntityNotFoundException();
 		return userAuthorityService.getByUserId(userId, pageable);
 	}

@@ -14,6 +14,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.Use
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.Authority;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
@@ -56,18 +57,24 @@ public class UserAuthorityConverter implements DtoConverter<UserAuthority, UserA
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends UserAuthorityDTO> T convertToDTO(UserAuthority source,
-			Class<? extends UserAuthorityDTO> returnType) {
+			Class<? extends UserAuthorityDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultUserAuthorityDTO.class) return (T) convertToDefaultUserAuthorityDTO(source);
+		else if (returnType == UserUserAuthorityDTO.class) return (T) convertToUserUserAuthorityDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
 	public List<? extends UserAuthorityDTO> convertToDTO(List<UserAuthority> sources,
-			Class<? extends UserAuthorityDTO> returnType) {
+			Class<? extends UserAuthorityDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultUserAuthorityDTO.class) {
 			List<DefaultUserAuthorityDTO> result = new ArrayList<>();
 			for (UserAuthority jpa : sources) result.add(convertToDefaultUserAuthorityDTO(jpa));
+			return result;
+		}
+		else if (returnType == UserUserAuthorityDTO.class) {
+			List<UserUserAuthorityDTO> result = new ArrayList<>();
+			for (UserAuthority jpa : sources) result.add(convertToUserUserAuthorityDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -91,6 +98,14 @@ public class UserAuthorityConverter implements DtoConverter<UserAuthority, UserA
 		DefaultUserAuthorityDTO dto = new DefaultUserAuthorityDTO(source.getId(), 
 				userConverter.convertToDTO(source.getUser()), 
 				authorityConverter.convertToDTO(source.getAuthority()));
+		
+		return dto;
+	}
+	
+	private UserUserAuthorityDTO convertToUserUserAuthorityDTO(UserAuthority source) {
+		if (source == null) return null;
+		
+		UserUserAuthorityDTO dto = new UserUserAuthorityDTO(source.getId(), authorityConverter.convertToDTO(source.getAuthority()));
 		
 		return dto;
 	}

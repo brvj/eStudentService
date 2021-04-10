@@ -1,12 +1,10 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.user;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
@@ -15,7 +13,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.Aut
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.AuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.Authority;
 
 @Service
@@ -70,13 +67,6 @@ public class DefaultAuthorityService implements AuthorityService {
 	public boolean delete(Integer id) {
 		if (!authorityRepo.existsById(id)) return false;
 		return true;
-	}
-
-	@Override
-	public List<DefaultUserAuthorityDTO> getAuthorityUserAuthorities(int authorityId, 
-			Pageable pageable) throws EntityNotFoundException {
-		if (!authorityRepo.existsById(authorityId)) throw new EntityNotFoundException();
-		return userAuthorityService.getByAuthorityId(authorityId, pageable);
 	}
 
 }

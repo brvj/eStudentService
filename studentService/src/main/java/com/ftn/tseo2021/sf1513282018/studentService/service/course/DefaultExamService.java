@@ -35,6 +35,9 @@ public class DefaultExamService implements ExamService {
 	@Autowired
 	private DtoConverter<ExamTaking, ExamTakingDTO, DefaultExamTakingDTO> examTakingConverter;
 
+	@Autowired
+	private ExamService examService;
+
 	@Override
 	public DefaultExamDTO getOne(Integer id) {
 		Optional<Exam> exam = examRepo.findById(id);
@@ -86,19 +89,16 @@ public class DefaultExamService implements ExamService {
 
 	@Override
 	public List<DefaultExamDTO> getByExamPeriodId(int examPeriodId, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+		return examService.getByExamPeriodId(examPeriodId, pageable);
 	}
 
 	@Override
 	public List<DefaultExamDTO> getByCourseId(int courseId, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+		return examService.getByCourseId(courseId, pageable);
 	}
 
 	@Override
 	public List<DefaultExamTakingDTO> getExamExamTakings(int examId, Pageable pageable) throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return examTakingService.getByExamId(examId, pageable);
 	}
 }

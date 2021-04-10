@@ -140,33 +140,30 @@ public class DefaultCourseService implements CourseService {
 
 	@Override
 	public List<DefaultCourseDTO> getByInstitutionId(int institutionId, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+		Page<Course> page = courseRepo.filterCourses(institutionId, null, pageable);
+
+		return courseConverter.convertToDTO(page.getContent());
 	}
 
 	@Override
 	public List<DefaultTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return teachingService.getByCourseId(courseId, pageable);
 	}
 
 	@Override
 	public List<DefaultEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable)
 			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return enrollmentService.getByCourseId(courseId, pageable);
 	}
 
 	@Override
 	public List<DefaultExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable)
 			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return examObligationService.getByCourseId(courseId, pageable);
 	}
 
 	@Override
 	public List<DefaultExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return examService.getByCourseId(courseId, pageable);
 	}
 }

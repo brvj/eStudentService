@@ -94,7 +94,6 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@Override
 	public List<DefaultExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable)
 			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return examObligationTakingService.getByExamObligationId(examObligationId, pageable);
 	}
 }

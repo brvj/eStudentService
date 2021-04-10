@@ -102,7 +102,6 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@Override
 	public List<DefaultExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return examService.getByExamPeriodId(examPeriodId, pageable);
 	}
 }

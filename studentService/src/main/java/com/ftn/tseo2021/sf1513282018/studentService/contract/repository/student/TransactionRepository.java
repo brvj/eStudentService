@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.common.TransactionType;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
 
 @Repository

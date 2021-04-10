@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Integer>{

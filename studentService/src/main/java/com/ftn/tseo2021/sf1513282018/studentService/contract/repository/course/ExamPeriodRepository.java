@@ -1,7 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course;
 
 
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,14 +12,10 @@ import org.springframework.stereotype.Repository;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface ExamPeriodRepository extends JpaRepository<ExamPeriod, Integer> {
-    Set<ExamPeriod> findAllByInstitution(Institution institution);
-
-    Optional<ExamPeriod> findByExamsContaining(Exam exam);
+    Page<ExamPeriod> findAllByInstitution(Institution institution, Pageable pageable);
 
     @Query("select ep from ExamPeriod ep where " +
             "ep.institution.id = :institutionId and " +

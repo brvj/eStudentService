@@ -1,6 +1,5 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course;
 
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,11 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
 
-import java.util.Optional;
-
 @Repository
 public interface ExamObligationRepository extends JpaRepository<ExamObligation, Integer> {
-    Optional<ExamObligation> findByExamObligationTaking(ExamObligationTaking examObligationTaking);
 
     @Query("select eo from ExamObligation eo where " +
             "eo.course.id = :courseId and " +

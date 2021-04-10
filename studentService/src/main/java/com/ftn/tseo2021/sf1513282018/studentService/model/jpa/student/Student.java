@@ -32,7 +32,7 @@ public class Student {
 	@Column(name = "last_name")
 	private String lastName;
 	
-	@Column(name = "student_card")
+	@Column(name = "student_card", nullable = false)
 	private String studentCard;
 	
 	@Column(name = "address")
@@ -44,21 +44,21 @@ public class Student {
     @Column(name = "generation")
 	private int generation;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
 	private Institution institution;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "student")
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "student")
 	private Set<Document> documents;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "financial_card_id", referencedColumnName = "financial_card_id", nullable = false)
 	private FinancialCard financialCard;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "student")
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "student")
 	private Set<Enrollment> enrollments;
 }

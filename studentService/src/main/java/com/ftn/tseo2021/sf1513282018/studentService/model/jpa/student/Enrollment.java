@@ -47,18 +47,18 @@ public class Enrollment {
 	@Column(name = "grade")
 	private int grade;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
 	@JoinColumn(name = "student_id", referencedColumnName = "student_id", nullable = false)
 	private Student student;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
 	@JoinColumn(name = "course_id", referencedColumnName = "course_id", nullable = false)
 	private Course course;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "enrollment")
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "enrollment")
 	private Set<ExamObligationTaking> examObligationTakings;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "enrollment")
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "enrollment")
 	private Set<ExamTaking> examTakings;
 
 }

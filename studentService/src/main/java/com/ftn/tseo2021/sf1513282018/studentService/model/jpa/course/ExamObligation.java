@@ -18,6 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExamObligation {
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exam_obligation_id", unique = true, nullable = false)
@@ -29,14 +30,14 @@ public class ExamObligation {
     @Column(name = "description")
     private String description;
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "exam_obligation_type_id", referencedColumnName = "exam_obligation_type_id", nullable = false)
     private ExamObligationType examObligationType;
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id", referencedColumnName = "course_id", nullable = false)
     private Course course;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "examObligation")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "examObligation")
     private Set<ExamObligationTaking> examObligationTaking;
 }

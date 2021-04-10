@@ -38,18 +38,18 @@ public class Teacher {
     @Column(name = "date_of_birth")
 	private LocalDate dateOfBirth;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "teacher_title_id", referencedColumnName = "teacher_title_id", nullable = false)
     private TeacherTitle teacherTitle;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "teacher")
-    private Set<Teaching> teacherTeachingCourse;
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "teacher")
+    private Set<Teaching> teacherTeachingCourses;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
     private Institution institution;
 }

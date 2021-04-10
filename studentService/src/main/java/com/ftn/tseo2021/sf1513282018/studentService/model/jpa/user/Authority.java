@@ -30,10 +30,10 @@ public class Authority {
 	@Column(name = "authority_id", nullable = false, unique = true)
 	private Integer id;
 	
-	@Column(name = "name")
+	@Column(name = "name", nullable = false)
 	String name;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "authority")
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "authority")
 	private Set<UserAuthority> userAuthorities;
 
 }

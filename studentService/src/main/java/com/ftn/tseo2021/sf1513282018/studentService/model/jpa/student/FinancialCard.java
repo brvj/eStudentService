@@ -41,10 +41,10 @@ public class FinancialCard {
 	@Column(name = "total_spent")
 	private double totalSpent;
 	
-	@OneToOne(mappedBy = "financialCard")
+	@OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "financialCard")
 	private Student student;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "financialCard")
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "financialCard")
 	private Set<Transaction> transactions;
 	
 }

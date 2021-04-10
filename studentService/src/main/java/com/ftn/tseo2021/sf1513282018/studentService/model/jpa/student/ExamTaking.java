@@ -1,8 +1,10 @@
 package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student;
 
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,11 +35,11 @@ public class ExamTaking {
 	@Column(name = "score")
 	private double score;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
 	@JoinColumn(name = "enrollment_id", referencedColumnName = "enrollment_id", nullable = false)
 	private Enrollment enrollment;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
 	@JoinColumn(name = "exam_id", referencedColumnName = "exam_id", nullable = false)
 	private Exam exam;
 

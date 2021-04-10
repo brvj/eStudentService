@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
@@ -29,7 +28,6 @@ public class Institution {
     @Column(name = "institution_id", unique = true, nullable = false)
     private Integer id;
 
-    @NotBlank(message = "Institution name is mandatory")
     @Column(name = "name", nullable = false)
     private String name;
     
@@ -39,18 +37,18 @@ public class Institution {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "institution")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "institution")
     private Set<User> users;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "institution")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "institution")
     private Set<Teacher> teachers;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "institution")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "institution")
     private Set<Student> students;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "institution")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "institution")
     private Set<ExamPeriod> examPeriods;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "institution")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "institution")
     private Set<Course> courses;
 }

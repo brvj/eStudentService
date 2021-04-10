@@ -2,10 +2,12 @@ package com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,7 +49,7 @@ public class Transaction {
 	@Enumerated(EnumType.ORDINAL)
 	private TransactionType transactionType;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "financial_card_id", referencedColumnName = "financial_card_id", nullable = false)
 	private FinancialCard financialCard;
 	

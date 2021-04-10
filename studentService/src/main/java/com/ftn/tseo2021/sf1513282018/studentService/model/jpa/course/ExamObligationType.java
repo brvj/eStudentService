@@ -16,14 +16,15 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExamObligationType {
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exam_obligation_type_id", unique = true, nullable = false)
     private int id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "examObligationType")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "examObligationType")
     private Set<ExamObligation> examObligations;
 }

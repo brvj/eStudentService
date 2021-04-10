@@ -28,7 +28,7 @@ public class User {
 	@Column(name = "username", unique = true, nullable = false)
 	private String username;
 	
-	@Column(name = "password")
+	@Column(name = "password", nullable = false)
 	private String password;
 	
 	@Column(name = "first_name")
@@ -38,17 +38,17 @@ public class User {
 	private String lastName;
 	
 	@Email
-	@Column(name = "email")
+	@Column(name = "email", nullable = false)
 	private String email;
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
 	@JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
 	private Institution institution;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "user")
 	private Set<UserAuthority> userAuthorities;
 	
 }

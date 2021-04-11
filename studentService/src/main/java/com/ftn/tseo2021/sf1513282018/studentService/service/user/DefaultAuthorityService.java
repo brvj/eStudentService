@@ -53,14 +53,9 @@ public class DefaultAuthorityService implements AuthorityService {
 		
 		Authority aNew = authorityConverter.convertToJPA(dto);
 		
-//		REAL PUT
-//		aNew.setId(id);
-//		authorityRepo.save(aNew);
-		
-//		SIMULATE PATCH
-		Authority a = authorityRepo.getOne(id);
+		Authority a = authorityRepo.findById(id).get();
 		a.setName(aNew.getName());
-		
+		authorityRepo.save(a);
 	}
 
 	@Override

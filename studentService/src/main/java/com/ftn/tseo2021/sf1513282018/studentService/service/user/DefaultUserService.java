@@ -21,7 +21,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
@@ -66,12 +65,7 @@ public class DefaultUserService implements UserService, UserDetailsService {
 
 		User uNew = userConverter.convertToJPA(dto);
 		
-//		REAL PUT
-//		uNew.setId(id);
-//		userRepo.save(uNew);
-		
-//		SIMULATE PATCH
-		User u = userRepo.getOne(id);
+		User u = userRepo.findById(id).get();
 		u.setUsername(uNew.getUsername());
 //		u.setPassword(uNew.getPassword()); ?
 		u.setFirstName(uNew.getFirstName());

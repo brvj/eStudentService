@@ -118,9 +118,10 @@ public class UserAuthorityConverter implements DtoConverter<UserAuthority, UserA
 				!userRepo.existsById(source.getUser().getId()))
 			throw new IllegalArgumentException();
 		
-		UserAuthority ua = new UserAuthority(source.getId(), 
-				userRepo.getOne(source.getUser().getId()), 
-				authorityRepo.getOne(source.getAuthority().getId()));
+		UserAuthority ua = new UserAuthority();
+//		ua.setId(source.getId());
+		ua.setUser(userRepo.getOne(source.getUser().getId()));
+		ua.setAuthority(authorityRepo.getOne(source.getAuthority().getId()));
 		
 		return ua;
 	}

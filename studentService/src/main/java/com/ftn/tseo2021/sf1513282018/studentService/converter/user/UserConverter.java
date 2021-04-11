@@ -53,7 +53,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends UserDTO> T convertToDTO(User source, Class<? extends UserDTO> returnType) {
+	public <T extends UserDTO> T convertToDTO(User source, Class<? extends UserDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultUserDTO.class) return (T) convertToDefaultUserDTO(source);
 		else if (returnType == InstitutionUserDTO.class) return (T) convertToInstitutionUserDTO(source);
 		else throw new IllegalArgumentException(String.format(
@@ -61,7 +61,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	}
 
 	@Override
-	public List<? extends UserDTO> convertToDTO(List<User> sources, Class<? extends UserDTO> returnType) {
+	public List<? extends UserDTO> convertToDTO(List<User> sources, Class<? extends UserDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultUserDTO.class) {
 			List<DefaultUserDTO> result = new ArrayList<>();
 			for (User jpa : sources) result.add(convertToDefaultUserDTO(jpa));
@@ -123,14 +123,14 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 			throw new IllegalArgumentException();
 		
 		User user = new User();
-		user.setId(source.getId());
+//		user.setId(source.getId());
 		user.setUsername(source.getUsername());
 		user.setPassword(source.getPassword());
 		user.setFirstName(source.getFirstName());
 		user.setLastName(source.getLastName());
 		user.setEmail(source.getEmail());
 		user.setPhoneNumber(source.getPhoneNumber());
-		user.setInstitution(institutionRepo.findById(source.getInstitution().getId()).get());
+		user.setInstitution(institutionRepo.getOne(source.getInstitution().getId()));
 		
 		return user;
 	}

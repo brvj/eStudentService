@@ -75,7 +75,7 @@ public class AuthorityConverter implements DtoConverter<Authority, AuthorityDTO,
 		if (source == null) return null;
 		
 		Authority a = new Authority();
-		a.setId(source.getId());
+//		a.setId(source.getId());
 		a.setName(source.getName());
 		
 		return a;

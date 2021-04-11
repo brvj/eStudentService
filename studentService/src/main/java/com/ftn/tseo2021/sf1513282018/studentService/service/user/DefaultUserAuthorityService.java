@@ -53,12 +53,7 @@ public class DefaultUserAuthorityService implements UserAuthorityService {
 		
 		UserAuthority uaNew = userAuthorityConverter.convertToJPA(dto);
 		
-//		REAL PUT
-//		uaNew.setId(id);
-//		userAuthorityRepo.save(uaNew);
-		
-//		SIMULATE PATCH
-//		UserAuthority ua = userAuthorityRepo.getOne(id);
+//		UserAuthority ua = userAuthorityRepo.findById(id).get();
 //		Nothing to change...
 //		userAuthorityRepo.save(ua);
 		

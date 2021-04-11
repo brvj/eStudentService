@@ -13,6 +13,8 @@ import lombok.Setter;
 @Setter
 public class DefaultTeacherTitleDTO implements TeacherTitleDTO {
 
-    private Integer id;
+	private static final long serialVersionUID = -5108426598452837550L;
+	
+	private Integer id;
     private String name;
 }

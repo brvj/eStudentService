@@ -1,7 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.teacher;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -15,13 +14,13 @@ import org.springframework.stereotype.Component;
 public class TeacherTitleConverter implements DtoConverter<TeacherTitle, TeacherTitleDTO, DefaultTeacherTitleDTO> {
 
 	@Override
-	public TeacherTitle convertToJPA(TeacherTitleDTO source) {
+	public TeacherTitle convertToJPA(TeacherTitleDTO source) throws IllegalArgumentException {
 		if(source instanceof DefaultTeacherTitleDTO) return convertToJPA((DefaultTeacherTitleDTO) source);
 		else throw new IllegalArgumentException(String.format("Converting from %s type is not supported!", source.getClass().toString()));
 	}
 
 	@Override
-	public List<TeacherTitle> convertToJPA(List<? extends TeacherTitleDTO> sources) {
+	public List<TeacherTitle> convertToJPA(List<? extends TeacherTitleDTO> sources) throws IllegalArgumentException {
 		List<TeacherTitle> result = new ArrayList<>();
 
 		if(sources != null){
@@ -37,15 +36,16 @@ public class TeacherTitleConverter implements DtoConverter<TeacherTitle, Teacher
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends TeacherTitleDTO> T convertToDTO(TeacherTitle source, Class<? extends TeacherTitleDTO> returnType) {
+	public <T extends TeacherTitleDTO> T convertToDTO(TeacherTitle source, Class<? extends TeacherTitleDTO> returnType) throws IllegalArgumentException {
 		if(returnType == DefaultTeacherTitleDTO.class) return (T) convertToDefaultTeacherTitleDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
-	public List<? extends TeacherTitleDTO> convertToDTO(List<TeacherTitle> sources, Class<? extends TeacherTitleDTO> returnType) {
+	public List<? extends TeacherTitleDTO> convertToDTO(List<TeacherTitle> sources, Class<? extends TeacherTitleDTO> returnType) throws IllegalArgumentException {
 		if(returnType == DefaultTeacherTitleDTO.class){
 			List<DefaultTeacherTitleDTO> result = new ArrayList<>();
 			if(sources != null){
@@ -70,19 +70,21 @@ public class TeacherTitleConverter implements DtoConverter<TeacherTitle, Teacher
 		return (List<DefaultTeacherTitleDTO>) convertToDTO(sources, DefaultTeacherTitleDTO.class);
 	}
 
-	private DefaultTeacherTitleDTO convertToDefaultTeacherTitleDTO(TeacherTitle source){
-		if(source == null) throw new NullPointerException();
+	private DefaultTeacherTitleDTO convertToDefaultTeacherTitleDTO(TeacherTitle source) {
+		if(source == null) return null;
 
 		DefaultTeacherTitleDTO dto = new DefaultTeacherTitleDTO(source.getId(), source.getName());
 
 		return dto;
 	}
 
-	private TeacherTitle convertToJPA(DefaultTeacherTitleDTO source){
-		if(source == null) throw new NullPointerException();
+	private TeacherTitle convertToJPA(DefaultTeacherTitleDTO source) {
+		if(source == null) return null;
 
-		TeacherTitle teacherTitle = new TeacherTitle(source.getId(), source.getName(), new HashSet<>());
-
+		TeacherTitle teacherTitle = new TeacherTitle();
+//		teacherTitle.setId(source.getId());
+		teacherTitle.setName(source.getName());
+		
 		return teacherTitle;
 	}
 

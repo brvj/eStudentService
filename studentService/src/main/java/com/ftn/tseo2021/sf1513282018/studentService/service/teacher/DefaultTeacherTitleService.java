@@ -34,8 +34,8 @@ public class DefaultTeacherTitleService implements TeacherTitleService {
 	}
 
 	@Override
-	public Integer create(DefaultTeacherTitleDTO t) {
-		TeacherTitle teacherTitle = teacherTitleConverter.convertToJPA(t);
+	public Integer create(DefaultTeacherTitleDTO dto) {
+		TeacherTitle teacherTitle = teacherTitleConverter.convertToJPA(dto);
 
 		teacherTitle = teacherTitleRepo.save(teacherTitle);
 
@@ -43,13 +43,14 @@ public class DefaultTeacherTitleService implements TeacherTitleService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultTeacherTitleDTO t) {
+	public void update(Integer id, DefaultTeacherTitleDTO dto) {
 		if(!teacherTitleRepo.existsById(id)) throw new EntityNotFoundException();
 
-		t.setId(id);
-		TeacherTitle teacherTitle = teacherTitleConverter.convertToJPA(t);
-
-		teacherTitleRepo.save(teacherTitle);
+		TeacherTitle tNew = teacherTitleConverter.convertToJPA(dto);
+		
+		TeacherTitle t = teacherTitleRepo.findById(id).get();
+		t.setName(tNew.getName());
+		teacherTitleRepo.save(t);
 	}
 
 	@Override

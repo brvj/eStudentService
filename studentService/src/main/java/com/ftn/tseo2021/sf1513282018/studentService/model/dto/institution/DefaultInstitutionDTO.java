@@ -13,7 +13,9 @@ import lombok.Setter;
 @Setter
 public class DefaultInstitutionDTO implements InstitutionDTO {
 
-    private Integer id;
+	private static final long serialVersionUID = 5985801823507871857L;
+	
+	private Integer id;
     private String name;
     private String address;
     private String phoneNumber;

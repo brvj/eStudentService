@@ -3,13 +3,14 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
 import lombok.RequiredArgsConstructor;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,6 @@ import java.util.Optional;
 public class DefaultTeachingService implements TeachingService {
 
 	private TeachingRepository teachingRepo;
-
-	private TeacherService teacherService;
 
 	private CourseService courseService;
 
@@ -68,13 +67,17 @@ public class DefaultTeachingService implements TeachingService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultTeachingDTO> getByTeacherId(int teacherId, Pageable pageable) {
-		if(teacherService.getOne(teacherId) == null) throw new EntityNotFoundException();
-
-		Page<Teaching> page = teachingRepo.filterTeachings(teacherId, null, null, pageable);
-
-		return teachingConverter.convertToDTO(page.getContent());
+	public List<TeacherTeachingDTO> filterTeachingsByTeacher(int teacherId, Pageable pageable, TeacherTeachingDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Teaching> page = teachingRepo.findByTeacher_Id(teacherId, pageable);
+			return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
+		}
+		else {
+			Page<Teaching> page = teachingRepo.filterTeachings(teacherId, null, filterOptions.getTeacherRole().getId(), pageable);
+			return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
+		}
 	}
 
 	@Override

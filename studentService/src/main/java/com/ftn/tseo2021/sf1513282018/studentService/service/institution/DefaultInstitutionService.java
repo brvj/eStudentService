@@ -71,12 +71,7 @@ public class DefaultInstitutionService implements InstitutionService {
 		
 		Institution iNew = institutionConverter.convertToJPA(dto);
 		
-//		REAL PUT
-//		iNew.setId(id);
-//		institutionRepo.save(iNew);
-		
-//		SIMULATE PATCH
-		Institution i = institutionRepo.getOne(id);
+		Institution i = institutionRepo.findById(id).get();
 		i.setName(iNew.getName());
 		i.setAddress(iNew.getAddress());
 		i.setPhoneNumber(iNew.getPhoneNumber());
@@ -107,7 +102,7 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		List<InstitutionTeacherDTO> teachers = teacherService.getByInstitutionId(institutionId, pageable);
+		List<InstitutionTeacherDTO> teachers = teacherService.filterTeachers(institutionId, pageable, null);
 
 		return teachers;
 	}

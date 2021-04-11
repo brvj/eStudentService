@@ -15,6 +15,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCour
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherRoleDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherRole;
@@ -44,14 +45,14 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 	private CourseRepository courseRepo;
 
 	@Override
-	public Teaching convertToJPA(TeachingDTO source) {
+	public Teaching convertToJPA(TeachingDTO source) throws IllegalArgumentException {
 		if(source instanceof DefaultTeachingDTO) return convertToJPA((DefaultTeachingDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<Teaching> convertToJPA(List<? extends TeachingDTO> sources) {
+	public List<Teaching> convertToJPA(List<? extends TeachingDTO> sources) throws IllegalArgumentException {
 		List<Teaching> result = new ArrayList<>();
 
 		if(sources != null){
@@ -64,15 +65,17 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends TeachingDTO> T convertToDTO(Teaching source, Class<? extends TeachingDTO> returnType) {
+	public <T extends TeachingDTO> T convertToDTO(Teaching source, Class<? extends TeachingDTO> returnType) throws IllegalArgumentException {
 		if(returnType == DefaultTeachingDTO.class) return (T) convertToDefaultTeachingDTO(source);
+		else if (returnType == TeacherTeachingDTO.class) return (T) convertToTeacherTeachingDTO(source);
 		else throw new IllegalArgumentException(String.format(
 					"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
-	public List<? extends TeachingDTO> convertToDTO(List<Teaching> sources, Class<? extends TeachingDTO> returnType) {
+	public List<? extends TeachingDTO> convertToDTO(List<Teaching> sources, Class<? extends TeachingDTO> returnType) throws IllegalArgumentException {
 		if(returnType == DefaultTeachingDTO.class){
 			List<DefaultTeachingDTO> result = new ArrayList<>();
 			sources.stream().forEach(teaching -> {
@@ -80,7 +83,16 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 			});
 			return result;
 
-		}else throw new IllegalArgumentException(String.format(
+		}
+		else if (returnType == TeacherTeachingDTO.class){
+			List<TeacherTeachingDTO> result = new ArrayList<>();
+			sources.stream().forEach(teaching -> {
+				result.add(convertToTeacherTeachingDTO(teaching));
+			});
+			return result;
+
+		}
+		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
 
@@ -89,6 +101,7 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 		return convertToDefaultTeachingDTO(source);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DefaultTeachingDTO> convertToDTO(List<Teaching> sources) {
 		return (List<DefaultTeachingDTO>) convertToDTO(sources, DefaultTeachingDTO.class);
@@ -123,6 +136,16 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 
 		DefaultTeachingDTO dto = new DefaultTeachingDTO(source.getId(), source.getStartDate(), teacherDTO, teacherRoleDTO, courseDTO);
 
+		return dto;
+	}
+	
+	private TeacherTeachingDTO convertToTeacherTeachingDTO(Teaching source) {
+		if (source == null) return null;
+		
+		TeacherTeachingDTO dto = new TeacherTeachingDTO(source.getId(), source.getStartDate(), 
+				teacherRoleConverter.convertToDTO(source.getTeacherRole()), 
+				courseConverter.convertToDTO(source.getCourse()));
+		
 		return dto;
 	}
 

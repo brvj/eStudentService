@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TeachingRepository extends JpaRepository<Teaching, Integer> {
+	
+	Page<Teaching> findByTeacher_Id(int teacherId, Pageable pageable);
 
     @Query("Select t from Teaching t WHERE " +
             "(:teacherId is null OR t.teacher.id = :teacherId) AND " +

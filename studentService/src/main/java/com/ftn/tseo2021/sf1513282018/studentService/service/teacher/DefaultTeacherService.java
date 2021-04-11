@@ -2,17 +2,15 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import lombok.RequiredArgsConstructor;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,11 +26,7 @@ public class DefaultTeacherService implements TeacherService {
 
 	private TeacherRepository teacherRepo;
 
-	private UserService userService;
-
 	private TeachingService teachingService;
-
-	private InstitutionService institutionService;
 
 	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
 	
@@ -48,8 +42,8 @@ public class DefaultTeacherService implements TeacherService {
 	}
 
 	@Override
-	public Integer create(DefaultTeacherDTO t) {
-		Teacher teacher = teacherConverter.convertToJPA(t);
+	public Integer create(DefaultTeacherDTO dto) throws IllegalArgumentException {
+		Teacher teacher = teacherConverter.convertToJPA(dto);
 
 		teacher = teacherRepo.save(teacher);
 
@@ -57,13 +51,24 @@ public class DefaultTeacherService implements TeacherService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultTeacherDTO t) {
+	public void update(Integer id, DefaultTeacherDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!teacherRepo.existsById(id)) throw new EntityNotFoundException();
 
-		t.setId(id);
-		Teacher teacher = teacherConverter.convertToJPA(t);
+		Teacher tNew = teacherConverter.convertToJPA(dto);
 
-		teacherRepo.save(teacher);
+		Teacher t = teacherRepo.findById(id).get();
+		t.setFirstName(tNew.getFirstName());
+		t.setLastName(tNew.getLastName());
+		t.setAddress(tNew.getAddress());
+		t.setDateOfBirth(tNew.getDateOfBirth());
+		t.setTeacherTitle(tNew.getTeacherTitle());
+		t.getUser().setUsername(tNew.getUser().getUsername());
+		t.getUser().setFirstName(tNew.getFirstName());
+		t.getUser().setLastName(tNew.getLastName());
+		t.getUser().setEmail(tNew.getUser().getEmail());
+		t.getUser().setPhoneNumber(tNew.getUser().getPhoneNumber());
+		teacherRepo.save(t);
+
 	}
 
 	@Override
@@ -76,8 +81,6 @@ public class DefaultTeacherService implements TeacherService {
 
 	@Override
 	public DefaultTeacherDTO getByUserId(int userId, Pageable pageable) {
-		if(userService.getOne(userId) == null) throw new EntityNotFoundException();
-
 		Optional<Teacher> teacher = teacherRepo.findByUser_Id(userId);
 
 		return teacherConverter.convertToDTO(teacher.orElse(null));
@@ -85,20 +88,24 @@ public class DefaultTeacherService implements TeacherService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InstitutionTeacherDTO> getByInstitutionId(int institutionId, Pageable pageable) {
-		if(institutionService.getOne(institutionId) == null) throw new EntityNotFoundException();
-
-		Page<Teacher> page = teacherRepo.filterTeachers(institutionId, null, null, null, pageable);
-
-		return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
+	public List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Teacher> page = teacherRepo.findByInstitution_Id(institutionId, pageable);
+			return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
+		}
+		else {
+			Page<Teacher> page = teacherRepo.filterTeachers(institutionId, filterOptions.getTeacherTitle().getId(), 
+					filterOptions.getFirstName(), filterOptions.getLastName(), pageable);
+			return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
+		}
 	}
 
 	@Override
-	public List<DefaultTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable)
+	public List<TeacherTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable)
 			throws EntityNotFoundException {
 		if(!teacherRepo.existsById(teacherId)) throw new EntityNotFoundException();
 
-		List<DefaultTeachingDTO> teachings = teachingService.getByTeacherId(teacherId, pageable);
+		List<TeacherTeachingDTO> teachings = teachingService.filterTeachingsByTeacher(teacherId, pageable, null);
 
 		return teachings;
 	}

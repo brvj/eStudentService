@@ -42,7 +42,7 @@ public class Teacher {
     @JoinColumn(name = "teacher_title_id", referencedColumnName = "teacher_title_id", nullable = false)
     private TeacherTitle teacherTitle;
 
-    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 

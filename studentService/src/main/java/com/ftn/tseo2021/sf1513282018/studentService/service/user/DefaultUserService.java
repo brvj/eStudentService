@@ -72,7 +72,6 @@ public class DefaultUserService implements UserService, UserDetailsService {
 		u.setLastName(uNew.getLastName());
 		u.setEmail(uNew.getEmail());
 		u.setPhoneNumber(uNew.getPhoneNumber());
-		u.setInstitution(uNew.getInstitution());
 		userRepo.save(u);
 		
 	}

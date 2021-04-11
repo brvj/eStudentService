@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     Optional<Teacher> findByUser_Id(int userId);
+    
+    Page<Teacher> findByInstitution_Id(int institutionId, Pageable pageable);
 
     @Query("SELECT t from Teacher t WHERE " +
             "t.institution.id = :institutionId AND " +

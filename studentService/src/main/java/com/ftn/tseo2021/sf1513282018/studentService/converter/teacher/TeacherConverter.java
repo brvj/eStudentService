@@ -119,7 +119,7 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 	}
 	
 	private Teacher convertToJPA(DefaultTeacherDTO source) throws IllegalArgumentException {
-		if(source == null) return null;
+		if (source == null) return null;
 		
 		if (source.getInstitution() == null || source.getTeacherTitle() == null 
 				|| source.getUser() == null

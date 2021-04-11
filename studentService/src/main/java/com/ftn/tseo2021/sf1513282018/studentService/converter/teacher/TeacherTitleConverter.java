@@ -78,7 +78,7 @@ public class TeacherTitleConverter implements DtoConverter<TeacherTitle, Teacher
 		return dto;
 	}
 
-	private TeacherTitle convertToJPA(DefaultTeacherTitleDTO source) {
+	private TeacherTitle convertToJPA(DefaultTeacherTitleDTO source) throws IllegalArgumentException {
 		if(source == null) return null;
 
 		TeacherTitle teacherTitle = new TeacherTitle();

@@ -11,6 +11,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.Teachin
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRoleRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherRoleDTO;
@@ -70,6 +71,7 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 	public <T extends TeachingDTO> T convertToDTO(Teaching source, Class<? extends TeachingDTO> returnType) throws IllegalArgumentException {
 		if(returnType == DefaultTeachingDTO.class) return (T) convertToDefaultTeachingDTO(source);
 		else if (returnType == TeacherTeachingDTO.class) return (T) convertToTeacherTeachingDTO(source);
+		else if (returnType == CourseTeachingDTO.class) return (T) convertToCourseTeachingDTO(source);
 		else throw new IllegalArgumentException(String.format(
 					"Converting to %s type is not supported", returnType.toString()));
 	}
@@ -92,6 +94,14 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 			return result;
 
 		}
+		else if (returnType == CourseTeachingDTO.class){
+			List<CourseTeachingDTO> result = new ArrayList<>();
+			sources.stream().forEach(teaching -> {
+				result.add(convertToCourseTeachingDTO(teaching));
+			});
+			return result;
+
+		}
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
@@ -107,34 +117,33 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 		return (List<DefaultTeachingDTO>) convertToDTO(sources, DefaultTeachingDTO.class);
 	}
 
-	private Teaching convertToJPA(DefaultTeachingDTO source){
-		if(source == null) throw new NullPointerException();
+	private Teaching convertToJPA(DefaultTeachingDTO source) throws IllegalArgumentException {
+		if (source == null) return null;
 
-		int teacherId = source.getTeacher().getId();
-		int teacherRoleId = source.getTeacherRole().getId();
-		int courseId = source.getCourse().getId();
-
-		if(!teacherRepo.existsById(teacherId) || !teacherRoleRepo.existsById(teacherRoleId) || !courseRepo.existsById(courseId)){
+		if (source.getTeacher() == null || source.getCourse() == null || source.getTeacherRole() == null 
+				|| !teacherRepo.existsById(source.getTeacher().getId()) 
+				|| !courseRepo.existsById(source.getCourse().getId())
+				|| !teacherRoleRepo.existsById(source.getTeacherRole().getId())) {
 			throw new IllegalArgumentException();
 		}
 
-		Teacher teacher = teacherRepo.findById(teacherId).get();
-		TeacherRole teacherRole = teacherRoleRepo.findById(teacherRoleId).get();
-		Course course = courseRepo.findById(courseId).get();
-
-		Teaching teaching = new Teaching(source.getId(), source.getStartDate(), teacher, teacherRole, course);
+		Teaching teaching = new Teaching();
+//		teaching.setId(source.getId());
+		teaching.setStartDate(source.getStartDate());
+		teaching.setTeacher(teacherRepo.getOne(source.getTeacher().getId()));
+		teaching.setCourse(courseRepo.getOne(source.getCourse().getId()));
+		teaching.setTeacherRole(teacherRoleRepo.getOne(source.getTeacherRole().getId()));
 
 		return teaching;
 	}
 
 	private DefaultTeachingDTO convertToDefaultTeachingDTO(Teaching source){
-		if(source == null) throw new NullPointerException();
+		if(source == null) return null;
 
-		DefaultTeacherDTO teacherDTO = (source.getTeacher() != null)? teacherConverter.convertToDTO(source.getTeacher()) : null;
-		DefaultTeacherRoleDTO teacherRoleDTO = (source.getTeacherRole() != null)? teacherRoleConverter.convertToDTO(source.getTeacherRole()) : null;
-		DefaultCourseDTO courseDTO = (source.getCourse() != null)? courseConverter.convertToDTO(source.getCourse()) : null;
-
-		DefaultTeachingDTO dto = new DefaultTeachingDTO(source.getId(), source.getStartDate(), teacherDTO, teacherRoleDTO, courseDTO);
+		DefaultTeachingDTO dto = new DefaultTeachingDTO(source.getId(), source.getStartDate(), 
+				teacherConverter.convertToDTO(source.getTeacher()), 
+				teacherRoleConverter.convertToDTO(source.getTeacherRole()), 
+				courseConverter.convertToDTO(source.getCourse()));
 
 		return dto;
 	}
@@ -145,6 +154,16 @@ public class TeachingConverter implements DtoConverter<Teaching, TeachingDTO, De
 		TeacherTeachingDTO dto = new TeacherTeachingDTO(source.getId(), source.getStartDate(), 
 				teacherRoleConverter.convertToDTO(source.getTeacherRole()), 
 				courseConverter.convertToDTO(source.getCourse()));
+		
+		return dto;
+	}
+	
+	private CourseTeachingDTO convertToCourseTeachingDTO(Teaching source) {
+		if (source == null) return null;
+		
+		CourseTeachingDTO dto = new CourseTeachingDTO(source.getId(), source.getStartDate(), 
+				teacherConverter.convertToDTO(source.getTeacher()), 
+				teacherRoleConverter.convertToDTO(source.getTeacherRole()));
 		
 		return dto;
 	}

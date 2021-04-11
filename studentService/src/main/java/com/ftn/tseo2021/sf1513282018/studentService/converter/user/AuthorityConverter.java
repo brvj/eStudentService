@@ -71,7 +71,7 @@ public class AuthorityConverter implements DtoConverter<Authority, AuthorityDTO,
 		return dto;
 	}
 	
-	private Authority convertToJPA(DefaultAuthorityDTO source) {
+	private Authority convertToJPA(DefaultAuthorityDTO source) throws IllegalArgumentException {
 		if (source == null) return null;
 		
 		Authority a = new Authority();

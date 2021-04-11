@@ -10,11 +10,18 @@ import org.springframework.data.repository.query.Param;
 public interface TeachingRepository extends JpaRepository<Teaching, Integer> {
 	
 	Page<Teaching> findByTeacher_Id(int teacherId, Pageable pageable);
+	
+	Page<Teaching> findByCourse_Id(int courseId, Pageable pageable);
 
     @Query("Select t from Teaching t WHERE " +
-            "(:teacherId is null OR t.teacher.id = :teacherId) AND " +
-            "(:courseId is null OR t.course.id = :courseId) AND " +
+            "t.teacher.id = :teacherId AND " +
             "(:teacherRoleId is null OR t.teacherRole.id = :teacherRoleId)")
-    Page<Teaching> filterTeachings(@Param("teacherId") Integer teacherId, @Param("courseId") Integer courseId,
+    Page<Teaching> filterTeachingsByTeacher(@Param("teacherId") int teacherId,
+                                   @Param("teacherRoleId") Integer teacherRoleId, Pageable pageable);
+    
+    @Query("Select t from Teaching t WHERE " +
+            "t.course.id = :courseId AND " +
+            "(:teacherRoleId is null OR t.teacherRole.id = :teacherRoleId)")
+    Page<Teaching> filterTeachingsByCourse(@Param("courseId") int courseId,
                                    @Param("teacherRoleId") Integer teacherRoleId, Pageable pageable);
 }

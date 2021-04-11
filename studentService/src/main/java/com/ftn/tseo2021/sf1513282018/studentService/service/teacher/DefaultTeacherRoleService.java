@@ -34,8 +34,8 @@ public class DefaultTeacherRoleService implements TeacherRoleService {
 	}
 
 	@Override
-	public Integer create(DefaultTeacherRoleDTO t) {
-		TeacherRole teacherRole = teacherRoleConverter.convertToJPA(t);
+	public Integer create(DefaultTeacherRoleDTO dto) throws IllegalArgumentException {
+		TeacherRole teacherRole = teacherRoleConverter.convertToJPA(dto);
 
 		teacherRole = teacherRoleRepo.save(teacherRole);
 
@@ -43,13 +43,14 @@ public class DefaultTeacherRoleService implements TeacherRoleService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultTeacherRoleDTO t) {
+	public void update(Integer id, DefaultTeacherRoleDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!teacherRoleRepo.existsById(id)) throw new EntityNotFoundException();
 
-		t.setId(id);
-		TeacherRole teacherRole = teacherRoleConverter.convertToJPA(t);
-
-		teacherRoleRepo.save(teacherRole);
+		TeacherRole tNew = teacherRoleConverter.convertToJPA(dto);
+		
+		TeacherRole t = teacherRoleRepo.findById(id).get();
+		t.setName(tNew.getName());
+		teacherRoleRepo.save(t);
 	}
 
 	@Override

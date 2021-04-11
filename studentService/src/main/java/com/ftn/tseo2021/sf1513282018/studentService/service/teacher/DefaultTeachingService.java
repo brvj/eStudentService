@@ -2,15 +2,16 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
 import lombok.RequiredArgsConstructor;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultTeachingService implements TeachingService {
 
+	@Autowired
 	private TeachingRepository teachingRepo;
 
-	private CourseService courseService;
-
+	@Autowired
 	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
 	
 	@Override
@@ -41,8 +42,8 @@ public class DefaultTeachingService implements TeachingService {
 	}
 
 	@Override
-	public Integer create(DefaultTeachingDTO t) {
-		Teaching teaching = teachingConverter.convertToJPA(t);
+	public Integer create(DefaultTeachingDTO dto) throws IllegalArgumentException {
+		Teaching teaching = teachingConverter.convertToJPA(dto);
 
 		teaching = teachingRepo.save(teaching);
 
@@ -50,13 +51,14 @@ public class DefaultTeachingService implements TeachingService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultTeachingDTO t) {
+	public void update(Integer id, DefaultTeachingDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!teachingRepo.existsById(id)) throw new EntityNotFoundException();
 
-		t.setId(id);
-		Teaching teaching = teachingConverter.convertToJPA(t);
-
-		teachingRepo.save(teaching);
+		Teaching tNew = teachingConverter.convertToJPA(dto);
+		
+		Teaching t = teachingRepo.findById(id).get();
+		t.setTeacherRole(tNew.getTeacherRole());
+		teachingRepo.save(t);
 	}
 
 	@Override
@@ -75,17 +77,21 @@ public class DefaultTeachingService implements TeachingService {
 			return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
 		}
 		else {
-			Page<Teaching> page = teachingRepo.filterTeachings(teacherId, null, filterOptions.getTeacherRole().getId(), pageable);
+			Page<Teaching> page = teachingRepo.filterTeachingsByTeacher(teacherId, filterOptions.getTeacherRole().getId(), pageable);
 			return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultTeachingDTO> getByCourseId(int courseId, Pageable pageable) {
-		if(courseService.getOne(courseId) == null) throw new EntityNotFoundException();
-
-		Page<Teaching> page = teachingRepo.filterTeachings(null, courseId, null, pageable);
-
-		return teachingConverter.convertToDTO(page.getContent());
+	public List<CourseTeachingDTO> filterTeachingsByCourse(int courseId, Pageable pageable, CourseTeachingDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Teaching> page = teachingRepo.findByCourse_Id(courseId, pageable);
+			return (List<CourseTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), CourseTeachingDTO.class);
+		}
+		else {
+			Page<Teaching> page = teachingRepo.filterTeachingsByCourse(courseId, filterOptions.getTeacherRole().getId(), pageable);
+			return (List<CourseTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), CourseTeachingDTO.class);
+		}
 	}
 }

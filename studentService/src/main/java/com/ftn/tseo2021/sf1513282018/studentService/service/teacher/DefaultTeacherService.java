@@ -12,6 +12,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTea
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultTeacherService implements TeacherService {
 
+	@Autowired
 	private TeacherRepository teacherRepo;
 
+	@Autowired
 	private TeachingService teachingService;
 
+	@Autowired
 	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
 	
 	@Override

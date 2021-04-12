@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +15,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Transac
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.TransactionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
 
 @Service
@@ -23,9 +23,6 @@ public class DefaultTransactionService implements TransactionService {
 	
 	@Autowired
 	private TransactionRepository transactionRepo;
-	
-	@Autowired
-	private FinancialCardService financialCardService;
 
 	@Autowired
 	private DtoConverter<Transaction, TransactionDTO, DefaultTransactionDTO> transactionConverter;
@@ -68,13 +65,17 @@ public class DefaultTransactionService implements TransactionService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultTransactionDTO> getByFinancialCardId(int financialCardId, Pageable pageable) {
-		if(financialCardService.getOne(financialCardId) == null) throw new EntityNotFoundException();
-
-		Page<Transaction> page = transactionRepo.filterTransaction(financialCardId, null, null, null, null, pageable);
-
-		return transactionConverter.convertToDTO(page.getContent());
+	public List<FinancialCardTransactionDTO> filterTransactions(int financialCardId, Pageable pageable, FinancialCardTransactionDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Transaction> page = transactionRepo.findByFinancialCard_Id(financialCardId, pageable);
+			return (List<FinancialCardTransactionDTO>) transactionConverter.convertToDTO(page.getContent(), FinancialCardTransactionDTO.class);
+		}
+		else {
+			Page<Transaction> page = transactionRepo.filterTransaction(financialCardId, null, null, null, null, pageable);
+			return (List<FinancialCardTransactionDTO>) transactionConverter.convertToDTO(page.getContent(), FinancialCardTransactionDTO.class);
+		}
 	}
 
 }

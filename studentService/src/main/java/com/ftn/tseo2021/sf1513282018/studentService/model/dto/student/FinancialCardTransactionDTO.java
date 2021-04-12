@@ -14,14 +14,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DefaultTransactionDTO implements TransactionDTO {
+public class FinancialCardTransactionDTO implements TransactionDTO {
 
-	private static final long serialVersionUID = 618279871124510843L;
+	private static final long serialVersionUID = -6386426933595054639L;
 	
 	private Integer id;
 	private double ammount;
 	private LocalDate date;
 	private String description;
 	private TransactionType type;
-	private DefaultFinancialCardDTO financialCard;
+
 }

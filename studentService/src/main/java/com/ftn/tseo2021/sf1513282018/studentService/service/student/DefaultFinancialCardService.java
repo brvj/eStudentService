@@ -7,7 +7,8 @@ import java.util.Optional;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,22 +49,23 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	}
 
 	@Override
-	public Integer create(DefaultFinancialCardDTO t) {
-		FinancialCard fc = financialCardConverter.convertToJPA(t);
+	public Integer create(DefaultFinancialCardDTO dto) throws IllegalArgumentException {
+		FinancialCard fc = financialCardConverter.convertToJPA(dto);
 		
-		fc = financialCardRepo.save(fc);
+//		fc = financialCardRepo.save(fc);
 		
 		return fc.getId();
 	}
 
 	@Override
-	public void update(Integer id, DefaultFinancialCardDTO t) {
+	public void update(Integer id, DefaultFinancialCardDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if (!financialCardRepo.existsById(id)) throw new EntityNotFoundException();
 		
-		t.setId(id);
-		FinancialCard fc = financialCardConverter.convertToJPA(t);
+		FinancialCard fNew = financialCardConverter.convertToJPA(dto);
 		
-		financialCardRepo.save(fc);
+//		FinancialCard f = financialCardRepo.findById(id).get();
+//		Nothing to change...
+//		financialCardRepo.save(f);
 		
 	}
 
@@ -76,18 +78,16 @@ public class DefaultFinancialCardService implements FinancialCardService {
 
 	@Override
 	public DefaultFinancialCardDTO getByStudentId(int studentId) {
-		if(studentService.getOne(studentId) == null) throw new EntityNotFoundException();
-
 		Optional<FinancialCard> fc = financialCardRepo.findByStudent_Id(studentId);
 
 		return financialCardConverter.convertToDTO(fc.orElse(null));
 	}
 
 	@Override
-	public List<DefaultTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable) throws EntityNotFoundException {
+	public List<FinancialCardTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable) throws EntityNotFoundException {
 		if(!financialCardRepo.existsById(cardId)) throw new EntityNotFoundException();
 
-		List<DefaultTransactionDTO> transactions = transactionService.getByFinancialCardId(cardId, pageable);
+		List<FinancialCardTransactionDTO> transactions = transactionService.filterTransactions(cardId, pageable, null);
 
 		return transactions;
 	}

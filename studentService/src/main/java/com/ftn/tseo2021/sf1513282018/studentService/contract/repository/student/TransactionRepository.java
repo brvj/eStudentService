@@ -14,6 +14,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transactio
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer>{
+	
+	Page<Transaction> findByFinancialCard_Id(int financialCardId, Pageable pageable);
 
 	@Query("SELECT t from Transaction t WHERE " +
 			"t.financialCard.id = :financialCardId AND " +

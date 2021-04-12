@@ -39,7 +39,7 @@ public class DefaultTransactionService implements TransactionService {
 	}
 
 	@Override
-	public Integer create(DefaultTransactionDTO dto) {
+	public Integer create(DefaultTransactionDTO dto) throws IllegalArgumentException {
 		Transaction t = transactionConverter.convertToJPA(dto);
 		
 		t = transactionRepo.save(t);
@@ -48,13 +48,14 @@ public class DefaultTransactionService implements TransactionService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultTransactionDTO dto) {
+	public void update(Integer id, DefaultTransactionDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if (!transactionRepo.existsById(id)) throw new EntityNotFoundException();
 		
-		dto.setId(id);
-		Transaction t = transactionConverter.convertToJPA(dto);
+		Transaction tNew = transactionConverter.convertToJPA(dto);
 		
-		transactionRepo.save(t);
+//		Transaction t = transactionRepo.findById(id).get();
+//		Nothing to change...
+//		transactionRepo.save(t);
 		
 	}
 

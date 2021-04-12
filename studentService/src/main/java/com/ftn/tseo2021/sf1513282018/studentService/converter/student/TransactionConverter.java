@@ -110,7 +110,7 @@ public class TransactionConverter implements DtoConverter<Transaction, Transacti
 		
 		Transaction transaction = new Transaction(source.getId(), source.getAmmount(), source.getDate(), 
 				source.getDescription(), source.getType(), 
-				financialCardRepo.findById(source.getFinancialCard().getId()).get());
+				financialCardRepo.getOne(source.getFinancialCard().getId()));
 		
 		return transaction;
 	}

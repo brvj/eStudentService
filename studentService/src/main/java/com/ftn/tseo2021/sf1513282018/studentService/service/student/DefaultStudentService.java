@@ -122,7 +122,7 @@ public class DefaultStudentService implements StudentService {
 	public List<StudentDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException {
 		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
 
-		List<StudentDocumentDTO> documents = documentService.getByStudentId(studentId, pageable);
+		List<StudentDocumentDTO> documents = documentService.filterDocuments(studentId, pageable, null);
 
 		return documents;
 	}

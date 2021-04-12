@@ -11,6 +11,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDoc
 
 public interface DocumentService extends BaseService<DefaultDocumentDTO, Integer> {
 	
-	List<StudentDocumentDTO> getByStudentId(int studentId, Pageable pageable);
+	List<StudentDocumentDTO> filterDocuments(int studentId, Pageable pageable, StudentDocumentDTO filterOptions);
 
 }

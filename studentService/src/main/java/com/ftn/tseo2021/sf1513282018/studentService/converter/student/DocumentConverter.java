@@ -26,14 +26,14 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 	StudentRepository studentRepo;
 	
 	@Override
-	public Document convertToJPA(DocumentDTO source) {
+	public Document convertToJPA(DocumentDTO source) throws IllegalArgumentException {
 		if (source instanceof DefaultDocumentDTO) return convertToJPA((DefaultDocumentDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<Document> convertToJPA(List<? extends DocumentDTO> sources) {
+	public List<Document> convertToJPA(List<? extends DocumentDTO> sources) throws IllegalArgumentException {
 		List<Document> result = new ArrayList<Document>();
 		
 		if (sources.get(0) instanceof DefaultDocumentDTO) {
@@ -46,7 +46,7 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends DocumentDTO> T convertToDTO(Document source, Class<? extends DocumentDTO> returnType) {
+	public <T extends DocumentDTO> T convertToDTO(Document source, Class<? extends DocumentDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultDocumentDTO.class) return (T) convertToDefaultDocumentDTO(source);
 		else if (returnType == StudentDocumentDTO.class) return (T) convertToStudentDocumentDTO(source);
 		else throw new IllegalArgumentException(String.format(
@@ -54,7 +54,7 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 	}
 
 	@Override
-	public List<? extends DocumentDTO> convertToDTO(List<Document> sources, Class<? extends DocumentDTO> returnType) {
+	public List<? extends DocumentDTO> convertToDTO(List<Document> sources, Class<? extends DocumentDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultDocumentDTO.class) {
 			List<DefaultDocumentDTO> result = new ArrayList<>();
 			for (Document jpa : sources) result.add(convertToDefaultDocumentDTO(jpa));
@@ -98,7 +98,7 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 		return dto;
 	}
 
-	private Document convertToJPA(DefaultDocumentDTO source) {
+	private Document convertToJPA(DefaultDocumentDTO source) throws IllegalArgumentException {
 		if (source == null) return null;
 		
 		if (source.getStudent() == null || 
@@ -107,7 +107,7 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 		
 		Document document = new Document(source.getId(), source.getName(), source.getType(), 
 				source.getPath(), 
-				studentRepo.findById(source.getStudent().getId()).get());
+				studentRepo.getOne(source.getStudent().getId()));
 		
 		return document;
 	}

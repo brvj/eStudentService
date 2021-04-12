@@ -43,8 +43,8 @@ public class DefaultDocumentService implements DocumentService {
 	}
 
 	@Override
-	public Integer create(DefaultDocumentDTO t) {
-		Document doc = documentConverter.convertToJPA(t);
+	public Integer create(DefaultDocumentDTO dto) throws IllegalArgumentException {
+		Document doc = documentConverter.convertToJPA(dto);
 		
 		doc = documentRepo.save(doc);
 		
@@ -52,13 +52,16 @@ public class DefaultDocumentService implements DocumentService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultDocumentDTO t) {
+	public void update(Integer id, DefaultDocumentDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if (!documentRepo.existsById(id)) throw new EntityNotFoundException();
 		
-		t.setId(id);
-		Document doc = documentConverter.convertToJPA(t);
+		Document dNew = documentConverter.convertToJPA(dto);
 		
-		documentRepo.save(doc);
+		Document d = documentRepo.findById(id).get();
+		d.setName(dNew.getName());
+		d.setType(dNew.getType());
+		d.setPath(dNew.getPath());
+		documentRepo.save(d);
 		
 	}
 
@@ -71,12 +74,15 @@ public class DefaultDocumentService implements DocumentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<StudentDocumentDTO> getByStudentId(int studentId, Pageable pageable) {
-		if(studentService.getOne(studentId) == null) throw new EntityNotFoundException();
-
-		Page<Document> page = documentRepo.filterDocuments(studentId, null, pageable);
-
-		return (List<StudentDocumentDTO>) documentConverter.convertToDTO(page.getContent(), StudentDocumentDTO.class);
+	public List<StudentDocumentDTO> filterDocuments(int studentId, Pageable pageable, StudentDocumentDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Document> page = documentRepo.findByStudent_Id(studentId, pageable);
+			return (List<StudentDocumentDTO>) documentConverter.convertToDTO(page.getContent(), StudentDocumentDTO.class);
+		}
+		else {
+			Page<Document> page = documentRepo.filterDocuments(studentId, filterOptions.getName(), pageable);
+			return (List<StudentDocumentDTO>) documentConverter.convertToDTO(page.getContent(), StudentDocumentDTO.class);
+		}
 	}
 
 }

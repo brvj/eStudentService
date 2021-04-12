@@ -48,15 +48,14 @@ public class Student {
 	@JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
 	private Institution institution;
 	
-	@OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 	
 	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "student")
 	private Set<Document> documents;
 	
-	@OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JoinColumn(name = "financial_card_id", referencedColumnName = "financial_card_id", nullable = false)
+	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER, mappedBy = "student")
 	private FinancialCard financialCard;
 	
 	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "student")

@@ -5,11 +5,9 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.DocumentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,11 +18,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 
 @Service
@@ -33,12 +31,6 @@ public class DefaultStudentService implements StudentService {
 	@Autowired
 	private StudentRepository studentRepo;
 	
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
-	private InstitutionService institutionService;
-
 	@Autowired
 	private EnrollmentService enrollmentService;
 
@@ -63,8 +55,8 @@ public class DefaultStudentService implements StudentService {
 	}
 
 	@Override
-	public Integer create(DefaultStudentDTO t) {
-		Student s = studentConverter.convertToJPA(t);
+	public Integer create(DefaultStudentDTO dto) throws IllegalArgumentException {
+		Student s = studentConverter.convertToJPA(dto);
 		
 		s = studentRepo.save(s);
 		
@@ -72,12 +64,18 @@ public class DefaultStudentService implements StudentService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultStudentDTO t) {
+	public void update(Integer id, DefaultStudentDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if (!studentRepo.existsById(id)) throw new EntityNotFoundException();
 		
-		t.setId(id);
-		Student s = studentConverter.convertToJPA(t);
+		Student sNew = studentConverter.convertToJPA(dto);
 		
+		Student s = studentRepo.findById(id).get();
+		s.setFirstName(sNew.getFirstName());
+		s.setLastName(sNew.getLastName());
+		s.setStudentCard(sNew.getStudentCard());
+		s.setAddress(sNew.getAddress());
+		s.setDateOfBirth(sNew.getDateOfBirth());
+		s.setGeneration(sNew.getGeneration());
 		studentRepo.save(s);
 		
 	}
@@ -91,8 +89,6 @@ public class DefaultStudentService implements StudentService {
 
 	@Override
 	public DefaultStudentDTO getByUserId(int userId) {
-		if(userService.getOne(userId) == null) throw new EntityNotFoundException();
-
 		Optional<Student> student = studentRepo.findByUser_Id(userId);
 
 		return studentConverter.convertToDTO(student.orElse(null));
@@ -100,28 +96,33 @@ public class DefaultStudentService implements StudentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InstitutionStudentDTO> getByInstitutionId(int institutionId, Pageable pageable) {
-		if(institutionService.getOne(institutionId) == null) throw new EntityNotFoundException();
-
-		Page<Student> page = studentRepo.filterStudent(institutionId, null, null, null, null, null, null, null, null, pageable);
-
-		return (List<InstitutionStudentDTO>) studentConverter.convertToDTO(page.getContent(), InstitutionStudentDTO.class);
+	public List<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Student> page = studentRepo.findByInstitution_Id(institutionId, pageable);
+			return (List<InstitutionStudentDTO>) studentConverter.convertToDTO(page.getContent(), InstitutionStudentDTO.class);
+		}
+		else {
+			Page<Student> page = studentRepo.filterStudent(institutionId, filterOptions.getFirstName(), 
+					filterOptions.getLastName(), filterOptions.getStudentCard(), filterOptions.getAddress(), 
+					null, null, null, null, pageable);
+			return (List<InstitutionStudentDTO>) studentConverter.convertToDTO(page.getContent(), InstitutionStudentDTO.class);
+		}
 	}
 
 	@Override
-	public List<DefaultEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException {
+	public List<StudentEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException {
 		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
 
-		List<DefaultEnrollmentDTO> enrollments = enrollmentService.getByStudentId(studentId, pageable);
+		List<StudentEnrollmentDTO> enrollments = enrollmentService.filterEnrollmentsByStudent(studentId, pageable, null);
 
 		return enrollments;
 	}
 
 	@Override
-	public List<DefaultDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException {
+	public List<StudentDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException {
 		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
 
-		List<DefaultDocumentDTO> documents = documentService.getByStudentId(studentId, pageable);
+		List<StudentDocumentDTO> documents = documentService.getByStudentId(studentId, pageable);
 
 		return documents;
 	}

@@ -11,13 +11,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DefaultDocumentDTO implements DocumentDTO {
+public class StudentDocumentDTO implements DocumentDTO {
 
-	private static final long serialVersionUID = 947628414904513089L;
+	private static final long serialVersionUID = 1336440496713912005L;
 	
 	private Integer id;
 	private String name;
 	private String type;
 	private String path;
-	private DefaultStudentDTO student;
+
 }

@@ -1,7 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.student;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 
 @Component
@@ -60,6 +58,7 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 	@Override
 	public <T extends EnrollmentDTO> T convertToDTO(Enrollment source, Class<? extends EnrollmentDTO> returnType) {
 		if (returnType == DefaultEnrollmentDTO.class) return (T) convertToDefaultEnrollmentDTO(source);
+		else if (returnType == StudentEnrollmentDTO.class) return (T) convertToStudentEnrollmentDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
@@ -68,8 +67,13 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 	public List<? extends EnrollmentDTO> convertToDTO(List<Enrollment> sources,
 			Class<? extends EnrollmentDTO> returnType) {
 		if (returnType == DefaultEnrollmentDTO.class) {
-			List<DefaultEnrollmentDTO> result = new ArrayList<DefaultEnrollmentDTO>();
+			List<DefaultEnrollmentDTO> result = new ArrayList<>();
 			for (Enrollment jpa : sources) result.add(convertToDefaultEnrollmentDTO(jpa));
+			return result;
+		}
+		else if (returnType == StudentEnrollmentDTO.class) {
+			List<StudentEnrollmentDTO> result = new ArrayList<>();
+			for (Enrollment jpa : sources) result.add(convertToStudentEnrollmentDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -94,6 +98,15 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 				source.isPassed(), source.getScore(), source.getGrade(), 
 				studentConverter.convertToDTO(source.getStudent()), 
 				courseConverter.convertToDTO(source.getCourse()));
+		
+		return dto;
+	}
+	
+	private StudentEnrollmentDTO convertToStudentEnrollmentDTO(Enrollment source) {
+		if (source == null) return null;
+		
+		StudentEnrollmentDTO dto = new StudentEnrollmentDTO(source.getId(), source.getStartDate(), source.isPassed(), 
+				source.getScore(), source.getGrade(), courseConverter.convertToDTO(source.getCourse()));
 		
 		return dto;
 	}

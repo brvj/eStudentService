@@ -16,6 +16,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Documen
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.DocumentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.DocumentService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Document;
 
 @Service
@@ -68,13 +69,14 @@ public class DefaultDocumentService implements DocumentService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultDocumentDTO> getByStudentId(int studentId, Pageable pageable) {
+	public List<StudentDocumentDTO> getByStudentId(int studentId, Pageable pageable) {
 		if(studentService.getOne(studentId) == null) throw new EntityNotFoundException();
 
 		Page<Document> page = documentRepo.filterDocuments(studentId, null, pageable);
 
-		return documentConverter.convertToDTO(page.getContent());
+		return (List<StudentDocumentDTO>) documentConverter.convertToDTO(page.getContent(), StudentDocumentDTO.class);
 	}
 
 }

@@ -8,17 +8,13 @@ import org.springframework.stereotype.Component;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.DocumentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.EnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Document;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
 
 @Component
 public class DocumentConverter implements DtoConverter<Document, DocumentDTO , DefaultDocumentDTO> {
@@ -52,6 +48,7 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 	@Override
 	public <T extends DocumentDTO> T convertToDTO(Document source, Class<? extends DocumentDTO> returnType) {
 		if (returnType == DefaultDocumentDTO.class) return (T) convertToDefaultDocumentDTO(source);
+		else if (returnType == StudentDocumentDTO.class) return (T) convertToStudentDocumentDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
@@ -59,8 +56,13 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 	@Override
 	public List<? extends DocumentDTO> convertToDTO(List<Document> sources, Class<? extends DocumentDTO> returnType) {
 		if (returnType == DefaultDocumentDTO.class) {
-			List<DefaultDocumentDTO> result = new ArrayList<DefaultDocumentDTO>();
+			List<DefaultDocumentDTO> result = new ArrayList<>();
 			for (Document jpa : sources) result.add(convertToDefaultDocumentDTO(jpa));
+			return result;
+		}
+		else if (returnType == StudentDocumentDTO.class) {
+			List<StudentDocumentDTO> result = new ArrayList<>();
+			for (Document jpa : sources) result.add(convertToStudentDocumentDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -84,6 +86,14 @@ public class DocumentConverter implements DtoConverter<Document, DocumentDTO , D
 		DefaultDocumentDTO dto = new DefaultDocumentDTO(source.getId(), source.getName(), 
 				source.getType(), source.getPath(),
 				studentConverter.convertToDTO(source.getStudent()));
+		
+		return dto;
+	}
+	
+	private StudentDocumentDTO convertToStudentDocumentDTO(Document source) {
+		if (source == null) return null;
+		
+		StudentDocumentDTO dto = new StudentDocumentDTO(source.getId(), source.getName(), source.getType(), source.getPath());
 		
 		return dto;
 	}

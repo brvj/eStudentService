@@ -16,9 +16,10 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamObligationTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 
@@ -63,12 +64,7 @@ public class DefaultEnrollmentService implements EnrollmentService {
 
 		Enrollment eNew = enrollmentConverter.convertToJPA(dto);
 		
-//		REAL PUT
-//		eNew.setId(id);
-//		enrollmentRepo.save(eNew);
-		
-//		SIMULATE PATCH
-		Enrollment e = enrollmentRepo.getOne(id);
+		Enrollment e = enrollmentRepo.findById(id).get();
 		e.setStartDate(eNew.getStartDate());
 		enrollmentRepo.save(e);
 	}
@@ -93,23 +89,32 @@ public class DefaultEnrollmentService implements EnrollmentService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultEnrollmentDTO> getByCourseId(int courseId, Pageable pageable) {
-		Page<Enrollment> page = enrollmentRepo.filterEnrollments(null, courseId, null, null, null, null, null, null, null, pageable);
-		return enrollmentConverter.convertToDTO(page.getContent());
+	public List<CourseEnrollmentDTO> filterEnrollmentsByCourse(int courseId, Pageable pageable, CourseEnrollmentDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Enrollment> page = enrollmentRepo.findByCourse_Id(courseId, pageable);
+			return (List<CourseEnrollmentDTO>) enrollmentConverter.convertToDTO(page.getContent(), CourseEnrollmentDTO.class);
+		}
+		else {
+			Page<Enrollment> page = enrollmentRepo.filterEnrollmentsByCourse(courseId, null, null, null, null, null, null, null, pageable);
+			return (List<CourseEnrollmentDTO>) enrollmentConverter.convertToDTO(page.getContent(), CourseEnrollmentDTO.class);
+		}
 	}
 
 	@Override
-	public List<DefaultExamObligationTakingDTO> getEnrollmentExamObligationTakings(int enrollmentId,
+	public List<EnrollmentExamObligationTakingDTO> getEnrollmentExamObligationTakings(int enrollmentId,
 			Pageable pageable) throws EntityNotFoundException {
 		if (!enrollmentRepo.existsById(enrollmentId)) throw new EntityNotFoundException();
-		return examObligationTakingService.getByEnrollmentId(enrollmentId, pageable);
+		
+		return examObligationTakingService.filterTakingsByEnrollment(enrollmentId, pageable, null);
 	}
 
 	@Override
-	public List<DefaultExamTakingDTO> getEnrollmentExamTakings(int enrollmentId, Pageable pageable) throws EntityNotFoundException {
+	public List<EnrollmentExamTakingDTO> getEnrollmentExamTakings(int enrollmentId, Pageable pageable) throws EntityNotFoundException {
 		if (!enrollmentRepo.existsById(enrollmentId)) throw new EntityNotFoundException();
-		return examTakingService.getByEnrollmentId(enrollmentId, pageable);
+		
+		return examTakingService.filterTakingsByEnrollment(enrollmentId, pageable, null);
 	}
 
 }

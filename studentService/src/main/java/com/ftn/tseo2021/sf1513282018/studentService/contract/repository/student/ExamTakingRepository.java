@@ -10,6 +10,15 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking
 
 public interface ExamTakingRepository extends JpaRepository<ExamTaking, Integer> {
 	
+	Page<ExamTaking> findByEnrollment_Id(int enrollmentId, Pageable pageable);
+	
+	@Query("SELECT et from ExamTaking et WHERE "
+			+ "et.enrollment.id = :enrollmentId AND "
+			+ "(:scoreFrom is null OR et.score >= :scoreFrom) AND "
+			+ "(:scoreTo is null OR et.score <= :scoreTo)")
+	Page<ExamTaking> filterTakingsByEnrollment(@Param("enrollmentId") int enrollmentId, 
+			@Param("scoreFrom") Double scoreFrom, @Param("scoreTo") Double scoreTo, Pageable pageable);
+	
 	@Query("SELECT et from ExamTaking et WHERE "
 			+ "(:examId is null OR et.exam.id = :examId) AND "
 			+ "(:enrollmentId is null OR et.enrollment.id = :enrollmentId) AND "

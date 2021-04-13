@@ -12,6 +12,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Enrollm
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
@@ -56,16 +57,17 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends EnrollmentDTO> T convertToDTO(Enrollment source, Class<? extends EnrollmentDTO> returnType) {
+	public <T extends EnrollmentDTO> T convertToDTO(Enrollment source, Class<? extends EnrollmentDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultEnrollmentDTO.class) return (T) convertToDefaultEnrollmentDTO(source);
 		else if (returnType == StudentEnrollmentDTO.class) return (T) convertToStudentEnrollmentDTO(source);
+		else if (returnType == CourseEnrollmentDTO.class) return (T) convertToCourseEnrollmentDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
 
 	@Override
 	public List<? extends EnrollmentDTO> convertToDTO(List<Enrollment> sources,
-			Class<? extends EnrollmentDTO> returnType) {
+			Class<? extends EnrollmentDTO> returnType) throws IllegalArgumentException {
 		if (returnType == DefaultEnrollmentDTO.class) {
 			List<DefaultEnrollmentDTO> result = new ArrayList<>();
 			for (Enrollment jpa : sources) result.add(convertToDefaultEnrollmentDTO(jpa));
@@ -74,6 +76,11 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 		else if (returnType == StudentEnrollmentDTO.class) {
 			List<StudentEnrollmentDTO> result = new ArrayList<>();
 			for (Enrollment jpa : sources) result.add(convertToStudentEnrollmentDTO(jpa));
+			return result;
+		}
+		else if (returnType == CourseEnrollmentDTO.class) {
+			List<CourseEnrollmentDTO> result = new ArrayList<>();
+			for (Enrollment jpa : sources) result.add(convertToCourseEnrollmentDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -111,6 +118,15 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 		return dto;
 	}
 	
+	private CourseEnrollmentDTO convertToCourseEnrollmentDTO(Enrollment source) {
+		if (source == null) return null;
+		
+		CourseEnrollmentDTO dto = new CourseEnrollmentDTO(source.getId(), source.getStartDate(), source.isPassed(), 
+				source.getScore(), source.getGrade(), studentConverter.convertToDTO(source.getStudent()));
+		
+		return dto;
+	}
+	
 	private Enrollment convertToJPA(DefaultEnrollmentDTO source) throws IllegalArgumentException {
 		if (source == null) return null;
 		
@@ -120,13 +136,13 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 			throw new IllegalArgumentException();
 		
 		Enrollment enrollment = new Enrollment();
-		enrollment.setId(source.getId());
+//		enrollment.setId(source.getId());
 		enrollment.setStartDate(source.getStartDate());
-		enrollment.setPassed(source.isPassed());
-		enrollment.setScore(source.getScore());
-		enrollment.setGrade(source.getGrade());
-		enrollment.setStudent(studentRepo.findById(source.getStudent().getId()).get());
-		enrollment.setCourse(courseRepo.findById(source.getCourse().getId()).get());
+//		enrollment.setPassed(source.isPassed());
+//		enrollment.setScore(source.getScore());
+//		enrollment.setGrade(source.getGrade());
+		enrollment.setStudent(studentRepo.getOne(source.getStudent().getId()));
+		enrollment.setCourse(courseRepo.getOne(source.getCourse().getId()));
 		
 		return enrollment;
 	}

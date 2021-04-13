@@ -15,6 +15,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamObl
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.ExamObligationTakingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
 
 @Service
@@ -76,10 +77,17 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 		return examObligationTakingConverter.convertToDTO(page.getContent());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultExamObligationTakingDTO> getByEnrollmentId(int enrollmentId, Pageable pageable) {
-		Page<ExamObligationTaking> page = examObligationTakingRepo.filterExamObligationTakings(null, enrollmentId, null, null, pageable);
-		return examObligationTakingConverter.convertToDTO(page.getContent());
+	public List<EnrollmentExamObligationTakingDTO> filterTakingsByEnrollment(int enrollmentId, Pageable pageable, EnrollmentExamObligationTakingDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<ExamObligationTaking> page = examObligationTakingRepo.findByEnrollment_Id(enrollmentId, pageable);
+			return (List<EnrollmentExamObligationTakingDTO>) examObligationTakingConverter.convertToDTO(page.getContent(), EnrollmentExamObligationTakingDTO.class);
+		}
+		else {
+			Page<ExamObligationTaking> page = examObligationTakingRepo.filterTakingsByEnrollment(enrollmentId, null, null, pageable);
+			return (List<EnrollmentExamObligationTakingDTO>) examObligationTakingConverter.convertToDTO(page.getContent(), EnrollmentExamObligationTakingDTO.class);
+		}
 	}
 
 }

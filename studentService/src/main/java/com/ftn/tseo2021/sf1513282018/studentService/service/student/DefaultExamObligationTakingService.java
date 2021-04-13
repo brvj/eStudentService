@@ -54,11 +54,6 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 		
 		ExamObligationTaking tNew = examObligationTakingConverter.convertToJPA(dto);
 
-//		REAL PUT
-//		tNew.setId(id);
-//		examObligationTakingRepo.save(tNew);
-		
-//		SIMULATE PATCH
 		ExamObligationTaking t = examObligationTakingRepo.getOne(id);
 		t.setScore(tNew.getScore());
 		examObligationTakingRepo.save(t);

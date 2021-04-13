@@ -53,11 +53,7 @@ public class DefaultExamTakingService implements ExamTakingService {
 		if (!examTakingRepo.existsById(id)) throw new EntityNotFoundException();
 		
 		ExamTaking tNew = examTakingConverter.convertToJPA(dto);
-//		REAL PUT
-//		tNew.setId(id);
-//		examTakingRepo.save(tNew);
 		
-//		SIMULATE PATCH
 		ExamTaking t = examTakingRepo.getOne(id);
 		t.setScore(tNew.getScore());
 		examTakingRepo.save(t);

@@ -137,8 +137,8 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 			throw new IllegalArgumentException();
 		
 		ExamObligationTaking taking = new ExamObligationTaking(source.getId(), source.getScore(), 
-				enrollmentRepo.findById(source.getEnrollment().getId()).get(), 
-				examObligationRepo.findById(source.getExamObligation().getId()).get());
+				enrollmentRepo.getOne(source.getEnrollment().getId()), 
+				examObligationRepo.getOne(source.getExamObligation().getId()));
 		
 		return taking;
 	}

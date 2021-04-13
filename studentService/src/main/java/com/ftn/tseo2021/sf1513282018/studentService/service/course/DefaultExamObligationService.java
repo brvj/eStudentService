@@ -2,17 +2,16 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamObligationService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,9 +32,6 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@Autowired
 	private ExamObligationTakingService examObligationTakingService;
 
-	@Autowired
-	private DtoConverter<ExamObligationTaking, ExamObligationTakingDTO, DefaultExamObligationTakingDTO> examObligationTakingConverter;
-	
 	@Override
 	public boolean existsById(Integer id) {
 		return examObligationRepo.existsById(id);
@@ -48,8 +44,8 @@ public class DefaultExamObligationService implements ExamObligationService {
 	}
 
 	@Override
-	public Integer create(DefaultExamObligationDTO t) {
-		ExamObligation examObligation = examObligationConverter.convertToJPA(t);
+	public Integer create(DefaultExamObligationDTO dto) throws IllegalArgumentException {
+		ExamObligation examObligation = examObligationConverter.convertToJPA(dto);
 
 		examObligation = examObligationRepo.save(examObligation);
 
@@ -57,13 +53,16 @@ public class DefaultExamObligationService implements ExamObligationService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultExamObligationDTO t) {
+	public void update(Integer id, DefaultExamObligationDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!examObligationRepo.existsById(id)) throw new EntityNotFoundException();
 
-		t.setId(id);
-		ExamObligation examObligation = examObligationConverter.convertToJPA(t);
-
-		examObligationRepo.save(examObligation);
+		ExamObligation eoNew = examObligationConverter.convertToJPA(dto);
+		
+		ExamObligation eo = examObligationRepo.findById(id).get();
+		eo.setPoints(eoNew.getPoints());
+		eo.setDescription(eoNew.getDescription());
+		eo.setExamObligationType(eoNew.getExamObligationType());
+		examObligationRepo.save(eo);
 	}
 
 	@Override
@@ -89,9 +88,10 @@ public class DefaultExamObligationService implements ExamObligationService {
 	}
 
 	@Override
-	public List<DefaultExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable)
+	public List<ExamOblExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable)
 			throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		if(!examObligationRepo.existsById(examObligationId)) throw new EntityNotFoundException();
+		
+		return examObligationTakingService.filterTakingsByExamObligation(examObligationId, pageable, null);
 	}
 }

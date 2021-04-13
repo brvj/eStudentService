@@ -12,21 +12,21 @@ public interface ExamObligationTakingRepository extends JpaRepository<ExamObliga
 	
 	Page<ExamObligationTaking> findByEnrollment_Id(int enrollmentId, Pageable pageable);
 	
+	Page<ExamObligationTaking> findByExamObligation_Id(int examObligationId, Pageable pageable);
+	
 	@Query("SELECT eot from ExamObligationTaking eot WHERE "
 			+ "eot.enrollment.id = :enrollmentId AND "
 			+ "(:scoreFrom is null OR eot.score >= :scoreFrom) AND "
 			+ "(:scoreTo is null OR eot.score <= :scoreTo)")
-	Page<ExamObligationTaking> filterTakingsByEnrollment(@Param("enrollmentId") Integer enrollmentId, 
+	Page<ExamObligationTaking> filterTakingsByEnrollment(@Param("enrollmentId") int enrollmentId, 
 									@Param("scoreFrom") Double scoreFrom, @Param("scoreTo") Double scoreTo, 
 									Pageable pageable);
 	
 	@Query("SELECT eot from ExamObligationTaking eot WHERE "
-			+ "(:examObligationId is null OR eot.examObligation.id = :examObligationId) AND "
-			+ "(:enrollmentId is null OR eot.enrollment.id = :enrollmentId) AND "
+			+ "eot.examObligation.id = :examObligationId AND "
 			+ "(:scoreFrom is null OR eot.score >= :scoreFrom) AND "
 			+ "(:scoreTo is null OR eot.score <= :scoreTo)")
-	Page<ExamObligationTaking> filterExamObligationTakings(@Param("examObligationId") Integer examObligationId, 
-									@Param("enrollmentId") Integer enrollmentId, 
+	Page<ExamObligationTaking> filterTakingsByExamObligation(@Param("examObligationId") int examObligationId, 
 									@Param("scoreFrom") Double scoreFrom, @Param("scoreTo") Double scoreTo, 
 									Pageable pageable);
 

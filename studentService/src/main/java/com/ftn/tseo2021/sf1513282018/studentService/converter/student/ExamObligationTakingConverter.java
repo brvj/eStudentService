@@ -13,6 +13,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamObl
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.EnrollmentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamObligationTakingDTO;
@@ -60,6 +61,7 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 			Class<? extends ExamObligationTakingDTO> returnType) {
 		if (returnType == DefaultExamObligationTakingDTO.class) return (T) convertToDefaultDTO(source);
 		else if (returnType == EnrollmentExamObligationTakingDTO.class) return (T) convertToEnrollmentExamObligationTakingDTO(source);
+		else if (returnType == ExamOblExamObligationTakingDTO.class) return (T) convertToExamOblExamObligationTakingDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
 	}
@@ -75,6 +77,11 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 		else if (returnType == EnrollmentExamObligationTakingDTO.class) {
 			List<EnrollmentExamObligationTakingDTO> result = new ArrayList<>();
 			for (ExamObligationTaking jpa : sources) result.add(convertToEnrollmentExamObligationTakingDTO(jpa));
+			return result;
+		}
+		else if (returnType == ExamOblExamObligationTakingDTO.class) {
+			List<ExamOblExamObligationTakingDTO> result = new ArrayList<>();
+			for (ExamObligationTaking jpa : sources) result.add(convertToExamOblExamObligationTakingDTO(jpa));
 			return result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -108,6 +115,15 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 		
 		EnrollmentExamObligationTakingDTO dto = new EnrollmentExamObligationTakingDTO(source.getId(), source.getScore(), 
 				examObligationConverter.convertToDTO(source.getExamObligation()));
+		
+		return dto;
+	}
+	
+	private ExamOblExamObligationTakingDTO convertToExamOblExamObligationTakingDTO(ExamObligationTaking source) {
+		if (source == null) return null;
+		
+		ExamOblExamObligationTakingDTO dto = new ExamOblExamObligationTakingDTO(source.getId(), source.getScore(), 
+				enrollmentConverter.convertToDTO(source.getEnrollment()));
 		
 		return dto;
 	}

@@ -34,8 +34,8 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 	}
 
 	@Override
-	public Integer create(DefaultExamObligationTypeDTO t) {
-		ExamObligationType examObligationType = examObligationTypeConverter.convertToJPA(t);
+	public Integer create(DefaultExamObligationTypeDTO dto) throws IllegalArgumentException {
+		ExamObligationType examObligationType = examObligationTypeConverter.convertToJPA(dto);
 
 		examObligationType = examObligationTypeRepo.save(examObligationType);
 
@@ -43,13 +43,14 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 	}
 
 	@Override
-	public void update(Integer id, DefaultExamObligationTypeDTO t) {
+	public void update(Integer id, DefaultExamObligationTypeDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!examObligationTypeRepo.existsById(id)) throw new EntityNotFoundException();
 
-		t.setId(id);
-		ExamObligationType examObligationType = examObligationTypeConverter.convertToJPA(t);
-
-		examObligationTypeRepo.save(examObligationType);
+		ExamObligationType eotNew = examObligationTypeConverter.convertToJPA(dto);
+		
+		ExamObligationType eot = examObligationTypeRepo.findById(id).get();
+		eot.setName(eotNew.getName());
+		examObligationTypeRepo.save(eot);
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.ExamObligationTakingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
@@ -71,10 +72,17 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultExamObligationTakingDTO> getByExamObligationId(int examObligationId, Pageable pageable) {
-		Page<ExamObligationTaking> page = examObligationTakingRepo.filterExamObligationTakings(examObligationId, null, null, null, pageable);
-		return examObligationTakingConverter.convertToDTO(page.getContent());
+	public List<ExamOblExamObligationTakingDTO> filterTakingsByExamObligation(int examObligationId, Pageable pageable, ExamOblExamObligationTakingDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<ExamObligationTaking> page = examObligationTakingRepo.findByExamObligation_Id(examObligationId, pageable);
+			return (List<ExamOblExamObligationTakingDTO>) examObligationTakingConverter.convertToDTO(page.getContent(), ExamOblExamObligationTakingDTO.class);
+		}
+		else {
+			Page<ExamObligationTaking> page = examObligationTakingRepo.filterTakingsByExamObligation(examObligationId, null, null, pageable);
+			return (List<ExamOblExamObligationTakingDTO>) examObligationTakingConverter.convertToDTO(page.getContent(), ExamOblExamObligationTakingDTO.class);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

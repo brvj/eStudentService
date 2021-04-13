@@ -2,17 +2,15 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamTaking;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamExamTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamPeriodExamDTO;
 
 import org.springframework.data.domain.Page;
@@ -35,9 +33,6 @@ public class DefaultExamService implements ExamService {
 	@Autowired
 	private ExamTakingService examTakingService;
 
-	@Autowired
-	private DtoConverter<ExamTaking, ExamTakingDTO, DefaultExamTakingDTO> examTakingConverter;
-	
 	@Override
 	public boolean existsById(Integer id) {
 		return examRepo.existsById(id);
@@ -50,8 +45,8 @@ public class DefaultExamService implements ExamService {
 	}
 
 	@Override
-	public Integer create(DefaultExamDTO t) {
-		Exam exam = examConverter.convertToJPA(t);
+	public Integer create(DefaultExamDTO dto) throws IllegalArgumentException {
+		Exam exam = examConverter.convertToJPA(dto);
 
 		exam = examRepo.save(exam);
 
@@ -59,13 +54,17 @@ public class DefaultExamService implements ExamService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultExamDTO t) {
+	public void update(Integer id, DefaultExamDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!examRepo.existsById(id)) throw new EntityNotFoundException();
 
-		t.setId(id);
-		Exam exam = examConverter.convertToJPA(t);
+		Exam eNew = examConverter.convertToJPA(dto);
 
-		examRepo.save(exam);
+		Exam e = examRepo.findById(id).get();
+		e.setDateTime(eNew.getDateTime());
+		e.setClassroom(eNew.getClassroom());
+		e.setPoints(eNew.getPoints());
+		e.setDescription(eNew.getDescription());
+		examRepo.save(e);
 	}
 
 	@Override
@@ -107,8 +106,9 @@ public class DefaultExamService implements ExamService {
 	}
 
 	@Override
-	public List<DefaultExamTakingDTO> getExamExamTakings(int examId, Pageable pageable) throws EntityNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ExamExamTakingDTO> getExamExamTakings(int examId, Pageable pageable) throws EntityNotFoundException {
+		if(!examRepo.existsById(examId)) throw new EntityNotFoundException();
+		
+		return examTakingService.filterTakingsByExam(examId, pageable, null);
 	}
 }

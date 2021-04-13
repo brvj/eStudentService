@@ -12,6 +12,8 @@ public interface ExamTakingRepository extends JpaRepository<ExamTaking, Integer>
 	
 	Page<ExamTaking> findByEnrollment_Id(int enrollmentId, Pageable pageable);
 	
+	Page<ExamTaking> findByExam_Id(int examId, Pageable pageable);
+	
 	@Query("SELECT et from ExamTaking et WHERE "
 			+ "et.enrollment.id = :enrollmentId AND "
 			+ "(:scoreFrom is null OR et.score >= :scoreFrom) AND "
@@ -20,12 +22,10 @@ public interface ExamTakingRepository extends JpaRepository<ExamTaking, Integer>
 			@Param("scoreFrom") Double scoreFrom, @Param("scoreTo") Double scoreTo, Pageable pageable);
 	
 	@Query("SELECT et from ExamTaking et WHERE "
-			+ "(:examId is null OR et.exam.id = :examId) AND "
-			+ "(:enrollmentId is null OR et.enrollment.id = :enrollmentId) AND "
+			+ "et.exam.id = :examId AND "
 			+ "(:scoreFrom is null OR et.score >= :scoreFrom) AND "
 			+ "(:scoreTo is null OR et.score <= :scoreTo)")
-	Page<ExamTaking> filterExamTakings(@Param("examId") Integer examId, 
-			@Param("enrollmentId") Integer enrollmentId, 
+	Page<ExamTaking> filterTakingsByExam(@Param("examId") int examId, 
 			@Param("scoreFrom") Double scoreFrom, @Param("scoreTo") Double scoreTo, Pageable pageable);
 
 }

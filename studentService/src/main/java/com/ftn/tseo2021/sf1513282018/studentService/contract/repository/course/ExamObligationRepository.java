@@ -11,6 +11,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligat
 
 @Repository
 public interface ExamObligationRepository extends JpaRepository<ExamObligation, Integer> {
+	
+	Page<ExamObligation> findByCourse_Id(int courseId, Pageable pageable);
 
     @Query("select eo from ExamObligation eo where " +
             "eo.course.id = :courseId and " +

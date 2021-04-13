@@ -122,7 +122,7 @@ public class DefaultInstitutionService implements InstitutionService {
 			throws EntityNotFoundException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
-		List<InstitutionCourseDTO> courses = courseService.getByInstitutionId(institutionId, pageable);
+		List<InstitutionCourseDTO> courses = courseService.filterCourses(institutionId, pageable, null);
 
 		return courses;
 	}

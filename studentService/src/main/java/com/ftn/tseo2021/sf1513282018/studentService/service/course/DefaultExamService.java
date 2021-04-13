@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,30 +74,24 @@ public class DefaultExamService implements ExamService {
 		return true;
 	}
 
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public DefaultExamDTO getByExamTaking(DefaultExamTakingDTO t) {
-		Optional<Exam> exam = examRepo.findByExamTakingsContaining(examTakingConverter.convertToJPA
-				(examTakingService.getOne(t.getId())));
+	public List<CourseExamDTO> filterExamsByCourse(int courseId, Pageable pageable, CourseExamDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Exam> page = examRepo.findByCourse_Id(courseId, pageable);
+			return (List<CourseExamDTO>) examConverter.convertToDTO(page.getContent(), CourseExamDTO.class);
+		}
+		else {
+			Page<Exam> page = examRepo.filterExamsByCourse(courseId, filterOptions.getDescription(),
+					filterOptions.getClassroom(), filterOptions.getDateTime(), filterOptions.getDateTime(), pageable);
+			return (List<CourseExamDTO>) examConverter.convertToDTO(page.getContent(), CourseExamDTO.class);
+		}
 
-		return examConverter.convertToDTO(exam.get());
-	}
-
-	@Override // treba prepraviti za filtriranje datuma
-	public List<DefaultExamDTO> filterExams(DefaultExamDTO filterOptions, Pageable pageable) {
-		Page<Exam> page = examRepo.filterExams(filterOptions.getCourse().getId(), filterOptions.getId(), filterOptions.getDescription(),
-				filterOptions.getClassroom(), filterOptions.getDateTime(), filterOptions.getDateTime(), pageable);
-
-		return examConverter.convertToDTO(page.getContent());
 	}
 
 	@Override
 	public List<DefaultExamDTO> getByExamPeriodId(int examPeriodId, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DefaultExamDTO> getByCourseId(int courseId, Pageable pageable) {
 		// TODO Auto-generated method stub
 		return null;
 	}

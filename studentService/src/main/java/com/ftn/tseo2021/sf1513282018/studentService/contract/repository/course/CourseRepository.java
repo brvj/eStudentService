@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface CourseRepository extends JpaRepository<Course, Integer> {
+	
+	Page<Course> findByInstitution_Id(int institutionId, Pageable pageable);
 
     @Query("select c from Course c where " +
             "c.institution.id = :institutionId and " +

@@ -13,6 +13,19 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
+	
+	Page<Exam> findByCourse_Id(int courseId, Pageable pageable);
+	
+	@Query("select e from Exam e where " +
+            "e.course.id = :courseId and " +
+            "(:description is null or lower(e.description) like lower(concat('%', :description, '%'))) and " +
+            "(:classroom is null or e.classroom like concat('%', :classroom, '%')) and " +
+            "(:startDate is null or e.dateTime >= :startDate) and " +
+            "(:endDate is null or e.dateTime <= :endDate)")
+    Page<Exam> filterExamsByCourse(@Param("courseId") int courseId,
+    		 				@Param("description") String description,
+                           @Param("classroom") String classroom, @Param("startDate") LocalDateTime startDate,
+                           @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
     @Query("select e from Exam e where " +
             "(:courseId is null or e.course.id = :courseId) and " +

@@ -7,6 +7,7 @@ import java.util.List;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.ExamTakingRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
@@ -50,9 +51,11 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 				"Converting from %s type is not supported", sources.get(0).getClass().toString()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ExamDTO> T convertToDTO(Exam source, Class<? extends ExamDTO> returnType) {
 		if(returnType == DefaultExamDTO.class) return (T) convertToDefaultExamDTO(source);
+		else if (returnType == CourseExamDTO.class) return (T) convertToCourseExamDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", returnType.toString()));
 	}
@@ -60,8 +63,13 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 	@Override
 	public List<? extends ExamDTO> convertToDTO(List<Exam> sources, Class<? extends ExamDTO> returnType) {
 		if(returnType == DefaultExamDTO.class){
-			List<DefaultExamDTO> result = new ArrayList<DefaultExamDTO>();
+			List<DefaultExamDTO> result = new ArrayList<>();
 			for(Exam jpa : sources) result.add(convertToDefaultExamDTO(jpa));
+			return  result;
+		}
+		else if(returnType == CourseExamDTO.class){
+			List<CourseExamDTO> result = new ArrayList<>();
+			for(Exam jpa : sources) result.add(convertToCourseExamDTO(jpa));
 			return  result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -73,6 +81,7 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 		return convertToDefaultExamDTO(source);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DefaultExamDTO> convertToDTO(List<Exam> sources) {
 		return (List<DefaultExamDTO>) convertToDTO(sources, DefaultExamDTO.class);
@@ -84,6 +93,16 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 		DefaultExamDTO dto = new DefaultExamDTO(source.getId(), source.getDateTime(), courseConverter.convertToDTO(source.getCourse()),
 				source.getDescription(), source.getClassroom(), source.getPoints(), examPeriodConverter.convertToDTO(source.getExamPeriod()));
 
+		return dto;
+	}
+	
+	private CourseExamDTO convertToCourseExamDTO(Exam source) {
+		if (source == null) return null;
+		
+		CourseExamDTO dto = new CourseExamDTO(source.getId(), source.getDateTime(),
+				source.getDescription(), source.getClassroom(), source.getPoints(), 
+				examPeriodConverter.convertToDTO(source.getExamPeriod()));
+		
 		return dto;
 	}
 

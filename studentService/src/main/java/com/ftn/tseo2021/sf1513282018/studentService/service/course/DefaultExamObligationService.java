@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamObligationService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,27 +74,18 @@ public class DefaultExamObligationService implements ExamObligationService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public DefaultExamObligationDTO getByExamObligationTaking(DefaultExamObligationTakingDTO t) {
-		Optional<ExamObligation> examObligation = examObligationRepo.findByExamObligationTaking(examObligationTakingConverter
-				.convertToJPA(examObligationTakingService.getOne(t.getId())));
-
-		return examObligationConverter.convertToDTO(examObligation.get());
-	}
-
-	@Override
-	public List<DefaultExamObligationDTO> filterExamObligations(DefaultExamObligationDTO filterOptions, Pageable pageable) {
-		Page<ExamObligation> page = examObligationRepo.filterExamObligations(filterOptions.getCourse().getId(),
-				filterOptions.getDescription(), filterOptions.getExamObligationType().getId(), pageable);
-
-		return examObligationConverter.convertToDTO(page.getContent());
-	}
-
-	@Override
-	public List<DefaultExamObligationDTO> getByCourseId(int courseId, Pageable pageable) {
-		Page<ExamObligation> page = examObligationRepo.filterExamObligations(courseId, null, null, pageable);
-
-		return examObligationConverter.convertToDTO(page.getContent());
+	public List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<ExamObligation> page = examObligationRepo.findByCourse_Id(courseId, pageable);
+			return (List<CourseExamObligationDTO>) examObligationConverter.convertToDTO(page.getContent(), CourseExamObligationDTO.class);
+		}
+		else {
+			Page<ExamObligation> page = examObligationRepo.filterExamObligations(courseId,
+					filterOptions.getDescription(), filterOptions.getExamObligationType().getId(), pageable);
+			return (List<CourseExamObligationDTO>) examObligationConverter.convertToDTO(page.getContent(), CourseExamObligationDTO.class);
+		}
 	}
 
 	@Override

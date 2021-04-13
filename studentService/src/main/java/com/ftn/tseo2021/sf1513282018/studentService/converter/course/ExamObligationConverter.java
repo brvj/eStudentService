@@ -9,6 +9,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObli
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationTypeRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.ExamObligationTakingRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationTypeDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
@@ -58,10 +59,12 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 				"Converting from %s type is not supported", sources.get(0).getClass().toString()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ExamObligationDTO> T convertToDTO(ExamObligation source,
 			Class<? extends ExamObligationDTO> returnType) {
 		if(returnType == DefaultExamObligationDTO.class) return (T) convertToDefaultExamObligationDTO(source);
+		else if (returnType == CourseExamObligationDTO.class) return (T) convertToCourseExamObligationDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", returnType.toString()));
 	}
@@ -70,8 +73,13 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 	public List<? extends ExamObligationDTO> convertToDTO(List<ExamObligation> sources,
 			Class<? extends ExamObligationDTO> returnType) {
 		if(returnType == DefaultExamObligationDTO.class){
-			List<DefaultExamObligationDTO> result = new ArrayList<DefaultExamObligationDTO>();
+			List<DefaultExamObligationDTO> result = new ArrayList<>();
 			for(ExamObligation jpa : sources) result.add(convertToDefaultExamObligationDTO(jpa));
+			return  result;
+		}
+		else if(returnType == CourseExamObligationDTO.class){
+			List<CourseExamObligationDTO> result = new ArrayList<>();
+			for(ExamObligation jpa : sources) result.add(convertToCourseExamObligationDTO(jpa));
 			return  result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -83,6 +91,7 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 		return convertToDefaultExamObligationDTO(source);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DefaultExamObligationDTO> convertToDTO(List<ExamObligation> sources) {
 		return (List<DefaultExamObligationDTO>) convertToDTO(sources, DefaultExamObligationDTO.class);
@@ -95,6 +104,15 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 				examObligationTypeConverter.convertToDTO(source.getExamObligationType()),
 				courseConverter.convertToDTO(source.getCourse()));
 
+		return dto;
+	}
+	
+	private CourseExamObligationDTO convertToCourseExamObligationDTO(ExamObligation source) {
+		if (source == null) return null;
+		
+		CourseExamObligationDTO dto = new CourseExamObligationDTO(source.getId(), source.getPoints(), source.getDescription(),
+				examObligationTypeConverter.convertToDTO(source.getExamObligationType()));
+		
 		return dto;
 	}
 

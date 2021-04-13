@@ -10,11 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
-
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,19 +79,10 @@ public class StudentController {
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
 	}
 	
-	@GetMapping(value = "/institution/{id}", produces = "application/json")
-	public ResponseEntity<List<DefaultStudentDTO>> getStudentsByInstitutionId(@PathVariable("id") int id){
-		try{
-			List<DefaultStudentDTO> students = studentService.getByInstitutionId(id, Pageable.unpaged());
-			return new ResponseEntity<>(students, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
-	}
-	
 	@GetMapping(value = "/{id}/enrollments", produces = "application/json")
-	public ResponseEntity<List<DefaultEnrollmentDTO>> getStudentEnrollments(@PathVariable("id") int id) {
+	public ResponseEntity<List<StudentEnrollmentDTO>> getStudentEnrollments(@PathVariable("id") int id) {
 		try {
-			List<DefaultEnrollmentDTO> enrollments = studentService.getStudentEnrollments(id, Pageable.unpaged());
+			List<StudentEnrollmentDTO> enrollments = studentService.getStudentEnrollments(id, Pageable.unpaged());
 			
 			return new ResponseEntity<>(enrollments, HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
@@ -101,9 +91,9 @@ public class StudentController {
 	}
 	
 	@GetMapping(value = "/{id}/documents", produces = "application/json")
-	public ResponseEntity<List<DefaultDocumentDTO>> getStudentDocuments(@PathVariable("id") int id) {
+	public ResponseEntity<List<StudentDocumentDTO>> getStudentDocuments(@PathVariable("id") int id) {
 		try {
-			List<DefaultDocumentDTO> documents = studentService.getStudentDocuments(id, Pageable.unpaged());
+			List<StudentDocumentDTO> documents = studentService.getStudentDocuments(id, Pageable.unpaged());
 			
 			return new ResponseEntity<>(documents, HttpStatus.OK);
 		} catch (EntityNotFoundException e) {

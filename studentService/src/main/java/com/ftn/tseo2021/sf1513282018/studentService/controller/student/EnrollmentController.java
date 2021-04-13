@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamObligationTakingDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamObligationTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamTakingDTO;
 
 @RestController
 @RequestMapping(value = "api/enrollments")
@@ -70,9 +70,9 @@ public class EnrollmentController {
 	}
 	
 	@GetMapping(value = "/{id}/examObligationTakings", produces = "application/json")
-	public ResponseEntity<List<DefaultExamObligationTakingDTO>> getEnrollmentExamObligationTakings(@PathVariable("id") int id) {
+	public ResponseEntity<List<EnrollmentExamObligationTakingDTO>> getEnrollmentExamObligationTakings(@PathVariable("id") int id) {
 		try {
-			List<DefaultExamObligationTakingDTO> takings = enrollmentService.getEnrollmentExamObligationTakings(id, Pageable.unpaged());
+			List<EnrollmentExamObligationTakingDTO> takings = enrollmentService.getEnrollmentExamObligationTakings(id, Pageable.unpaged());
 			
 			return new ResponseEntity<>(takings, HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
@@ -81,9 +81,9 @@ public class EnrollmentController {
 	}
 	
 	@GetMapping(value = "/{id}/examTakings", produces = "application/json")
-	public ResponseEntity<List<DefaultExamTakingDTO>> getEnrollmentExamTakings(@PathVariable("id") int id) {
+	public ResponseEntity<List<EnrollmentExamTakingDTO>> getEnrollmentExamTakings(@PathVariable("id") int id) {
 		try {
-			List<DefaultExamTakingDTO> takings = enrollmentService.getEnrollmentExamTakings(id, Pageable.unpaged());
+			List<EnrollmentExamTakingDTO> takings = enrollmentService.getEnrollmentExamTakings(id, Pageable.unpaged());
 			
 			return new ResponseEntity<>(takings, HttpStatus.OK);
 		} catch (EntityNotFoundException e) {

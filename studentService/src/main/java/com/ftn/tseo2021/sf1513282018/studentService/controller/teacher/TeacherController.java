@@ -1,7 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeachingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -68,19 +69,10 @@ public class TeacherController {
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
 	}
 
-	@GetMapping(value = "/institution/{id}", produces = "application/json")
-	public ResponseEntity<List<DefaultTeacherDTO>> getTeachersByInstitutionId(@PathVariable("id") int id){
-		try{
-			List<DefaultTeacherDTO> teachers = teacherService.getByInstitutionId(id, Pageable.unpaged());
-			return new ResponseEntity<>(teachers, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
-	}
-
 	@GetMapping(value = "/{id}/teachings", produces = "application/json")
-	public ResponseEntity<List<DefaultTeachingDTO>> getTeacherTeachings(@PathVariable("id") int id){
+	public ResponseEntity<List<TeacherTeachingDTO>> getTeacherTeachings(@PathVariable("id") int id){
 		try{
-			List<DefaultTeachingDTO> teachings = teacherService.getTeacherTeachings(id, Pageable.unpaged());
+			List<TeacherTeachingDTO> teachings = teacherService.getTeacherTeachings(id, Pageable.unpaged());
 			return new ResponseEntity<>(teachings, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}

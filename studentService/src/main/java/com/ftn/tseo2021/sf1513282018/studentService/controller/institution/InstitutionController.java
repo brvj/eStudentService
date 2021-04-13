@@ -1,11 +1,12 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.institution;
 
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -64,45 +65,45 @@ public class InstitutionController {
 	}
 
 	@GetMapping(value = "/{id}/users", produces = "application/json")
-	public ResponseEntity<List<DefaultUserDTO>> getInstitutionUsers(@PathVariable("id") int id){
+	public ResponseEntity<List<InstitutionUserDTO>> getInstitutionUsers(@PathVariable("id") int id){
 		try{
-			List<DefaultUserDTO> users = institutionService.getInstitutionUsers(id, Pageable.unpaged());
+			List<InstitutionUserDTO> users = institutionService.getInstitutionUsers(id, Pageable.unpaged());
 			return new ResponseEntity<>(users, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){ return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
 	}
 
 	@GetMapping(value = "/{id}/teachers", produces = "application/json")
-	public ResponseEntity<List<DefaultTeacherDTO>> getInstitutionTeachers(@PathVariable("id") int id){
+	public ResponseEntity<List<InstitutionTeacherDTO>> getInstitutionTeachers(@PathVariable("id") int id){
 		try{
-			List<DefaultTeacherDTO> teachers = institutionService.getInstitutionTeachers(id, Pageable.unpaged());
+			List<InstitutionTeacherDTO> teachers = institutionService.getInstitutionTeachers(id, Pageable.unpaged());
 			return new ResponseEntity<>(teachers, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
 	}
 
 	@GetMapping(value = "/{id}/students", produces = "application/json")
-	public ResponseEntity<List<DefaultStudentDTO>> getInstitutionStudents(@PathVariable("id") int id){
+	public ResponseEntity<List<InstitutionStudentDTO>> getInstitutionStudents(@PathVariable("id") int id){
 		try{
-			List<DefaultStudentDTO> students = institutionService.getInstitutionStudents(id, Pageable.unpaged());
+			List<InstitutionStudentDTO> students = institutionService.getInstitutionStudents(id, Pageable.unpaged());
 			return new ResponseEntity<>(students, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){ return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
 	}
 
 	@GetMapping(value = "/{id}/courses", produces = "application/json")
-	public ResponseEntity<List<DefaultCourseDTO>> getInstitutionCourses(@PathVariable("id") int id){
+	public ResponseEntity<List<InstitutionCourseDTO>> getInstitutionCourses(@PathVariable("id") int id){
 		try{
-			List<DefaultCourseDTO> courses = institutionService.getInstitutionCourses(id, Pageable.unpaged());
+			List<InstitutionCourseDTO> courses = institutionService.getInstitutionCourses(id, Pageable.unpaged());
 			return new ResponseEntity<>(courses, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){ return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
 	}
 
 	@GetMapping(value = "/{id}/examPeriods", produces = "application/json")
-	public ResponseEntity<List<DefaultExamPeriodDTO>> getInstitutionExamPeriods(@PathVariable("id") int id){
+	public ResponseEntity<List<InstitutionExamPeriodDTO>> getInstitutionExamPeriods(@PathVariable("id") int id){
 		try{
-			List<DefaultExamPeriodDTO> examPeriods = institutionService.getInstitutionExamPeriods(id, Pageable.unpaged());
+			List<InstitutionExamPeriodDTO> examPeriods = institutionService.getInstitutionExamPeriods(id, Pageable.unpaged());
 			return new ResponseEntity<>(examPeriods, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}

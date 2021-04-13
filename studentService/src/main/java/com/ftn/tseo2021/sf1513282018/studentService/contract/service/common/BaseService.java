@@ -1,7 +1,5 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.common;
 
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 
 public interface BaseService<T, ID> {

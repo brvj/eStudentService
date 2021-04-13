@@ -3,8 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.controller.student;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
-
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
 
 import java.util.List;
 
@@ -81,9 +80,9 @@ public class FinancialCardController {
 	}
 	
 	@GetMapping(value = "/{id}/transactions", produces = "application/json")
-	public ResponseEntity<List<DefaultTransactionDTO>> getFinancialCardTransactions(@PathVariable("id") int id){
+	public ResponseEntity<List<FinancialCardTransactionDTO>> getFinancialCardTransactions(@PathVariable("id") int id){
 		try{
-			List<DefaultTransactionDTO> transactions = cardService.getFinancialCardTransactions(id, Pageable.unpaged());
+			List<FinancialCardTransactionDTO> transactions = cardService.getFinancialCardTransactions(id, Pageable.unpaged());
 			return new ResponseEntity<>(transactions, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}

@@ -1,11 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.student;
 
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.DocumentService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
-
 
 @RestController
 @RequestMapping(value = "api/documents")
@@ -54,7 +50,7 @@ public class DocumentController {
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteEnrollment(@PathVariable("id") int id) {
+	public ResponseEntity<Void> deleteDocument(@PathVariable("id") int id) {
 		if (documentService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -67,12 +63,4 @@ public class DocumentController {
 		return new ResponseEntity<>(document, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/student/{id}", produces = "application/json")
-	public ResponseEntity<List<DefaultDocumentDTO>> getDocumentsByStudentId(@PathVariable("id") int id){
-		try{
-			List<DefaultDocumentDTO> documents = documentService.getByStudentId(id, Pageable.unpaged());
-			return new ResponseEntity<>(documents, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
-	}
 }

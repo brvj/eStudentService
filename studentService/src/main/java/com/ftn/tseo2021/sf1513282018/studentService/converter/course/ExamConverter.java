@@ -10,6 +10,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamPeriodExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 	public <T extends ExamDTO> T convertToDTO(Exam source, Class<? extends ExamDTO> returnType) {
 		if(returnType == DefaultExamDTO.class) return (T) convertToDefaultExamDTO(source);
 		else if (returnType == CourseExamDTO.class) return (T) convertToCourseExamDTO(source);
+		else if (returnType == ExamPeriodExamDTO.class) return (T) convertToExamPeriodExamDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", returnType.toString()));
 	}
@@ -70,6 +72,11 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 		else if(returnType == CourseExamDTO.class){
 			List<CourseExamDTO> result = new ArrayList<>();
 			for(Exam jpa : sources) result.add(convertToCourseExamDTO(jpa));
+			return  result;
+		}
+		else if(returnType == ExamPeriodExamDTO.class){
+			List<ExamPeriodExamDTO> result = new ArrayList<>();
+			for(Exam jpa : sources) result.add(convertToExamPeriodExamDTO(jpa));
 			return  result;
 		}
 		else throw new IllegalArgumentException(String.format(
@@ -102,6 +109,16 @@ public class ExamConverter implements DtoConverter<Exam, ExamDTO, DefaultExamDTO
 		CourseExamDTO dto = new CourseExamDTO(source.getId(), source.getDateTime(),
 				source.getDescription(), source.getClassroom(), source.getPoints(), 
 				examPeriodConverter.convertToDTO(source.getExamPeriod()));
+		
+		return dto;
+	}
+	
+	private ExamPeriodExamDTO convertToExamPeriodExamDTO(Exam source) {
+		if (source == null) return null;
+		
+		ExamPeriodExamDTO dto = new ExamPeriodExamDTO(source.getId(), source.getDateTime(),
+				courseConverter.convertToDTO(source.getCourse()), source.getDescription(), 
+						source.getClassroom(), source.getPoints());
 		
 		return dto;
 	}

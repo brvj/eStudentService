@@ -13,6 +13,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.E
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamPeriodExamDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -84,16 +86,24 @@ public class DefaultExamService implements ExamService {
 		}
 		else {
 			Page<Exam> page = examRepo.filterExamsByCourse(courseId, filterOptions.getDescription(),
-					filterOptions.getClassroom(), filterOptions.getDateTime(), filterOptions.getDateTime(), pageable);
+					filterOptions.getClassroom(), null, null, pageable);
 			return (List<CourseExamDTO>) examConverter.convertToDTO(page.getContent(), CourseExamDTO.class);
 		}
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<DefaultExamDTO> getByExamPeriodId(int examPeriodId, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ExamPeriodExamDTO> filterExamsByExamPeriod(int examPeriodId, Pageable pageable, ExamPeriodExamDTO filterOptions) {
+		if (filterOptions == null) {
+			Page<Exam> page = examRepo.findByExamPeriod_Id(examPeriodId, pageable);
+			return (List<ExamPeriodExamDTO>) examConverter.convertToDTO(page.getContent(), ExamPeriodExamDTO.class);
+		}
+		else {
+			Page<Exam> page = examRepo.filterExamsByExamPeriod(examPeriodId, filterOptions.getDescription(), 
+					filterOptions.getClassroom(), null, null, pageable);
+			return (List<ExamPeriodExamDTO>) examConverter.convertToDTO(page.getContent(), ExamPeriodExamDTO.class);
+		}
 	}
 
 	@Override

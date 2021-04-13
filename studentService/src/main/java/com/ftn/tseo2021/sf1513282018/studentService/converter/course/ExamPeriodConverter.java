@@ -1,7 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.course;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
@@ -27,14 +26,14 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 	DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 
 	@Override
-	public ExamPeriod convertToJPA(ExamPeriodDTO source) {
+	public ExamPeriod convertToJPA(ExamPeriodDTO source) throws IllegalArgumentException {
 		if(source instanceof DefaultExamPeriodDTO) return convertToJPA((DefaultExamPeriodDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<ExamPeriod> convertToJPA(List<? extends ExamPeriodDTO> sources) {
+	public List<ExamPeriod> convertToJPA(List<? extends ExamPeriodDTO> sources) throws IllegalArgumentException {
 		List<ExamPeriod> result = new ArrayList<ExamPeriod>();
 
 		if(sources.get(0) instanceof DefaultExamPeriodDTO){
@@ -47,7 +46,7 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends ExamPeriodDTO> T convertToDTO(ExamPeriod source, Class<? extends ExamPeriodDTO> returnType) {
+	public <T extends ExamPeriodDTO> T convertToDTO(ExamPeriod source, Class<? extends ExamPeriodDTO> returnType) throws IllegalArgumentException {
 		if(returnType == DefaultExamPeriodDTO.class) return (T) convertToDefaultExamPeriodDTO(source);
 		else if (returnType == InstitutionExamPeriodDTO.class) return (T) convertToInstitutionExamPeriodDTO(source);
 		else throw new IllegalArgumentException(String.format(
@@ -56,7 +55,7 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 
 	@Override
 	public List<? extends ExamPeriodDTO> convertToDTO(List<ExamPeriod> sources,
-			Class<? extends ExamPeriodDTO> returnType) {
+			Class<? extends ExamPeriodDTO> returnType) throws IllegalArgumentException {
 		if(returnType == DefaultExamPeriodDTO.class){
 			List<DefaultExamPeriodDTO> result = new ArrayList<>();
 			for(ExamPeriod jpa : sources) result.add(convertToDefaultExamPeriodDTO(jpa));
@@ -76,6 +75,7 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 		return convertToDefaultExamPeriodDTO(source);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DefaultExamPeriodDTO> convertToDTO(List<ExamPeriod> sources) {
 		return (List<DefaultExamPeriodDTO>) convertToDTO(sources, DefaultExamPeriodDTO.class);
@@ -98,14 +98,19 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 		return dto;
 	}
 
-	private ExamPeriod convertToJPA(DefaultExamPeriodDTO source){
+	private ExamPeriod convertToJPA(DefaultExamPeriodDTO source) throws IllegalArgumentException {
 		if(source == null) return null;
 
-		if(!institutionRepository.existsById(source.getInstitution().getId()))
+		if(source.getInstitution() == null || 
+				!institutionRepository.existsById(source.getInstitution().getId()))
 			throw new IllegalArgumentException();
 
-		ExamPeriod examPeriod = new ExamPeriod(source.getId(), source.getName(), source.getStartDate(), source.getEndDate(),
-				institutionRepository.findById(source.getInstitution().getId()).get(), new HashSet<>());
+		ExamPeriod examPeriod = new ExamPeriod();
+//		examPeriod.setId(source.getId());
+		examPeriod.setName(source.getName());
+		examPeriod.setStartDate(source.getStartDate());
+		examPeriod.setEndDate(source.getEndDate());
+		examPeriod.setInstitution(institutionRepository.getOne(source.getInstitution().getId()));
 
 		return examPeriod;
 	}

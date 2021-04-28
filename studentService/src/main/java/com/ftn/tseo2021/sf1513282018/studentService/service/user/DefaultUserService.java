@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 
 @Service
-public class DefaultUserService implements UserService, UserDetailsService {
+public class DefaultUserService implements UserService {
 	
 	@Autowired
 	UserRepository userRepo;

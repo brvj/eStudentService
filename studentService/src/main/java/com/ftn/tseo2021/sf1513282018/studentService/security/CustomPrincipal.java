@@ -98,6 +98,14 @@ public class CustomPrincipal implements UserDetails {
 		return this.enabled;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (GrantedAuthority auth : this.authorities) sb.append(String.format("%s, ", auth.getAuthority()));
+		sb.delete(sb.length()-2, sb.length());
+		return String.format("id: %d\nusername: %s\ninstitutionId: %d\nauthorities: %s", this.id, this.username, this.institutionId, sb.toString());
+	}
+	
 	private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
 		// Ensure array iteration order is predictable (as per
@@ -129,5 +137,5 @@ public class CustomPrincipal implements UserDetails {
 		}
 
 	}
-
+	
 }

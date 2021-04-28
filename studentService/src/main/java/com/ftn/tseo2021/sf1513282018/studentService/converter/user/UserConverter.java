@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
@@ -31,6 +32,9 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	
 	@Autowired
 	private DtoConverter<Authority, AuthorityDTO, DefaultAuthorityDTO> authorityConverter;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public User convertToJPA(UserDTO source) throws IllegalArgumentException {
@@ -125,7 +129,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 		User user = new User();
 //		user.setId(source.getId());
 		user.setUsername(source.getUsername());
-		user.setPassword(source.getPassword());
+		user.setPassword(passwordEncoder.encode(source.getPassword()));
 		user.setFirstName(source.getFirstName());
 		user.setLastName(source.getLastName());
 		user.setEmail(source.getEmail());

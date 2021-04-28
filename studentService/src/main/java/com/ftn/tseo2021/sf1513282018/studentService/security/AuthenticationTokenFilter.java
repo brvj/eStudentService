@@ -22,7 +22,7 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
 	private TokenUtils tokenUtils;
 	
 	@Autowired
-	UserDetailsService userDetailsService;
+	private UserDetailsService userDetailsService;
 	
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

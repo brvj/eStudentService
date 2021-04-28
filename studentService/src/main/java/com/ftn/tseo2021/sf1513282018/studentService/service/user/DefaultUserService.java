@@ -26,6 +26,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUs
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 
 @Service
 public class DefaultUserService implements UserService, UserDetailsService {
@@ -119,7 +120,7 @@ public class DefaultUserService implements UserService, UserDetailsService {
 		for (UserAuthority ua : user.getUserAuthorities())
 			grantedAuthorities.add(new SimpleGrantedAuthority(ua.getAuthority().getName()));
 		
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
+		return new CustomPrincipal(user.getId(), user.getUsername(), user.getPassword(), grantedAuthorities);
 	}
 
 }

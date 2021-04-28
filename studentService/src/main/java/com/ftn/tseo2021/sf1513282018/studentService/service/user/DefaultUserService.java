@@ -120,7 +120,7 @@ public class DefaultUserService implements UserService, UserDetailsService {
 		for (UserAuthority ua : user.getUserAuthorities())
 			grantedAuthorities.add(new SimpleGrantedAuthority(ua.getAuthority().getName()));
 		
-		return new CustomPrincipal(user.getId(), user.getUsername(), user.getPassword(), grantedAuthorities);
+		return new CustomPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getInstitution().getId(), grantedAuthorities);
 	}
 
 }

@@ -22,6 +22,8 @@ public class CustomPrincipal implements UserDetails {
 	private final Integer id;
 
 	private final String username;
+	
+	private final Integer institutionId;
 
 	private final Set<GrantedAuthority> authorities;
 
@@ -33,18 +35,19 @@ public class CustomPrincipal implements UserDetails {
 
 	private final boolean enabled;
 	
-	public CustomPrincipal(Integer id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
-		this(id, username, password, true, true, true, true, authorities);
+	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, Collection<? extends GrantedAuthority> authorities) {
+		this(id, username, password, institutionId, true, true, true, true, authorities);
 	}
 	
-	public CustomPrincipal(Integer id, String username, String password, boolean enabled, boolean accountNonExpired,
+	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, boolean enabled, boolean accountNonExpired,
 			boolean credentialsNonExpired, boolean accountNonLocked,
 			Collection<? extends GrantedAuthority> authorities) {
-		Assert.isTrue(id != null && username != null && !"".equals(username) && password != null,
+		Assert.isTrue(id != null && institutionId != null && username != null && !"".equals(username) && password != null,
 				"Cannot pass null or empty values to constructor");
 		this.id = id;
 		this.username = username;
 		this.password = password;
+		this.institutionId = institutionId;
 		this.enabled = enabled;
 		this.accountNonExpired = accountNonExpired;
 		this.credentialsNonExpired = credentialsNonExpired;
@@ -69,6 +72,10 @@ public class CustomPrincipal implements UserDetails {
 	@Override
 	public String getUsername() {
 		return this.username;
+	}
+	
+	public Integer getInstitutionId() {
+		return this.institutionId;
 	}
 
 	@Override

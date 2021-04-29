@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultExamTakingDTO;
 
 @RestController
@@ -57,10 +58,15 @@ public class ExamTakingController {
 	
 	@GetMapping(value = "/{id", produces = "application/json")
 	public ResponseEntity<DefaultExamTakingDTO> getExamTakingById(@PathVariable("id") int id) {
-		DefaultExamTakingDTO taking = examTakingService.getOne(id);
-		
-		if (taking == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(taking, HttpStatus.OK);
+		DefaultExamTakingDTO taking;
+		try {
+			taking = examTakingService.getOne(id);
+			
+			if (taking == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(taking, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 }

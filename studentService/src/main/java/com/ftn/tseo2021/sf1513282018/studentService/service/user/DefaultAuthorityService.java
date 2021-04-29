@@ -28,11 +28,6 @@ public class DefaultAuthorityService implements AuthorityService {
 	UserAuthorityService userAuthorityService;
 	
 	@Override
-	public boolean existsById(Integer id) {
-		return authorityRepo.existsById(id);
-	}
-	
-	@Override
 	public DefaultAuthorityDTO getOne(Integer id) {
 		Optional<Authority> a = authorityRepo.findById(id);
 		return authorityConverter.convertToDTO(a.orElse(null));

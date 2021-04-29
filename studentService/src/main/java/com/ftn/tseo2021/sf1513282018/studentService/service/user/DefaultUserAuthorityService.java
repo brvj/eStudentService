@@ -26,11 +26,6 @@ public class DefaultUserAuthorityService implements UserAuthorityService {
 	
 	@Autowired
 	DtoConverter<UserAuthority, UserAuthorityDTO, DefaultUserAuthorityDTO> userAuthorityConverter;
-	
-	@Override
-	public boolean existsById(Integer id) {
-		return userAuthorityRepo.existsById(id);
-	}
 
 	@Override
 	public DefaultUserAuthorityDTO getOne(Integer id) {

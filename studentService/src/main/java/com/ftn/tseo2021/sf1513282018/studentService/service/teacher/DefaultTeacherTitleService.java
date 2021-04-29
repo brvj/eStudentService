@@ -21,11 +21,6 @@ public class DefaultTeacherTitleService implements TeacherTitleService {
 
 	@Autowired
 	private DtoConverter<TeacherTitle, TeacherTitleDTO, DefaultTeacherTitleDTO> teacherTitleConverter;
-	
-	@Override
-	public boolean existsById(Integer id) {
-		return teacherTitleRepo.existsById(id);
-	}
 
 	@Override
 	public DefaultTeacherTitleDTO getOne(Integer id) {

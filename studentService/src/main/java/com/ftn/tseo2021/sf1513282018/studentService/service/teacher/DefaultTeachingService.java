@@ -29,11 +29,6 @@ public class DefaultTeachingService implements TeachingService {
 
 	@Autowired
 	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
-	
-	@Override
-	public boolean existsById(Integer id) {
-		return teachingRepo.existsById(id);
-	}
 
 	@Override
 	public DefaultTeachingDTO getOne(Integer id) {

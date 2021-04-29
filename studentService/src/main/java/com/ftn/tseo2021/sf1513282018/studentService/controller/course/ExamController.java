@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -49,9 +50,14 @@ public class ExamController {
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultExamDTO> getExamById(@PathVariable("id") int id){
-		DefaultExamDTO examDTO = examService.getOne(id);
-
-		if(examDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(HttpStatus.OK);
+		DefaultExamDTO examDTO;
+		try {
+			examDTO = examService.getOne(id);
+			
+			if(examDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(examDTO, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 }

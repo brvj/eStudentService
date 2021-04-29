@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamTakingDTO;
@@ -63,10 +64,15 @@ public class EnrollmentController {
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultEnrollmentDTO> getEnrollmentById(@PathVariable("id") int id) {
-		DefaultEnrollmentDTO enrollment = enrollmentService.getOne(id);
-		
-		if (enrollment == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(enrollment, HttpStatus.OK);
+		DefaultEnrollmentDTO enrollment;
+		try {
+			enrollment = enrollmentService.getOne(id);
+			
+			if (enrollment == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(enrollment, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	@GetMapping(value = "/{id}/examObligationTakings", produces = "application/json")

@@ -28,11 +28,6 @@ public class DefaultTransactionService implements TransactionService {
 	private DtoConverter<Transaction, TransactionDTO, DefaultTransactionDTO> transactionConverter;
 	
 	@Override
-	public boolean existsById(Integer id) {
-		return transactionRepo.existsById(id);
-	}	
-	
-	@Override
 	public DefaultTransactionDTO getOne(Integer id) {
 		Optional<Transaction> s = transactionRepo.findById(id);
 		return transactionConverter.convertToDTO(s.orElse(null));

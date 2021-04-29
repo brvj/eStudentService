@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 
 @RestController
@@ -57,10 +58,15 @@ public class TransactionController {
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultTransactionDTO> getTransactionById(@PathVariable("id") int id) {
-		DefaultTransactionDTO transaction = transactionService.getOne(id);
-		
-		if (transaction == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(transaction, HttpStatus.OK);
+		DefaultTransactionDTO transaction;
+		try {
+			transaction = transactionService.getOne(id);
+			
+			if (transaction == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(transaction, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 }

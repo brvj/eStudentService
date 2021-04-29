@@ -34,11 +34,6 @@ public class DefaultExamService implements ExamService {
 	private ExamTakingService examTakingService;
 
 	@Override
-	public boolean existsById(Integer id) {
-		return examRepo.existsById(id);
-	}
-
-	@Override
 	public DefaultExamDTO getOne(Integer id) {
 		Optional<Exam> exam = examRepo.findById(id);
 		return examConverter.convertToDTO(exam.orElse(null));

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.DocumentService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
 
 @RestController
@@ -57,10 +58,15 @@ public class DocumentController {
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultDocumentDTO> getDocumentById(@PathVariable("id") int id) {
-		DefaultDocumentDTO document = documentService.getOne(id);
-		
-		if (document == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(document, HttpStatus.OK);
+		DefaultDocumentDTO document;
+		try {
+			document = documentService.getOne(id);
+			
+			if (document == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(document, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 }

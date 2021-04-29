@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -48,10 +49,15 @@ public class TeachingController {
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultTeachingDTO> getTeachingById(@PathVariable("id") int id){
-		DefaultTeachingDTO teachingDTO = teachingService.getOne(id);
-
-		if(teachingDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(teachingDTO, HttpStatus.OK);
+		DefaultTeachingDTO teachingDTO;
+		try {
+			teachingDTO = teachingService.getOne(id);
+			
+			if(teachingDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(teachingDTO, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 }

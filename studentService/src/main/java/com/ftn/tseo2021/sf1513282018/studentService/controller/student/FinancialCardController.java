@@ -1,7 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.student;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
-
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
 
@@ -64,10 +64,15 @@ public class FinancialCardController {
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultFinancialCardDTO> getFinancialCardById(@PathVariable("id") int id) {
-		DefaultFinancialCardDTO financialCard = cardService.getOne(id);
-		
-		if (financialCard == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(financialCard, HttpStatus.OK);
+		DefaultFinancialCardDTO financialCard;
+		try {
+			financialCard = cardService.getOne(id);
+			
+			if (financialCard == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(financialCard, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	@GetMapping(value = "/student/{id}", produces = "application/json")

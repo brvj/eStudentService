@@ -2,14 +2,18 @@ package com.ftn.tseo2021.sf1513282018.studentService.controller.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -54,10 +58,14 @@ public class TeacherController {
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultTeacherDTO> getTeacherById(@PathVariable("id") int id){
-		DefaultTeacherDTO teacherDTO = teacherService.getOne(id);
-
-		if(teacherDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
+		DefaultTeacherDTO teacherDTO;
+		try {
+			teacherDTO = teacherService.getOne(id);
+			if(teacherDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/user/{id}", produces = "application/json")
@@ -76,5 +84,10 @@ public class TeacherController {
 			return new ResponseEntity<>(teachings, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+	}
+	
+	@GetMapping
+	public ModelAndView getInstitutionTeachers(@CurrentPrincipal CustomPrincipal principal) {
+		return new ModelAndView(String.format("forward:/api/institutions/%d/teachers", principal.getInstitutionId()));
 	}
 }

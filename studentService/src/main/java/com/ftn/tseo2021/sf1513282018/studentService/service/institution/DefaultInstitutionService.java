@@ -7,8 +7,15 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Exam
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeSuperadmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
@@ -31,31 +38,45 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultInstitutionService implements InstitutionService {
 
+	@Autowired
 	private InstitutionRepository institutionRepo;
 
+	@Autowired
 	private UserService userService;
 
+	@Autowired
 	private StudentService studentService;
 
+	@Autowired
 	private TeacherService teacherService;
 
+	@Autowired
 	private CourseService courseService;
 
+	@Autowired
 	private ExamPeriodService examPeriodService;
 
+	@Autowired
 	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
-
-	@Override
-	public boolean existsById(Integer id) {
-		return institutionRepo.existsById(id);
+	
+	@Autowired
+	private PrincipalHolder principalHolder;
+	
+	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
+			throw new ForbiddenAccessException();
 	}
 	
+	@AuthorizeAny
 	@Override
-	public DefaultInstitutionDTO getOne(Integer id) {
+	public DefaultInstitutionDTO getOne(Integer id) throws ForbiddenAccessException {
+		authorize(id);
+		
 		Optional<Institution> institution = institutionRepo.findById(id);
 		return institutionConverter.convertToDTO(institution.orElse(null));
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public Integer create(DefaultInstitutionDTO dto) throws IllegalArgumentException {
 		Institution institution = institutionConverter.convertToJPA(dto);
@@ -65,6 +86,7 @@ public class DefaultInstitutionService implements InstitutionService {
 		return institution.getId();
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public void update(Integer id, DefaultInstitutionDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!institutionRepo.existsById(id)) throw new EntityNotFoundException();
@@ -79,6 +101,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public boolean delete(Integer id) {
 		if(!institutionRepo.existsById(id)) return false;
@@ -86,10 +109,12 @@ public class DefaultInstitutionService implements InstitutionService {
 		institutionRepo.deleteById(id);
 		return true;
 	}
-
+	
+//	No need to explicitly secure methods below since they completely depend on secured methods of another services
+	
 	@Override
 	public List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable)
-			throws EntityNotFoundException {
+			throws EntityNotFoundException, ForbiddenAccessException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionUserDTO> users = userService.filterUsers(institutionId, pageable, null);
@@ -99,7 +124,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable)
-			throws EntityNotFoundException {
+			throws EntityNotFoundException, ForbiddenAccessException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionTeacherDTO> teachers = teacherService.filterTeachers(institutionId, pageable, null);
@@ -109,7 +134,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable)
-			throws EntityNotFoundException {
+			throws EntityNotFoundException, ForbiddenAccessException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionStudentDTO> students = studentService.filterStudents(institutionId, pageable, null);
@@ -119,7 +144,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable)
-			throws EntityNotFoundException {
+			throws EntityNotFoundException, ForbiddenAccessException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionCourseDTO> courses = courseService.filterCourses(institutionId, pageable, null);
@@ -129,7 +154,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable)
-			throws EntityNotFoundException {
+			throws EntityNotFoundException, ForbiddenAccessException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionExamPeriodDTO> examPeriods = examPeriodService.filterExamPeriods(institutionId, pageable, null);

@@ -14,9 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
+
 import java.util.List;
 
 @RestController
@@ -24,8 +26,8 @@ import java.util.List;
 public class InstitutionController {
 	
 	@Autowired
-	InstitutionService institutionService;
-
+	private InstitutionService institutionService;
+	
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createInstitution(@NotNull @RequestBody DefaultInstitutionDTO institutionDTO){
 		try{
@@ -58,19 +60,25 @@ public class InstitutionController {
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultInstitutionDTO> getInstitutionById(@PathVariable("id") int id){
-		DefaultInstitutionDTO institutionDTO = institutionService.getOne(id);
-
-		if (institutionDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(institutionDTO, HttpStatus.OK);
+		DefaultInstitutionDTO institutionDTO;
+		try {
+			institutionDTO = institutionService.getOne(id);
+			if (institutionDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(institutionDTO, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
-
+	
 	@GetMapping(value = "/{id}/users", produces = "application/json")
-	public ResponseEntity<List<InstitutionUserDTO>> getInstitutionUsers(@PathVariable("id") int id){
+	public ResponseEntity<List<InstitutionUserDTO>> getInstitutionUsers(@PathVariable("id") int id) {
 		try{
 			List<InstitutionUserDTO> users = institutionService.getInstitutionUsers(id, Pageable.unpaged());
 			return new ResponseEntity<>(users, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){ return new ResponseEntity<>(HttpStatus.NOT_FOUND); }
+		}
+		catch(EntityNotFoundException | ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+		} 
 	}
 
 	@GetMapping(value = "/{id}/teachers", produces = "application/json")
@@ -79,7 +87,10 @@ public class InstitutionController {
 			List<InstitutionTeacherDTO> teachers = institutionService.getInstitutionTeachers(id, Pageable.unpaged());
 			return new ResponseEntity<>(teachers, HttpStatus.OK);
 
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		}
+		catch(EntityNotFoundException | ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}/students", produces = "application/json")
@@ -88,7 +99,10 @@ public class InstitutionController {
 			List<InstitutionStudentDTO> students = institutionService.getInstitutionStudents(id, Pageable.unpaged());
 			return new ResponseEntity<>(students, HttpStatus.OK);
 
-		}catch(EntityNotFoundException e){ return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		}
+		catch(EntityNotFoundException | ForbiddenAccessException e) { 
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}/courses", produces = "application/json")
@@ -97,7 +111,10 @@ public class InstitutionController {
 			List<InstitutionCourseDTO> courses = institutionService.getInstitutionCourses(id, Pageable.unpaged());
 			return new ResponseEntity<>(courses, HttpStatus.OK);
 
-		}catch(EntityNotFoundException e){ return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		}
+		catch(EntityNotFoundException | ForbiddenAccessException e) { 
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}/examPeriods", produces = "application/json")
@@ -106,6 +123,9 @@ public class InstitutionController {
 			List<InstitutionExamPeriodDTO> examPeriods = institutionService.getInstitutionExamPeriods(id, Pageable.unpaged());
 			return new ResponseEntity<>(examPeriods, HttpStatus.OK);
 
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		}
+		catch(EntityNotFoundException | ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 }

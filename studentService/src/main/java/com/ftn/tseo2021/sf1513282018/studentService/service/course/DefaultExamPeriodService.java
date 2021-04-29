@@ -3,7 +3,11 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamPeriodRepository;
@@ -31,10 +35,13 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@Autowired
 	private ExamService examService;
-
-	@Override
-	public boolean existsById(Integer id) {
-		return examPeriodRepo.existsById(id);
+	
+	@Autowired
+	private PrincipalHolder principalHolder;
+	
+	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
+			throw new ForbiddenAccessException();
 	}
 
 	@Override
@@ -74,8 +81,12 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	}
 
 	@SuppressWarnings("unchecked")
+	@AuthorizeAny
 	@Override
-	public List<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions) {
+	public List<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions) 
+			throws ForbiddenAccessException {
+		authorize(institutionId);
+		
 		if (filterOptions == null) {
 			Page<ExamPeriod> page = examPeriodRepo.findByInstitution_Id(institutionId, pageable);
 			return (List<InstitutionExamPeriodDTO>) examPeriodConverter.convertToDTO(page.getContent(), InstitutionExamPeriodDTO.class);

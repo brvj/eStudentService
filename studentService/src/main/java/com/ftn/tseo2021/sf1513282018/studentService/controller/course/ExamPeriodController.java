@@ -1,12 +1,17 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamPeriodService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -49,9 +54,18 @@ public class ExamPeriodController {
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultExamPeriodDTO> getExamPeriodById(@PathVariable("id") int id){
-		DefaultExamPeriodDTO examPeriodDTO = examPeriodService.getOne(id);
-
-		if(examPeriodDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(HttpStatus.OK);
+		DefaultExamPeriodDTO examPeriodDTO;
+		try {
+			examPeriodDTO = examPeriodService.getOne(id);
+			if(examPeriodDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(examPeriodDTO, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping
+	public ModelAndView getInstitutionExamPeriods(@CurrentPrincipal CustomPrincipal principal) {
+		return new ModelAndView(String.format("forward:/api/institutions/%d/examPeriods", principal.getInstitutionId()));
 	}
 }

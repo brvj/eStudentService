@@ -18,12 +18,15 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 
 @Service
 public class DefaultStudentService implements StudentService {
@@ -43,9 +46,12 @@ public class DefaultStudentService implements StudentService {
 	@Autowired
 	private DtoConverter<Student, StudentDTO, DefaultStudentDTO> studentConverter;
 	
-	@Override
-	public boolean existsById(Integer id) {
-		return studentRepo.existsById(id);
+	@Autowired
+	private PrincipalHolder principalHolder;
+	
+	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
+			throw new ForbiddenAccessException();
 	}
 
 	@Override
@@ -95,8 +101,12 @@ public class DefaultStudentService implements StudentService {
 	}
 
 	@SuppressWarnings("unchecked")
+	@AuthorizeAdmin
 	@Override
-	public List<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions) {
+	public List<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions) 
+			throws ForbiddenAccessException {
+		authorize(institutionId);
+			
 		if (filterOptions == null) {
 			Page<Student> page = studentRepo.findByInstitution_Id(institutionId, pageable);
 			return (List<InstitutionStudentDTO>) studentConverter.convertToDTO(page.getContent(), InstitutionStudentDTO.class);

@@ -1,12 +1,17 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -49,9 +54,18 @@ public class CourseController {
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultCourseDTO> getCourseById(@PathVariable("id") int id){
-		DefaultCourseDTO courseDTO = courseService.getOne(id);
-
-		if(courseDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(HttpStatus.OK);
+		DefaultCourseDTO courseDTO;
+		try {
+			courseDTO = courseService.getOne(id);
+			if(courseDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(courseDTO, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping
+	public ModelAndView getInstitutionCourses(@CurrentPrincipal CustomPrincipal principal) {
+		return new ModelAndView(String.format("forward:/api/institutions/%d/courses", principal.getInstitutionId()));
 	}
 }

@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.LoginDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.TokenUtils;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping(value = "api/users")
@@ -34,8 +35,8 @@ public class UserController {
 	private TokenUtils tokenUtils;
 	
 	@GetMapping
-	public String getInstituionUsers(@AuthenticationPrincipal CustomPrincipal principal) {
-		return String.format("forward:/api/institution/%d/users", principal.getInstitutionId());
+	public ModelAndView getInstituionUsers(@CurrentPrincipal CustomPrincipal principal) {
+		return new ModelAndView(String.format("forward:/api/institutions/%d/users", principal.getInstitutionId()));
 	}
 	
 	@PostMapping(value = "/login", consumes = "application/json")

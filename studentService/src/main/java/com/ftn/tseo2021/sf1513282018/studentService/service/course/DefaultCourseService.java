@@ -4,6 +4,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Exam
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
@@ -45,10 +49,13 @@ public class DefaultCourseService implements CourseService {
 	
 	@Autowired
 	private ExamObligationService examObligationService;
-
-	@Override
-	public boolean existsById(Integer id) {
-		return courseRepo.existsById(id);
+	
+	@Autowired
+	private PrincipalHolder principalHolder;
+	
+	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
+			throw new ForbiddenAccessException();
 	}
 
 	@Override
@@ -86,8 +93,12 @@ public class DefaultCourseService implements CourseService {
 	}
 
 	@SuppressWarnings("unchecked")
+	@AuthorizeAdmin
 	@Override
-	public List<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions) {
+	public List<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions) 
+		throws ForbiddenAccessException {
+		authorize(institutionId);
+		
 		if (filterOptions == null) {
 			Page<Course> page = courseRepo.findByInstitution_Id(institutionId, pageable);
 			return (List<InstitutionCourseDTO>) courseConverter.convertToDTO(page.getContent(), InstitutionCourseDTO.class);

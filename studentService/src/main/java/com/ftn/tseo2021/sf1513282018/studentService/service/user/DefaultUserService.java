@@ -20,12 +20,15 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 
 @Service
 public class DefaultUserService implements UserService {
@@ -39,9 +42,12 @@ public class DefaultUserService implements UserService {
 	@Autowired
 	UserAuthorityService userAuthorityService;
 	
-	@Override
-	public boolean existsById(Integer id) {
-		return userRepo.existsById(id);
+	@Autowired
+	private PrincipalHolder principalHolder;
+	
+	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
+			throw new ForbiddenAccessException();
 	}
 
 	@Override
@@ -90,8 +96,11 @@ public class DefaultUserService implements UserService {
 	}
 
 	@SuppressWarnings("unchecked")
+	@AuthorizeAdmin
 	@Override
-	public List<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions) {
+	public List<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions) throws ForbiddenAccessException {
+		authorize(institutionId);
+		
 		if (filterOptions == null) {
 			Page<User> page = userRepo.findByInstitution_Id(institutionId, pageable);
 			return (List<InstitutionUserDTO>) userConverter.convertToDTO(page.getContent(), InstitutionUserDTO.class);

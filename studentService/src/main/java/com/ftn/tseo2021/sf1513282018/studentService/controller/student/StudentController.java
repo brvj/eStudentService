@@ -10,10 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping(value = "api/students")
@@ -64,10 +68,14 @@ public class StudentController {
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultStudentDTO> getStudentById(@PathVariable("id") int id) {
-		DefaultStudentDTO student = studentService.getOne(id);
-		
-		if (student == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(student, HttpStatus.OK);
+		DefaultStudentDTO student;
+		try {
+			student = studentService.getOne(id);
+			if (student == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(student, HttpStatus.OK);
+		} catch (ForbiddenAccessException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	@GetMapping(value = "/user/{id}", produces = "application/json")
@@ -112,6 +120,9 @@ public class StudentController {
 		}
 	}
 	
-	
+	@GetMapping
+	public ModelAndView getInstitutionStudents(@CurrentPrincipal CustomPrincipal principal) {
+		return new ModelAndView(String.format("forward:/api/institutions/%d/students", principal.getInstitutionId()));
+	}
 	
 }

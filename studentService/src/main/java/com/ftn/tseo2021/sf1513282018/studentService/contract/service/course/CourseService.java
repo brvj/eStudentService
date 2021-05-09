@@ -23,7 +23,7 @@ public interface CourseService extends BaseService<DefaultCourseDTO, Integer> {
 	
 	List<CourseEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable) throws EntityNotFoundException;
+	List<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable) throws EntityNotFoundException, ForbiddenAccessException;
 	
 	List<CourseExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException;
 	

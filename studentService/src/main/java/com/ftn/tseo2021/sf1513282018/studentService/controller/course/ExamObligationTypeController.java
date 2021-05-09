@@ -19,7 +19,7 @@ public class ExamObligationTypeController {
 	ExamObligationTypeService examObligationTypeService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createExamObligationType(@RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO){
+	public ResponseEntity<Integer> createExamObligationType(@RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO) throws ForbiddenAccessException {
 		try{
 			int id = examObligationTypeService.create(examObligationTypeDTO);
 
@@ -30,7 +30,7 @@ public class ExamObligationTypeController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateExamObligationType(@PathVariable("id") int id, @RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO){
+	public ResponseEntity<Void> updateExamObligationType(@PathVariable("id") int id, @RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO) throws ForbiddenAccessException {
 		try{
 			examObligationTypeService.update(id, examObligationTypeDTO);
 
@@ -43,7 +43,7 @@ public class ExamObligationTypeController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteExamObligationType(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteExamObligationType(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(examObligationTypeService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

@@ -2,8 +2,15 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeTeacher;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
@@ -32,14 +39,30 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@Autowired
 	private ExamObligationTakingService examObligationTakingService;
 
+	@Autowired
+	private CourseService courseService;
+
+	@Autowired
+	private PrincipalHolder principalHolder;
+
+	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId)
+			throw new ForbiddenAccessException();
+	}
+
+	@AuthorizeAny
 	@Override
 	public DefaultExamObligationDTO getOne(Integer id) {
 		Optional<ExamObligation> examObligation = examObligationRepo.findById(id);
 		return examObligationConverter.convertToDTO(examObligation.orElse(null));
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
-	public Integer create(DefaultExamObligationDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultExamObligationDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getCourse().getInstitution().getId());
+
 		ExamObligation examObligation = examObligationConverter.convertToJPA(dto);
 
 		examObligation = examObligationRepo.save(examObligation);
@@ -47,8 +70,12 @@ public class DefaultExamObligationService implements ExamObligationService {
 		return examObligation.getId();
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
-	public void update(Integer id, DefaultExamObligationDTO dto) throws EntityNotFoundException, IllegalArgumentException {
+	public void update(Integer id, DefaultExamObligationDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getCourse().getInstitution().getId());
+
 		if(!examObligationRepo.existsById(id)) throw new EntityNotFoundException();
 
 		ExamObligation eoNew = examObligationConverter.convertToJPA(dto);
@@ -60,8 +87,14 @@ public class DefaultExamObligationService implements ExamObligationService {
 		examObligationRepo.save(eo);
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
-	public boolean delete(Integer id) {
+	public boolean delete(Integer id) throws ForbiddenAccessException {
+		ExamObligation examObligation = examObligationRepo.getOne(id);
+
+		authorize(examObligation.getCourse().getInstitution().getId());
+
 		if(!examObligationRepo.existsById(id)) return false;
 
 		examObligationRepo.deleteById(id);
@@ -69,8 +102,13 @@ public class DefaultExamObligationService implements ExamObligationService {
 	}
 
 	@SuppressWarnings("unchecked")
+	@AuthorizeAny
 	@Override
-	public List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) {
+	public List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) throws ForbiddenAccessException {
+		DefaultCourseDTO course = courseService.getOne(courseId);
+
+		authorize(course.getInstitution().getId());
+
 		if (filterOptions == null) {
 			Page<ExamObligation> page = examObligationRepo.findByCourse_Id(courseId, pageable);
 			return (List<CourseExamObligationDTO>) examObligationConverter.convertToDTO(page.getContent(), CourseExamObligationDTO.class);
@@ -82,6 +120,7 @@ public class DefaultExamObligationService implements ExamObligationService {
 		}
 	}
 
+	@AuthorizeAny
 	@Override
 	public List<ExamOblExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable)
 			throws EntityNotFoundException {

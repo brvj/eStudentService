@@ -3,7 +3,12 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeTeacher;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;
@@ -33,14 +38,27 @@ public class DefaultExamService implements ExamService {
 	@Autowired
 	private ExamTakingService examTakingService;
 
+	@Autowired
+	private PrincipalHolder principalHolder;
+
+	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId)
+			throw new ForbiddenAccessException();
+	}
+
+	@AuthorizeAny
 	@Override
 	public DefaultExamDTO getOne(Integer id) {
 		Optional<Exam> exam = examRepo.findById(id);
 		return examConverter.convertToDTO(exam.orElse(null));
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
-	public Integer create(DefaultExamDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultExamDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getExamPeriod().getInstitution().getId());
+
 		Exam exam = examConverter.convertToJPA(dto);
 
 		exam = examRepo.save(exam);
@@ -48,8 +66,12 @@ public class DefaultExamService implements ExamService {
 		return exam.getId();
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
-	public void update(Integer id, DefaultExamDTO dto) throws EntityNotFoundException, IllegalArgumentException {
+	public void update(Integer id, DefaultExamDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getExamPeriod().getInstitution().getId());
+
 		if(!examRepo.existsById(id)) throw new EntityNotFoundException();
 
 		Exam eNew = examConverter.convertToJPA(dto);
@@ -62,16 +84,21 @@ public class DefaultExamService implements ExamService {
 		examRepo.save(e);
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
-	public boolean delete(Integer id) {
+	public boolean delete(Integer id) throws ForbiddenAccessException {
+		Exam exam = examRepo.getOne(id);
+		authorize(exam.getExamPeriod().getInstitution().getId());
+
 		if(!examRepo.existsById(id)) return false;
 
 		examRepo.deleteById(id);
 		return true;
 	}
 
-
 	@SuppressWarnings("unchecked")
+	@AuthorizeAny
 	@Override
 	public List<CourseExamDTO> filterExamsByCourse(int courseId, Pageable pageable, CourseExamDTO filterOptions) {
 		if (filterOptions == null) {
@@ -83,10 +110,10 @@ public class DefaultExamService implements ExamService {
 					filterOptions.getClassroom(), null, null, pageable);
 			return (List<CourseExamDTO>) examConverter.convertToDTO(page.getContent(), CourseExamDTO.class);
 		}
-
 	}
 
 	@SuppressWarnings("unchecked")
+	@AuthorizeAny
 	@Override
 	public List<ExamPeriodExamDTO> filterExamsByExamPeriod(int examPeriodId, Pageable pageable, ExamPeriodExamDTO filterOptions) {
 		if (filterOptions == null) {
@@ -100,6 +127,7 @@ public class DefaultExamService implements ExamService {
 		}
 	}
 
+	@AuthorizeAny
 	@Override
 	public List<ExamExamTakingDTO> getExamExamTakings(int examId, Pageable pageable) throws EntityNotFoundException {
 		if(!examRepo.existsById(examId)) throw new EntityNotFoundException();

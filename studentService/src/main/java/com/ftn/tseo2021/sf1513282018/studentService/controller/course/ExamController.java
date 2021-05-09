@@ -19,7 +19,7 @@ public class ExamController {
 	ExamService examService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createExam(@RequestBody DefaultExamDTO examDTO){
+	public ResponseEntity<Integer> createExam(@RequestBody DefaultExamDTO examDTO) throws ForbiddenAccessException {
 		try{
 			int id = examService.create(examDTO);
 
@@ -30,7 +30,7 @@ public class ExamController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateExam(@PathVariable("id") int id, @RequestBody DefaultExamDTO examDTO){
+	public ResponseEntity<Void> updateExam(@PathVariable("id") int id, @RequestBody DefaultExamDTO examDTO) throws ForbiddenAccessException {
 		try{
 			examService.update(id, examDTO);
 
@@ -43,7 +43,7 @@ public class ExamController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteExam(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteExam(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(examService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

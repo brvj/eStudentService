@@ -5,6 +5,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeri
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 
@@ -44,14 +45,18 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 			throw new ForbiddenAccessException();
 	}
 
+	@AuthorizeAny
 	@Override
 	public DefaultExamPeriodDTO getOne(Integer id) {
 		Optional<ExamPeriod> examPeriod = examPeriodRepo.findById(id);
 		return examPeriodConverter.convertToDTO(examPeriod.orElse(null));
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public Integer create(DefaultExamPeriodDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultExamPeriodDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getInstitution().getId());
+
 		ExamPeriod examPeriod = examPeriodConverter.convertToJPA(dto);
 
 		examPeriod = examPeriodRepo.save(examPeriod);
@@ -59,8 +64,11 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 		return examPeriod.getId();
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public void update(Integer id, DefaultExamPeriodDTO dto) throws EntityNotFoundException, IllegalArgumentException {
+	public void update(Integer id, DefaultExamPeriodDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getInstitution().getId());
+
 		if(!examPeriodRepo.existsById(id)) throw new EntityNotFoundException();
 
 		ExamPeriod epNew = examPeriodConverter.convertToJPA(dto);
@@ -72,8 +80,13 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 		examPeriodRepo.save(ep);
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public boolean delete(Integer id) {
+	public boolean delete(Integer id) throws ForbiddenAccessException {
+		ExamPeriod examPeriod = examPeriodRepo.getOne(id);
+
+		authorize(examPeriod.getInstitution().getId());
+
 		if(!examPeriodRepo.existsById(id)) return false;
 
 		examPeriodRepo.deleteById(id);
@@ -98,11 +111,11 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	}
 
+	@AuthorizeAny
 	@Override
 	public List<ExamPeriodExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException {
 		if(!examPeriodRepo.existsById(examPeriodId)) throw new EntityNotFoundException();
-		
-		
+
 		return examService.filterExamsByExamPeriod(examPeriodId, pageable, null);
 	}
 }

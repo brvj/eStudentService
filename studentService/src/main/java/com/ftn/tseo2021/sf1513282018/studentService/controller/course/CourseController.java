@@ -1,10 +1,11 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.*;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Cour
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/courses")
@@ -23,7 +25,7 @@ public class CourseController {
 	CourseService courseService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createCourse(@RequestBody DefaultCourseDTO courseDTO){
+	public ResponseEntity<Integer> createCourse(@RequestBody DefaultCourseDTO courseDTO) throws ForbiddenAccessException {
 		try{
 			int id = courseService.create(courseDTO);
 
@@ -34,7 +36,7 @@ public class CourseController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateCourse(@PathVariable("id") int id, @RequestBody DefaultCourseDTO courseDTO){
+	public ResponseEntity<Void> updateCourse(@PathVariable("id") int id, @RequestBody DefaultCourseDTO courseDTO) throws ForbiddenAccessException {
 		try{
 			courseService.update(id, courseDTO);
 
@@ -47,7 +49,7 @@ public class CourseController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteCourse(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteCourse(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(courseService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -67,5 +69,41 @@ public class CourseController {
 	@GetMapping
 	public ModelAndView getInstitutionCourses(@CurrentPrincipal CustomPrincipal principal) {
 		return new ModelAndView(String.format("forward:/api/institutions/%d/courses", principal.getInstitutionId()));
+	}
+
+	@GetMapping(value = "/{id}/teachings", produces = "application/json")
+	public ResponseEntity<List<CourseTeachingDTO>> getCourseTeachings(@PathVariable("id") int id){
+		List<CourseTeachingDTO> courseTeachingDTOList;
+
+		courseTeachingDTOList = courseService.getCourseTeachings(id, Pageable.unpaged());
+		if(courseTeachingDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(courseTeachingDTOList, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/{id}/enrollments", produces = "application/json")
+	public ResponseEntity<List<CourseEnrollmentDTO>> getCourseEnrollments(@PathVariable("id") int id){
+		List<CourseEnrollmentDTO> courseEnrollmentDTOList;
+
+		courseEnrollmentDTOList = courseService.getCourseEnrollments(id, Pageable.unpaged());
+		if(courseEnrollmentDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(courseEnrollmentDTOList, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/{id}/examObligations", produces = "application/json")
+	public ResponseEntity<List<CourseExamObligationDTO>> getCourseExamObligations(@PathVariable("id") int id) throws ForbiddenAccessException {
+		List<CourseExamObligationDTO> courseExamObligationDTOList;
+
+		courseExamObligationDTOList = courseService.getCourseExamObligations(id, Pageable.unpaged());
+		if(courseExamObligationDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(courseExamObligationDTOList, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/{id}/exams", produces = "application/json")
+	public ResponseEntity<List<CourseExamDTO>> getCourseExams(@PathVariable("id") int id){
+		List<CourseExamDTO> courseExamDTOList;
+
+		courseExamDTOList = courseService.getCourseExams(id, Pageable.unpaged());
+		if(courseExamDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(courseExamDTOList, HttpStatus.OK);
 	}
 }

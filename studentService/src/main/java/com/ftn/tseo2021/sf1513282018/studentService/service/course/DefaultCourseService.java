@@ -5,6 +5,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDT
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,14 +59,18 @@ public class DefaultCourseService implements CourseService {
 			throw new ForbiddenAccessException();
 	}
 
+	@AuthorizeAny
 	@Override
 	public DefaultCourseDTO getOne(Integer id) {
 		Optional<Course> course = courseRepo.findById(id);
 		return courseConverter.convertToDTO(course.orElse(null));
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public Integer create(DefaultCourseDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultCourseDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getInstitution().getId());
+
 		Course course = courseConverter.convertToJPA(dto);
 
 		course = courseRepo.save(course);
@@ -73,8 +78,11 @@ public class DefaultCourseService implements CourseService {
 		return course.getId();
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public void update(Integer id, DefaultCourseDTO dto) throws EntityNotFoundException, IllegalArgumentException {
+	public void update(Integer id, DefaultCourseDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
+		authorize(dto.getInstitution().getId());
+
 		if(!courseRepo.existsById(id)) throw new EntityNotFoundException();
 
 		Course cNew = courseConverter.convertToJPA(dto);
@@ -84,8 +92,13 @@ public class DefaultCourseService implements CourseService {
 		courseRepo.save(c);
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public boolean delete(Integer id) {
+	public boolean delete(Integer id) throws ForbiddenAccessException {
+		Course course= courseRepo.getOne(id);
+
+		authorize(course.getInstitution().getId());
+
 		if(!courseRepo.existsById(id)) return false;
 
 		courseRepo.deleteById(id);
@@ -109,6 +122,7 @@ public class DefaultCourseService implements CourseService {
 		}
 	}
 
+	@AuthorizeAny
 	@Override
 	public List<CourseTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
@@ -116,6 +130,7 @@ public class DefaultCourseService implements CourseService {
 		return teachingService.filterTeachingsByCourse(courseId, pageable, null);
 	}
 
+	@AuthorizeAny
 	@Override
 	public List<CourseEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable)
 			throws EntityNotFoundException {
@@ -124,14 +139,16 @@ public class DefaultCourseService implements CourseService {
 		return enrollmentService.filterEnrollmentsByCourse(courseId, pageable, null);
 	}
 
+	@AuthorizeAny
 	@Override
 	public List<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable)
-			throws EntityNotFoundException {
+			throws EntityNotFoundException, ForbiddenAccessException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
 		
 		return examObligationService.filterExamObligations(courseId, pageable, null);
 	}
 
+	@AuthorizeAny
 	@Override
 	public List<CourseExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();

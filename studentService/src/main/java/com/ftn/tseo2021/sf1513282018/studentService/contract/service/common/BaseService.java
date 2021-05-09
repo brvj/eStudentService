@@ -12,10 +12,10 @@ public interface BaseService<T, ID> {
 	
     public T getOne(ID id) throws ForbiddenAccessException;
     
-    public ID create(T t) throws IllegalArgumentException;
+    public ID create(T t) throws IllegalArgumentException, ForbiddenAccessException;
     
-    public void update(ID id, T t) throws EntityNotFoundException, IllegalArgumentException;
+    public void update(ID id, T t) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException;
     
-    public boolean delete(ID id);
+    public boolean delete(ID id) throws ForbiddenAccessException;
     
 }

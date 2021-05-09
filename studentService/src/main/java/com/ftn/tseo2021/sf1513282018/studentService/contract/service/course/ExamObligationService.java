@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
@@ -12,7 +13,7 @@ import javax.persistence.EntityNotFoundException;
 
 public interface ExamObligationService extends BaseService<DefaultExamObligationDTO, Integer> {
 
-    List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions);
+    List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) throws ForbiddenAccessException;
     
     List<ExamOblExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable) throws EntityNotFoundException;
 }

@@ -29,7 +29,7 @@ public class InstitutionController {
 	private InstitutionService institutionService;
 	
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createInstitution(@NotNull @RequestBody DefaultInstitutionDTO institutionDTO){
+	public ResponseEntity<Integer> createInstitution(@NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws ForbiddenAccessException {
 		try{
 			int institutionId = institutionService.create(institutionDTO);
 			return new ResponseEntity<>(institutionId, HttpStatus.CREATED);
@@ -40,7 +40,7 @@ public class InstitutionController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateInstitution(@PathVariable("id") int id, @NotNull @RequestBody DefaultInstitutionDTO institutionDTO){
+	public ResponseEntity<Void> updateInstitution(@PathVariable("id") int id, @NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws ForbiddenAccessException {
 		try{
 			institutionService.update(id, institutionDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

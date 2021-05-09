@@ -1,7 +1,10 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +13,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Exam
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/examObligations")
@@ -19,7 +23,7 @@ public class ExamObligationController {
 	ExamObligationService examObligationService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createExamObligation(@RequestBody DefaultExamObligationDTO examObligationDTO){
+	public ResponseEntity<Integer> createExamObligation(@RequestBody DefaultExamObligationDTO examObligationDTO) throws ForbiddenAccessException {
 		try{
 			int id = examObligationService.create(examObligationDTO);
 
@@ -30,7 +34,7 @@ public class ExamObligationController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateExamObligation(@PathVariable("id") int id, @RequestBody DefaultExamObligationDTO examObligationDTO){
+	public ResponseEntity<Void> updateExamObligation(@PathVariable("id") int id, @RequestBody DefaultExamObligationDTO examObligationDTO) throws ForbiddenAccessException {
 		try{
 			examObligationService.update(id, examObligationDTO);
 
@@ -43,7 +47,7 @@ public class ExamObligationController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteExamObligation(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteExamObligation(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(examObligationService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -59,5 +63,13 @@ public class ExamObligationController {
 		} catch (ForbiddenAccessException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+	}
+
+	@GetMapping(value = "/{id}/examObligationTakings", produces = "application/json")
+	public ResponseEntity<List<ExamOblExamObligationTakingDTO>> getExamObligationTakings(@PathVariable("id") int id){
+		List<ExamOblExamObligationTakingDTO> examObligationTakingList = examObligationService.getExamObligationTakings(id, Pageable.unpaged());
+
+		if(examObligationTakingList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(examObligationTakingList, HttpStatus.OK);
 	}
 }

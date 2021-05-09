@@ -2,7 +2,12 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationTypeDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligationType;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeTeacher;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +27,15 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 	@Autowired
 	private DtoConverter<ExamObligationType, ExamObligationTypeDTO, DefaultExamObligationTypeDTO> examObligationTypeConverter;
 
+	@AuthorizeAny
 	@Override
 	public DefaultExamObligationTypeDTO getOne(Integer id) {
 		Optional<ExamObligationType> examObligationType = examObligationTypeRepo.findById(id);
 		return examObligationTypeConverter.convertToDTO(examObligationType.orElse(null));
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
 	public Integer create(DefaultExamObligationTypeDTO dto) throws IllegalArgumentException {
 		ExamObligationType examObligationType = examObligationTypeConverter.convertToJPA(dto);
@@ -37,6 +45,8 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 		return examObligationType.getId();
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
 	public void update(Integer id, DefaultExamObligationTypeDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!examObligationTypeRepo.existsById(id)) throw new EntityNotFoundException();
@@ -48,6 +58,8 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 		examObligationTypeRepo.save(eot);
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@Override
 	public boolean delete(Integer id) {
 		if(!examObligationTypeRepo.existsById(id)) return  false;

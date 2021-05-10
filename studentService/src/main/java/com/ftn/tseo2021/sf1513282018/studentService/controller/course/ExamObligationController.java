@@ -23,18 +23,20 @@ public class ExamObligationController {
 	ExamObligationService examObligationService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createExamObligation(@RequestBody DefaultExamObligationDTO examObligationDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Integer> createExamObligation(@RequestBody DefaultExamObligationDTO examObligationDTO){
 		try{
 			int id = examObligationService.create(examObligationDTO);
 
 			return new ResponseEntity<>(id, HttpStatus.CREATED);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateExamObligation(@PathVariable("id") int id, @RequestBody DefaultExamObligationDTO examObligationDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Void> updateExamObligation(@PathVariable("id") int id, @RequestBody DefaultExamObligationDTO examObligationDTO){
 		try{
 			examObligationService.update(id, examObligationDTO);
 
@@ -43,13 +45,19 @@ public class ExamObligationController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteExamObligation(@PathVariable("id") int id) throws ForbiddenAccessException {
-		if(examObligationService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public ResponseEntity<Void> deleteExamObligation(@PathVariable("id") int id){
+		try{
+			examObligationService.delete(id);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")

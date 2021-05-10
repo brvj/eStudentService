@@ -26,18 +26,20 @@ public class ExamPeriodController {
 	ExamPeriodService examPeriodService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createExamPeriod(@RequestBody DefaultExamPeriodDTO examPeriodDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Integer> createExamPeriod(@RequestBody DefaultExamPeriodDTO examPeriodDTO){
 		try{
 			int id = examPeriodService.create(examPeriodDTO);
 
 			return new ResponseEntity<>(id, HttpStatus.CREATED);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateExamPeriod(@PathVariable("id") int id, @RequestBody DefaultExamPeriodDTO examPeriodDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Void> updateExamPeriod(@PathVariable("id") int id, @RequestBody DefaultExamPeriodDTO examPeriodDTO){
 		try{
 			examPeriodService.update(id, examPeriodDTO);
 
@@ -46,13 +48,19 @@ public class ExamPeriodController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteExamPeriod(@PathVariable("id") int id) throws ForbiddenAccessException {
-		if(examPeriodService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public ResponseEntity<Void> deleteExamPeriod(@PathVariable("id") int id){
+		try{
+			examPeriodService.delete(id);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")

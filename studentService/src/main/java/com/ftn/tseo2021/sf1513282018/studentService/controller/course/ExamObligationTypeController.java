@@ -19,18 +19,20 @@ public class ExamObligationTypeController {
 	ExamObligationTypeService examObligationTypeService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createExamObligationType(@RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Integer> createExamObligationType(@RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO){
 		try{
 			int id = examObligationTypeService.create(examObligationTypeDTO);
 
 			return new ResponseEntity<>(id, HttpStatus.CREATED);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateExamObligationType(@PathVariable("id") int id, @RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Void> updateExamObligationType(@PathVariable("id") int id, @RequestBody DefaultExamObligationTypeDTO examObligationTypeDTO){
 		try{
 			examObligationTypeService.update(id, examObligationTypeDTO);
 
@@ -39,13 +41,19 @@ public class ExamObligationTypeController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteExamObligationType(@PathVariable("id") int id) throws ForbiddenAccessException {
-		if(examObligationTypeService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public ResponseEntity<Void> deleteExamObligationType(@PathVariable("id") int id){
+		try{
+			examObligationTypeService.delete(id);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")

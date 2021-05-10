@@ -19,18 +19,20 @@ public class ExamController {
 	ExamService examService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createExam(@RequestBody DefaultExamDTO examDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Integer> createExam(@RequestBody DefaultExamDTO examDTO){
 		try{
 			int id = examService.create(examDTO);
 
 			return new ResponseEntity<>(id, HttpStatus.CREATED);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateExam(@PathVariable("id") int id, @RequestBody DefaultExamDTO examDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Void> updateExam(@PathVariable("id") int id, @RequestBody DefaultExamDTO examDTO){
 		try{
 			examService.update(id, examDTO);
 
@@ -39,13 +41,20 @@ public class ExamController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteExam(@PathVariable("id") int id) throws ForbiddenAccessException {
-		if(examService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public ResponseEntity<Void> deleteExam(@PathVariable("id") int id){
+		try{
+			examService.delete(id);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")

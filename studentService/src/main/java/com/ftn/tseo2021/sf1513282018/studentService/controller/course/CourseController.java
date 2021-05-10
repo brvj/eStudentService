@@ -90,12 +90,14 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/{id}/examObligations", produces = "application/json")
-	public ResponseEntity<List<CourseExamObligationDTO>> getCourseExamObligations(@PathVariable("id") int id) throws ForbiddenAccessException {
-		List<CourseExamObligationDTO> courseExamObligationDTOList;
-
-		courseExamObligationDTOList = courseService.getCourseExamObligations(id, Pageable.unpaged());
-		if(courseExamObligationDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<>(courseExamObligationDTOList, HttpStatus.OK);
+	public ResponseEntity<List<CourseExamObligationDTO>> getCourseExamObligations(@PathVariable("id") int id){
+		try{
+			List<CourseExamObligationDTO> courseExamObligationDTOList = courseService.getCourseExamObligations(id, Pageable.unpaged());
+			return new ResponseEntity<>(courseExamObligationDTOList, HttpStatus.OK);
+		}
+		catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@GetMapping(value = "/{id}/exams", produces = "application/json")

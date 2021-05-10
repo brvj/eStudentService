@@ -3,9 +3,11 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
@@ -43,6 +45,9 @@ public class DefaultExamObligationService implements ExamObligationService {
 	private CourseService courseService;
 
 	@Autowired
+	private InstitutionService institutionService;
+
+	@Autowired
 	private PrincipalHolder principalHolder;
 
 	private void authorize(Integer institutionId) throws ForbiddenAccessException {
@@ -61,8 +66,6 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@AuthorizeTeacher
 	@Override
 	public Integer create(DefaultExamObligationDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getCourse().getInstitution().getId());
-
 		ExamObligation examObligation = examObligationConverter.convertToJPA(dto);
 
 		examObligation = examObligationRepo.save(examObligation);
@@ -74,7 +77,8 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@AuthorizeTeacher
 	@Override
 	public void update(Integer id, DefaultExamObligationDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getCourse().getInstitution().getId());
+		DefaultInstitutionDTO institution = institutionService.getOne(dto.getCourse().getInstitution().getId());
+		authorize(institution.getId());
 
 		if(!examObligationRepo.existsById(id)) throw new EntityNotFoundException();
 

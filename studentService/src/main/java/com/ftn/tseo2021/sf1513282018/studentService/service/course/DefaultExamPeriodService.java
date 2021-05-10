@@ -3,7 +3,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
@@ -36,6 +38,9 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@Autowired
 	private ExamService examService;
+
+	@Autowired
+	private InstitutionService institutionService;
 	
 	@Autowired
 	private PrincipalHolder principalHolder;
@@ -55,9 +60,8 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@AuthorizeAdmin
 	@Override
 	public Integer create(DefaultExamPeriodDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getInstitution().getId());
-
 		ExamPeriod examPeriod = examPeriodConverter.convertToJPA(dto);
+		examPeriod.getInstitution().setId(principalHolder.getCurrentPrincipal().getInstitutionId());
 
 		examPeriod = examPeriodRepo.save(examPeriod);
 
@@ -67,7 +71,8 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@AuthorizeAdmin
 	@Override
 	public void update(Integer id, DefaultExamPeriodDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getInstitution().getId());
+		DefaultInstitutionDTO institution = institutionService.getOne(dto.getInstitution().getId());
+		authorize(institution.getId());
 
 		if(!examPeriodRepo.existsById(id)) throw new EntityNotFoundException();
 

@@ -2,8 +2,11 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
@@ -50,6 +53,9 @@ public class DefaultCourseService implements CourseService {
 	
 	@Autowired
 	private ExamObligationService examObligationService;
+
+	@Autowired
+	private InstitutionService institutionService;
 	
 	@Autowired
 	private PrincipalHolder principalHolder;
@@ -69,9 +75,8 @@ public class DefaultCourseService implements CourseService {
 	@AuthorizeAdmin
 	@Override
 	public Integer create(DefaultCourseDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getInstitution().getId());
-
 		Course course = courseConverter.convertToJPA(dto);
+		course.getInstitution().setId(principalHolder.getCurrentPrincipal().getInstitutionId());
 
 		course = courseRepo.save(course);
 
@@ -81,7 +86,8 @@ public class DefaultCourseService implements CourseService {
 	@AuthorizeAdmin
 	@Override
 	public void update(Integer id, DefaultCourseDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getInstitution().getId());
+		DefaultInstitutionDTO institution = institutionService.getOne(dto.getInstitution().getId());
+		authorize(institution.getId());
 
 		if(!courseRepo.existsById(id)) throw new EntityNotFoundException();
 

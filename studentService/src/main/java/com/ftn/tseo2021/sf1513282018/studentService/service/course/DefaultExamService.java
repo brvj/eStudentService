@@ -2,8 +2,10 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
@@ -39,6 +41,9 @@ public class DefaultExamService implements ExamService {
 	private ExamTakingService examTakingService;
 
 	@Autowired
+	private InstitutionService institutionService;
+
+	@Autowired
 	private PrincipalHolder principalHolder;
 
 	private void authorize(Integer institutionId) throws ForbiddenAccessException {
@@ -57,8 +62,6 @@ public class DefaultExamService implements ExamService {
 	@AuthorizeTeacher
 	@Override
 	public Integer create(DefaultExamDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getExamPeriod().getInstitution().getId());
-
 		Exam exam = examConverter.convertToJPA(dto);
 
 		exam = examRepo.save(exam);
@@ -70,7 +73,8 @@ public class DefaultExamService implements ExamService {
 	@AuthorizeTeacher
 	@Override
 	public void update(Integer id, DefaultExamDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
-		authorize(dto.getExamPeriod().getInstitution().getId());
+		DefaultInstitutionDTO institution = institutionService.getOne(dto.getExamPeriod().getInstitution().getId());
+		authorize(institution.getId());
 
 		if(!examRepo.existsById(id)) throw new EntityNotFoundException();
 

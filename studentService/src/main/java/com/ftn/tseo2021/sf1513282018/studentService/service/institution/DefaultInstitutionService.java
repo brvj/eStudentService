@@ -7,7 +7,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Exam
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeSuperadmin;
@@ -59,14 +59,14 @@ public class DefaultInstitutionService implements InstitutionService {
 	@Autowired
 	private PrincipalHolder principalHolder;
 	
-	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new ForbiddenAccessException();
+			throw new PersonalizedAccessDeniedException();
 	}
 	
 	@AuthorizeAny
 	@Override
-	public DefaultInstitutionDTO getOne(Integer id) throws ForbiddenAccessException {
+	public DefaultInstitutionDTO getOne(Integer id) throws PersonalizedAccessDeniedException {
 		authorize(id);
 		
 		Optional<Institution> institution = institutionRepo.findById(id);
@@ -111,7 +111,7 @@ public class DefaultInstitutionService implements InstitutionService {
 	
 	@Override
 	public List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, ForbiddenAccessException {
+			throws EntityNotFoundException, PersonalizedAccessDeniedException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionUserDTO> users = userService.filterUsers(institutionId, pageable, null);
@@ -121,7 +121,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, ForbiddenAccessException {
+			throws EntityNotFoundException, PersonalizedAccessDeniedException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionTeacherDTO> teachers = teacherService.filterTeachers(institutionId, pageable, null);
@@ -131,7 +131,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, ForbiddenAccessException {
+			throws EntityNotFoundException, PersonalizedAccessDeniedException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionStudentDTO> students = studentService.filterStudents(institutionId, pageable, null);
@@ -141,7 +141,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, ForbiddenAccessException {
+			throws EntityNotFoundException, PersonalizedAccessDeniedException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionCourseDTO> courses = courseService.filterCourses(institutionId, pageable, null);
@@ -151,7 +151,7 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@Override
 	public List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, ForbiddenAccessException {
+			throws EntityNotFoundException, PersonalizedAccessDeniedException {
 		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
 
 		List<InstitutionExamPeriodDTO> examPeriods = examPeriodService.filterExamPeriods(institutionId, pageable, null);

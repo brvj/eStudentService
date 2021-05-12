@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -26,7 +26,7 @@ public class ExamController {
 			return new ResponseEntity<>(id, HttpStatus.CREATED);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (ForbiddenAccessException e){
+		}catch (PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -41,7 +41,7 @@ public class ExamController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (ForbiddenAccessException e){
+		}catch (PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -52,7 +52,7 @@ public class ExamController {
 			examService.delete(id);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		catch (ForbiddenAccessException e){
+		catch (PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -65,7 +65,7 @@ public class ExamController {
 			
 			if(examDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(examDTO, HttpStatus.OK);
-		} catch (ForbiddenAccessException e) {
+		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -34,7 +34,7 @@ public class TeacherController {
 
 		}catch(IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (ForbiddenAccessException e){
+		}catch (PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -45,7 +45,7 @@ public class TeacherController {
 			teacherService.update(id, teacherDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		}catch(EntityNotFoundException | ForbiddenAccessException e){
+		}catch(EntityNotFoundException | PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -53,7 +53,7 @@ public class TeacherController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteTeacher(@PathVariable("id") int id) throws ForbiddenAccessException {
+	public ResponseEntity<Void> deleteTeacher(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
 		if(teacherService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -65,7 +65,7 @@ public class TeacherController {
 			teacherDTO = teacherService.getOne(id);
 			if(teacherDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
-		} catch (ForbiddenAccessException e) {
+		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

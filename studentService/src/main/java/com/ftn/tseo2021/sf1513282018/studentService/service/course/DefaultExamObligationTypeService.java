@@ -2,7 +2,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationTypeDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligationType;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;

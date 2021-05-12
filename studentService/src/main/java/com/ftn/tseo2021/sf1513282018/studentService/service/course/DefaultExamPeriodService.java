@@ -4,7 +4,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
@@ -45,9 +45,9 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@Autowired
 	private PrincipalHolder principalHolder;
 	
-	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new ForbiddenAccessException();
+			throw new PersonalizedAccessDeniedException();
 	}
 
 	@AuthorizeAny
@@ -59,7 +59,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@AuthorizeAdmin
 	@Override
-	public Integer create(DefaultExamPeriodDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
+	public Integer create(DefaultExamPeriodDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
 		ExamPeriod examPeriod = examPeriodConverter.convertToJPA(dto);
 		examPeriod.getInstitution().setId(principalHolder.getCurrentPrincipal().getInstitutionId());
 
@@ -70,7 +70,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@AuthorizeAdmin
 	@Override
-	public void update(Integer id, DefaultExamPeriodDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
+	public void update(Integer id, DefaultExamPeriodDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
 		DefaultInstitutionDTO institution = institutionService.getOne(dto.getInstitution().getId());
 		authorize(institution.getId());
 
@@ -87,7 +87,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@AuthorizeAdmin
 	@Override
-	public boolean delete(Integer id) throws ForbiddenAccessException {
+	public boolean delete(Integer id) throws PersonalizedAccessDeniedException {
 		ExamPeriod examPeriod = examPeriodRepo.getOne(id);
 
 		authorize(examPeriod.getInstitution().getId());
@@ -102,7 +102,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@AuthorizeAny
 	@Override
 	public List<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions) 
-			throws ForbiddenAccessException {
+			throws PersonalizedAccessDeniedException {
 		authorize(institutionId);
 		
 		if (filterOptions == null) {

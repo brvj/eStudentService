@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 
 @RestController
@@ -64,7 +64,7 @@ public class TransactionController {
 			
 			if (transaction == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(transaction, HttpStatus.OK);
-		} catch (ForbiddenAccessException e) {
+		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

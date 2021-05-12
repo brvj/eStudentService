@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -25,7 +25,7 @@ public class CourseController {
 	CourseService courseService;
 
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createCourse(@RequestBody DefaultCourseDTO courseDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Integer> createCourse(@RequestBody DefaultCourseDTO courseDTO) throws PersonalizedAccessDeniedException {
 		try{
 			int id = courseService.create(courseDTO);
 
@@ -36,7 +36,7 @@ public class CourseController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateCourse(@PathVariable("id") int id, @RequestBody DefaultCourseDTO courseDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Void> updateCourse(@PathVariable("id") int id, @RequestBody DefaultCourseDTO courseDTO) throws PersonalizedAccessDeniedException {
 		try{
 			courseService.update(id, courseDTO);
 
@@ -49,7 +49,7 @@ public class CourseController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteCourse(@PathVariable("id") int id) throws ForbiddenAccessException {
+	public ResponseEntity<Void> deleteCourse(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
 		if(courseService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -61,7 +61,7 @@ public class CourseController {
 			courseDTO = courseService.getOne(id);
 			if(courseDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(courseDTO, HttpStatus.OK);
-		} catch (ForbiddenAccessException e) {
+		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -95,7 +95,7 @@ public class CourseController {
 			List<CourseExamObligationDTO> courseExamObligationDTOList = courseService.getCourseExamObligations(id, Pageable.unpaged());
 			return new ResponseEntity<>(courseExamObligationDTOList, HttpStatus.OK);
 		}
-		catch (ForbiddenAccessException e){
+		catch (PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

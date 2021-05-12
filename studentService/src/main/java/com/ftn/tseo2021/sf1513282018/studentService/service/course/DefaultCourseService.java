@@ -22,7 +22,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Exam
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
@@ -60,9 +60,9 @@ public class DefaultCourseService implements CourseService {
 	@Autowired
 	private PrincipalHolder principalHolder;
 	
-	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new ForbiddenAccessException();
+			throw new PersonalizedAccessDeniedException();
 	}
 
 	@AuthorizeAny
@@ -74,7 +74,7 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAdmin
 	@Override
-	public Integer create(DefaultCourseDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
+	public Integer create(DefaultCourseDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
 		Course course = courseConverter.convertToJPA(dto);
 		course.getInstitution().setId(principalHolder.getCurrentPrincipal().getInstitutionId());
 
@@ -85,7 +85,7 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAdmin
 	@Override
-	public void update(Integer id, DefaultCourseDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
+	public void update(Integer id, DefaultCourseDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
 		DefaultInstitutionDTO institution = institutionService.getOne(dto.getInstitution().getId());
 		authorize(institution.getId());
 
@@ -100,7 +100,7 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAdmin
 	@Override
-	public boolean delete(Integer id) throws ForbiddenAccessException {
+	public boolean delete(Integer id) throws PersonalizedAccessDeniedException {
 		Course course= courseRepo.getOne(id);
 
 		authorize(course.getInstitution().getId());
@@ -115,7 +115,7 @@ public class DefaultCourseService implements CourseService {
 	@AuthorizeAdmin
 	@Override
 	public List<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions) 
-		throws ForbiddenAccessException {
+		throws PersonalizedAccessDeniedException {
 		authorize(institutionId);
 		
 		if (filterOptions == null) {
@@ -148,7 +148,7 @@ public class DefaultCourseService implements CourseService {
 	@AuthorizeAny
 	@Override
 	public List<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable)
-			throws EntityNotFoundException, ForbiddenAccessException {
+			throws EntityNotFoundException, PersonalizedAccessDeniedException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
 		
 		return examObligationService.filterExamObligations(courseId, pageable, null);

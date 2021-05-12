@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -27,7 +27,7 @@ public class TeachingController {
 
 		}catch(IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (ForbiddenAccessException e){
+		}catch (PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -38,7 +38,7 @@ public class TeachingController {
 			teachingService.update(id, teachingDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		}catch(EntityNotFoundException | ForbiddenAccessException e){
+		}catch(EntityNotFoundException | PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch(IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -46,7 +46,7 @@ public class TeachingController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteTeaching(@PathVariable("id") int id) throws ForbiddenAccessException {
+	public ResponseEntity<Void> deleteTeaching(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
 		if(teachingService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -59,7 +59,7 @@ public class TeachingController {
 			
 			if(teachingDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(teachingDTO, HttpStatus.OK);
-		} catch (ForbiddenAccessException e) {
+		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

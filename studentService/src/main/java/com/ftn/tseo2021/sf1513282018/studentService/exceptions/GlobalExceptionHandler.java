@@ -16,7 +16,7 @@ import org.springframework.web.util.WebUtils;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
-	@ExceptionHandler({EntityNotFoundException.class, ForbiddenAccessException.class})
+	@ExceptionHandler({EntityNotFoundException.class, PersonalizedAccessDeniedException.class})
 	public ResponseEntity<ErrorMessage> handleNotFound(Exception ex, WebRequest request) {
 		ErrorMessage error = new ErrorMessage(HttpStatus.NOT_FOUND.value(), ex.getMessage(), "");
 		return handleException(ex, error, null, HttpStatus.NOT_FOUND, request);

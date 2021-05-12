@@ -18,7 +18,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
@@ -49,9 +49,9 @@ public class DefaultStudentService implements StudentService {
 	@Autowired
 	private PrincipalHolder principalHolder;
 	
-	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new ForbiddenAccessException();
+			throw new PersonalizedAccessDeniedException();
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class DefaultStudentService implements StudentService {
 	@AuthorizeAdmin
 	@Override
 	public List<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions) 
-			throws ForbiddenAccessException {
+			throws PersonalizedAccessDeniedException {
 		authorize(institutionId);
 			
 		if (filterOptions == null) {

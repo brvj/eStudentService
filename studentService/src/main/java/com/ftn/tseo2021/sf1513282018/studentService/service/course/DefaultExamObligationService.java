@@ -5,7 +5,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObli
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
@@ -50,9 +50,9 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@Autowired
 	private PrincipalHolder principalHolder;
 
-	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId)
-			throw new ForbiddenAccessException();
+			throw new PersonalizedAccessDeniedException();
 	}
 
 	@AuthorizeAny
@@ -65,7 +65,7 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@AuthorizeAdmin
 	@AuthorizeTeacher
 	@Override
-	public Integer create(DefaultExamObligationDTO dto) throws IllegalArgumentException, ForbiddenAccessException {
+	public Integer create(DefaultExamObligationDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
 		ExamObligation examObligation = examObligationConverter.convertToJPA(dto);
 
 		examObligation = examObligationRepo.save(examObligation);
@@ -76,7 +76,7 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@AuthorizeAdmin
 	@AuthorizeTeacher
 	@Override
-	public void update(Integer id, DefaultExamObligationDTO dto) throws EntityNotFoundException, IllegalArgumentException, ForbiddenAccessException {
+	public void update(Integer id, DefaultExamObligationDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
 		DefaultInstitutionDTO institution = institutionService.getOne(dto.getCourse().getInstitution().getId());
 		authorize(institution.getId());
 
@@ -94,7 +94,7 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@AuthorizeAdmin
 	@AuthorizeTeacher
 	@Override
-	public boolean delete(Integer id) throws ForbiddenAccessException {
+	public boolean delete(Integer id) throws PersonalizedAccessDeniedException {
 		ExamObligation examObligation = examObligationRepo.getOne(id);
 
 		authorize(examObligation.getCourse().getInstitution().getId());
@@ -108,7 +108,7 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAny
 	@Override
-	public List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) throws ForbiddenAccessException {
+	public List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) throws PersonalizedAccessDeniedException {
 		DefaultCourseDTO course = courseService.getOne(courseId);
 
 		authorize(course.getInstitution().getId());

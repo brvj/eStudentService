@@ -3,7 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
@@ -43,9 +43,9 @@ public class DefaultTeacherService implements TeacherService {
 	@Autowired
 	private PrincipalHolder principalHolder;
 	
-	private void authorize(Integer institutionId) throws ForbiddenAccessException {
+	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new ForbiddenAccessException();
+			throw new PersonalizedAccessDeniedException();
 	}
 
 	@AuthorizeAny
@@ -107,7 +107,7 @@ public class DefaultTeacherService implements TeacherService {
 	@AuthorizeAdmin
 	@Override
 	public List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions)
-		throws ForbiddenAccessException {
+		throws PersonalizedAccessDeniedException {
 		authorize(institutionId);
 
 		Page<Teacher> page;

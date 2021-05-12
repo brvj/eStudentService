@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherRoleService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -27,7 +27,7 @@ public class TeacherRoleController {
 
 		}catch(IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (ForbiddenAccessException e){
+		}catch (PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -38,7 +38,7 @@ public class TeacherRoleController {
 			roleService.update(id, teacherRoleDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		} catch(EntityNotFoundException | ForbiddenAccessException e){
+		} catch(EntityNotFoundException | PersonalizedAccessDeniedException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -46,7 +46,7 @@ public class TeacherRoleController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteTeacherRole(@PathVariable("id") int id) throws ForbiddenAccessException {
+	public ResponseEntity<Void> deleteTeacherRole(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
 		if(roleService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -59,7 +59,7 @@ public class TeacherRoleController {
 			
 			if(teacherRoleDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(teacherRoleDTO, HttpStatus.OK);
-		} catch (ForbiddenAccessException e) {
+		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

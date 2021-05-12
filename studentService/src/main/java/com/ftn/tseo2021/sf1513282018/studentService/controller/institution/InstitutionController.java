@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -29,7 +29,7 @@ public class InstitutionController {
 	private InstitutionService institutionService;
 	
 	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createInstitution(@NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Integer> createInstitution(@NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws PersonalizedAccessDeniedException {
 		try{
 			int institutionId = institutionService.create(institutionDTO);
 			return new ResponseEntity<>(institutionId, HttpStatus.CREATED);
@@ -40,7 +40,7 @@ public class InstitutionController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateInstitution(@PathVariable("id") int id, @NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws ForbiddenAccessException {
+	public ResponseEntity<Void> updateInstitution(@PathVariable("id") int id, @NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws PersonalizedAccessDeniedException {
 		try{
 			institutionService.update(id, institutionDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -53,7 +53,7 @@ public class InstitutionController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteInstitution(@PathVariable("id") int id) throws ForbiddenAccessException {
+	public ResponseEntity<Void> deleteInstitution(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
 		if(institutionService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
@@ -65,7 +65,7 @@ public class InstitutionController {
 			institutionDTO = institutionService.getOne(id);
 			if (institutionDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(institutionDTO, HttpStatus.OK);
-		} catch (ForbiddenAccessException e) {
+		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -76,7 +76,7 @@ public class InstitutionController {
 			List<InstitutionUserDTO> users = institutionService.getInstitutionUsers(id, Pageable.unpaged());
 			return new ResponseEntity<>(users, HttpStatus.OK);
 		}
-		catch(EntityNotFoundException | ForbiddenAccessException e) {
+		catch(EntityNotFoundException | PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
 		} 
 	}
@@ -88,7 +88,7 @@ public class InstitutionController {
 			return new ResponseEntity<>(teachers, HttpStatus.OK);
 
 		}
-		catch(EntityNotFoundException | ForbiddenAccessException e) {
+		catch(EntityNotFoundException | PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -100,7 +100,7 @@ public class InstitutionController {
 			return new ResponseEntity<>(students, HttpStatus.OK);
 
 		}
-		catch(EntityNotFoundException | ForbiddenAccessException e) { 
+		catch(EntityNotFoundException | PersonalizedAccessDeniedException e) { 
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -112,7 +112,7 @@ public class InstitutionController {
 			return new ResponseEntity<>(courses, HttpStatus.OK);
 
 		}
-		catch(EntityNotFoundException | ForbiddenAccessException e) { 
+		catch(EntityNotFoundException | PersonalizedAccessDeniedException e) { 
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
@@ -124,7 +124,7 @@ public class InstitutionController {
 			return new ResponseEntity<>(examPeriods, HttpStatus.OK);
 
 		}
-		catch(EntityNotFoundException | ForbiddenAccessException e) {
+		catch(EntityNotFoundException | PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}

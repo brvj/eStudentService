@@ -5,10 +5,10 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.Teacher
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeSuperadmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeSuperadmin;
 
 import lombok.RequiredArgsConstructor;
 

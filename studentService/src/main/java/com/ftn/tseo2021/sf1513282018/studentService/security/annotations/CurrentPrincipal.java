@@ -1,4 +1,4 @@
-package com.ftn.tseo2021.sf1513282018.studentService.security;
+package com.ftn.tseo2021.sf1513282018.studentService.security.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

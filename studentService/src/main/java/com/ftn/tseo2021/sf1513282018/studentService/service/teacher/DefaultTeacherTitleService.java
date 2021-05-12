@@ -3,8 +3,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherTitleDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherTitle;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeSuperadmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeSuperadmin;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherTitleRepository;

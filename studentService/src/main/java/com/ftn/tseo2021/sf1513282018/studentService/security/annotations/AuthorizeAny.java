@@ -1,4 +1,4 @@
-package com.ftn.tseo2021.sf1513282018.studentService.security;
+package com.ftn.tseo2021.sf1513282018.studentService.security.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAuthority('ADMIN')")
-public @interface AuthorizeAdmin {
+@PreAuthorize("hasAnyAuthority('SUPERADMIN', 'ADMIN', 'TEACHER', 'STUDENT')")
+public @interface AuthorizeAny {
 
 }

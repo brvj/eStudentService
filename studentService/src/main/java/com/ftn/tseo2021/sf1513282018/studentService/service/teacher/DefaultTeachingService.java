@@ -3,10 +3,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeTeacher;
-
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseTeachingDTO;

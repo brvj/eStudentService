@@ -3,7 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.controller.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
-import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.CurrentPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;

@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.LoginDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.TokenUtils;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.CurrentPrincipal;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;

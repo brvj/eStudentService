@@ -4,10 +4,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationTypeDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligationType;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeTeacher;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacher;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

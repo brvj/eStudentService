@@ -28,9 +28,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUs
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 
 @Service
 public class DefaultUserService implements UserService {

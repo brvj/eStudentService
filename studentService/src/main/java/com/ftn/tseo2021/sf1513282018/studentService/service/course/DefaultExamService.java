@@ -7,10 +7,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Exa
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
-import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeTeacher;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacher;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;

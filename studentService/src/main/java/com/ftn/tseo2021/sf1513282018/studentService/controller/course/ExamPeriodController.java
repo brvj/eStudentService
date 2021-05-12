@@ -2,8 +2,8 @@ package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamPeriodExamDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.security.CurrentPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.CurrentPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;

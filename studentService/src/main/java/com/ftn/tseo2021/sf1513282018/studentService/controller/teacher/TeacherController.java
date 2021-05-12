@@ -34,6 +34,8 @@ public class TeacherController {
 
 		}catch(IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -43,7 +45,7 @@ public class TeacherController {
 			teacherService.update(id, teacherDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		}catch(EntityNotFoundException e){
+		}catch(EntityNotFoundException | ForbiddenAccessException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -51,7 +53,7 @@ public class TeacherController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteTeacher(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteTeacher(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(teacherService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

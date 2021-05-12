@@ -53,7 +53,7 @@ public class InstitutionController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteInstitution(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteInstitution(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(institutionService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

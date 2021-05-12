@@ -25,7 +25,11 @@ public class TeacherRoleController {
 			int id = roleService.create(teacherRoleDTO);
 			return new ResponseEntity<>(id, HttpStatus.CREATED);
 
-		}catch(IllegalArgumentException e){return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
+		}catch(IllegalArgumentException e){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
@@ -34,7 +38,7 @@ public class TeacherRoleController {
 			roleService.update(id, teacherRoleDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		} catch(EntityNotFoundException e){
+		} catch(EntityNotFoundException | ForbiddenAccessException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -42,7 +46,7 @@ public class TeacherRoleController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteTeacherRole(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteTeacherRole(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(roleService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

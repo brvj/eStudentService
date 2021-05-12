@@ -3,6 +3,8 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherRoleDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherRole;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeSuperadmin;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRoleRepository;
@@ -22,12 +24,14 @@ public class DefaultTeacherRoleService implements TeacherRoleService {
 	@Autowired
 	private DtoConverter<TeacherRole, TeacherRoleDTO, DefaultTeacherRoleDTO> teacherRoleConverter;
 
+	@AuthorizeAny
 	@Override
 	public DefaultTeacherRoleDTO getOne(Integer id) {
 		Optional<TeacherRole> teacherRole = teacherRoleRepo.findById(id);
 		return teacherRoleConverter.convertToDTO(teacherRole.orElse(null));
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public Integer create(DefaultTeacherRoleDTO dto) throws IllegalArgumentException {
 		TeacherRole teacherRole = teacherRoleConverter.convertToJPA(dto);
@@ -37,6 +41,7 @@ public class DefaultTeacherRoleService implements TeacherRoleService {
 		return teacherRole.getId();
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public void update(Integer id, DefaultTeacherRoleDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!teacherRoleRepo.existsById(id)) throw new EntityNotFoundException();
@@ -48,6 +53,7 @@ public class DefaultTeacherRoleService implements TeacherRoleService {
 		teacherRoleRepo.save(t);
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public boolean delete(Integer id) {
 		if(!teacherRoleRepo.existsById(id)) return false;

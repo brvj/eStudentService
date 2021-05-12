@@ -25,7 +25,11 @@ public class TeachingController {
 			int teaching = teachingService.create(teachingDTO);
 			return new ResponseEntity<>(teaching, HttpStatus.CREATED);
 
-		}catch(IllegalArgumentException e){return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
+		}catch(IllegalArgumentException e){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}catch (ForbiddenAccessException e){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
@@ -34,7 +38,7 @@ public class TeachingController {
 			teachingService.update(id, teachingDTO);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		}catch(EntityNotFoundException e){
+		}catch(EntityNotFoundException | ForbiddenAccessException e){
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch(IllegalArgumentException e){
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -42,7 +46,7 @@ public class TeachingController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteTeaching(@PathVariable("id") int id){
+	public ResponseEntity<Void> deleteTeaching(@PathVariable("id") int id) throws ForbiddenAccessException {
 		if(teachingService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

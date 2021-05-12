@@ -3,7 +3,9 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeachingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teaching;
-import lombok.RequiredArgsConstructor;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeTeacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeachingRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
@@ -21,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class DefaultTeachingService implements TeachingService {
 
 	@Autowired
@@ -30,12 +31,14 @@ public class DefaultTeachingService implements TeachingService {
 	@Autowired
 	private DtoConverter<Teaching, TeachingDTO, DefaultTeachingDTO> teachingConverter;
 
+	@AuthorizeAny
 	@Override
 	public DefaultTeachingDTO getOne(Integer id) {
 		Optional<Teaching> teaching = teachingRepo.findById(id);
 		return teachingConverter.convertToDTO(teaching.orElse(null));
 	}
 
+	@AuthorizeAdmin
 	@Override
 	public Integer create(DefaultTeachingDTO dto) throws IllegalArgumentException {
 		Teaching teaching = teachingConverter.convertToJPA(dto);
@@ -45,6 +48,7 @@ public class DefaultTeachingService implements TeachingService {
 		return teaching.getId();
 	}
 
+	@AuthorizeAdmin
 	@Override
 	public void update(Integer id, DefaultTeachingDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!teachingRepo.existsById(id)) throw new EntityNotFoundException();
@@ -56,6 +60,7 @@ public class DefaultTeachingService implements TeachingService {
 		teachingRepo.save(t);
 	}
 
+	@AuthorizeAdmin
 	@Override
 	public boolean delete(Integer id) {
 		if(!teachingRepo.existsById(id)) return false;
@@ -64,29 +69,33 @@ public class DefaultTeachingService implements TeachingService {
 		return true;
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<TeacherTeachingDTO> filterTeachingsByTeacher(int teacherId, Pageable pageable, TeacherTeachingDTO filterOptions) {
-		if (filterOptions == null) {
-			Page<Teaching> page = teachingRepo.findByTeacher_Id(teacherId, pageable);
-			return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
+		Page<Teaching> page;
+		if(filterOptions == null) {
+			page = teachingRepo.findByTeacher_Id(teacherId, pageable);
 		}
 		else {
-			Page<Teaching> page = teachingRepo.filterTeachingsByTeacher(teacherId, filterOptions.getTeacherRole().getId(), pageable);
-			return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
+			page = teachingRepo.filterTeachingsByTeacher(teacherId, filterOptions.getTeacherRole().getId(), pageable);
 		}
+		return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
 	}
 
+	@AuthorizeAdmin
+	@AuthorizeTeacher
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<CourseTeachingDTO> filterTeachingsByCourse(int courseId, Pageable pageable, CourseTeachingDTO filterOptions) {
-		if (filterOptions == null) {
-			Page<Teaching> page = teachingRepo.findByCourse_Id(courseId, pageable);
-			return (List<CourseTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), CourseTeachingDTO.class);
+		Page<Teaching> page;
+		if(filterOptions == null) {
+			page = teachingRepo.findByCourse_Id(courseId, pageable);
 		}
 		else {
-			Page<Teaching> page = teachingRepo.filterTeachingsByCourse(courseId, filterOptions.getTeacherRole().getId(), pageable);
-			return (List<CourseTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), CourseTeachingDTO.class);
+			page = teachingRepo.filterTeachingsByCourse(courseId, filterOptions.getTeacherRole().getId(), pageable);
 		}
+		return (List<CourseTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), CourseTeachingDTO.class);
 	}
 }

@@ -13,8 +13,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeSuperadmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
@@ -35,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class DefaultInstitutionService implements InstitutionService {
 
 	@Autowired

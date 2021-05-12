@@ -6,6 +6,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.Tea
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ForbiddenAccessException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeAny;
+import com.ftn.tseo2021.sf1513282018.studentService.security.AuthorizeSuperadmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 
 import lombok.RequiredArgsConstructor;
@@ -45,13 +47,15 @@ public class DefaultTeacherService implements TeacherService {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
 			throw new ForbiddenAccessException();
 	}
-	
+
+	@AuthorizeAny
 	@Override
 	public DefaultTeacherDTO getOne(Integer id) {
 		Optional<Teacher> teacher = teacherRepo.findById(id);
 		return teacherConverter.convertToDTO(teacher.orElse(null));
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public Integer create(DefaultTeacherDTO dto) throws IllegalArgumentException {
 		Teacher teacher = teacherConverter.convertToJPA(dto);
@@ -61,6 +65,7 @@ public class DefaultTeacherService implements TeacherService {
 		return teacher.getId();
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public void update(Integer id, DefaultTeacherDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!teacherRepo.existsById(id)) throw new EntityNotFoundException();
@@ -82,6 +87,7 @@ public class DefaultTeacherService implements TeacherService {
 
 	}
 
+	@AuthorizeSuperadmin
 	@Override
 	public boolean delete(Integer id) {
 		if(!teacherRepo.existsById(id)) return false;
@@ -103,16 +109,16 @@ public class DefaultTeacherService implements TeacherService {
 	public List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions)
 		throws ForbiddenAccessException {
 		authorize(institutionId);
-		
+
+		Page<Teacher> page;
 		if (filterOptions == null) {
-			Page<Teacher> page = teacherRepo.findByInstitution_Id(institutionId, pageable);
-			return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
+			page = teacherRepo.findByInstitution_Id(institutionId, pageable);
 		}
 		else {
-			Page<Teacher> page = teacherRepo.filterTeachers(institutionId, filterOptions.getTeacherTitle().getId(), 
+			page = teacherRepo.filterTeachers(institutionId, filterOptions.getTeacherTitle().getId(),
 					filterOptions.getFirstName(), filterOptions.getLastName(), pageable);
-			return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
 		}
+		return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
 	}
 
 	@Override

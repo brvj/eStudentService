@@ -14,7 +14,7 @@ import javax.persistence.EntityNotFoundException;
 
 public interface TeacherService extends BaseService<DefaultTeacherDTO, Integer> {
 
-    DefaultTeacherDTO getByUserId(int userId, Pageable pageable);
+    DefaultTeacherDTO getByUserId(int userId);
 
     List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) throws PersonalizedAccessDeniedException;
     

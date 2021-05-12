@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
@@ -24,9 +25,11 @@ public class CustomPrincipal implements UserDetails {
 	private final String username;
 	
 	private final Integer institutionId;
+	
+	private final Integer ownerId;
 
 	private final Set<GrantedAuthority> authorities;
-
+	
 	private final boolean accountNonExpired;
 
 	private final boolean accountNonLocked;
@@ -35,11 +38,11 @@ public class CustomPrincipal implements UserDetails {
 
 	private final boolean enabled;
 	
-	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, Collection<? extends GrantedAuthority> authorities) {
-		this(id, username, password, institutionId, true, true, true, true, authorities);
+	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, Integer ownerId, Collection<? extends GrantedAuthority> authorities) {
+		this(id, username, password, institutionId, ownerId, true, true, true, true, authorities);
 	}
 	
-	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, boolean enabled, boolean accountNonExpired,
+	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, Integer ownerId, boolean enabled, boolean accountNonExpired,
 			boolean credentialsNonExpired, boolean accountNonLocked,
 			Collection<? extends GrantedAuthority> authorities) {
 		Assert.isTrue(id != null && institutionId != null && username != null && !"".equals(username) && password != null,
@@ -48,6 +51,7 @@ public class CustomPrincipal implements UserDetails {
 		this.username = username;
 		this.password = password;
 		this.institutionId = institutionId;
+		this.ownerId = ownerId;
 		this.enabled = enabled;
 		this.accountNonExpired = accountNonExpired;
 		this.credentialsNonExpired = credentialsNonExpired;
@@ -58,6 +62,31 @@ public class CustomPrincipal implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.authorities;
+	}
+	
+	public boolean isAdmin() {
+		if (this.authorities.contains(new SimpleGrantedAuthority("ADMIN"))) return true;
+		return false;
+	}
+	
+	public boolean isTeacher() {
+		if (this.authorities.contains(new SimpleGrantedAuthority("TEACHER"))) return true;
+		return false;
+	}
+
+	public boolean isStudent() {
+		if (this.authorities.contains(new SimpleGrantedAuthority("STUDENT"))) return true;
+		return false;
+	}
+	
+	public Integer getTeacherId() {
+		if (!this.isTeacher()) throw new RuntimeException("Principal is not teacher hence you can not access teacherId");
+		return this.ownerId;
+	}
+	
+	public Integer getStudentId() {
+		if (!this.isStudent()) throw new RuntimeException("Principal is not student hence you can not access studentId");
+		return this.ownerId;
 	}
 	
 	public Integer getId() {

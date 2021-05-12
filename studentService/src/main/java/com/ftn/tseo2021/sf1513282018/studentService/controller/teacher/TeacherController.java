@@ -73,7 +73,7 @@ public class TeacherController {
 	@GetMapping(value = "/user/{id}", produces = "application/json")
 	public ResponseEntity<DefaultTeacherDTO> getTeacherByUserId(@PathVariable("id") int id){
 		try{
-			DefaultTeacherDTO teacherDTO = teacherService.getByUserId(id, Pageable.unpaged());
+			DefaultTeacherDTO teacherDTO = teacherService.getByUserId(id);
 			return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
 
 		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}

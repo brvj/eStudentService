@@ -97,7 +97,7 @@ public class DefaultTeacherService implements TeacherService {
 	}
 
 	@Override
-	public DefaultTeacherDTO getByUserId(int userId, Pageable pageable) {
+	public DefaultTeacherDTO getByUserId(int userId) {
 		Optional<Teacher> teacher = teacherRepo.findByUser_Id(userId);
 
 		return teacherConverter.convertToDTO(teacher.orElse(null));

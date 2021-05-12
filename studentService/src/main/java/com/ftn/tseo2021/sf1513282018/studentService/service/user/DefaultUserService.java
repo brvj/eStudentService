@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
@@ -41,6 +43,12 @@ public class DefaultUserService implements UserService {
 	
 	@Autowired
 	UserAuthorityService userAuthorityService;
+	
+	@Autowired
+	TeacherService teacherService;
+	
+	@Autowired
+	StudentService studentService;
 	
 	@Autowired
 	private PrincipalHolder principalHolder;
@@ -124,11 +132,25 @@ public class DefaultUserService implements UserService {
 		if (u.isEmpty()) throw new UsernameNotFoundException(String.format("User with username: %s not found", username));
 		
 		User user = u.get();
+		boolean isTeacher = false;
+		boolean isStudent = false;
 		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-		for (UserAuthority ua : user.getUserAuthorities())
+		for (UserAuthority ua : user.getUserAuthorities()) {
 			grantedAuthorities.add(new SimpleGrantedAuthority(ua.getAuthority().getName()));
+			
+			if (ua.getAuthority().getName().equals("TEACHER")) isTeacher = true;
+			else if (ua.getAuthority().getName().equals("STUDENT")) isStudent = true;
+		}
 		
-		return new CustomPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getInstitution().getId(), grantedAuthorities);
+		Integer ownerId = null;
+		if (isTeacher) {
+			ownerId = teacherService.getByUserId(user.getId()).getId();
+		}
+		else if (isStudent) {
+			ownerId = studentService.getByUserId(user.getId()).getId();
+		}
+		
+		return new CustomPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getInstitution().getId(), ownerId, grantedAuthorities);
 	}
 
 }

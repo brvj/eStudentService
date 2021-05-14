@@ -64,6 +64,11 @@ public class CustomPrincipal implements UserDetails {
 		return this.authorities;
 	}
 	
+	public boolean isSuperadmin() {
+		if (this.authorities.contains(new SimpleGrantedAuthority("SUPERADMIN"))) return true;
+		return false;
+	}
+	
 	public boolean isAdmin() {
 		if (this.authorities.contains(new SimpleGrantedAuthority("ADMIN"))) return true;
 		return false;

@@ -1,7 +1,12 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.user;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +17,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.Ins
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.AuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.AuthorityRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
@@ -28,6 +35,9 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	private InstitutionRepository institutionRepo;
 	
 	@Autowired
+	private AuthorityRepository authorityRepo;
+	
+	@Autowired
 	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 	
 	@Autowired
@@ -37,14 +47,14 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 	private PasswordEncoder passwordEncoder;
 
 	@Override
-	public User convertToJPA(UserDTO source) throws IllegalArgumentException {
+	public User convertToJPA(UserDTO source) {
 		if (source instanceof DefaultUserDTO) return convertToJPA((DefaultUserDTO) source);
 		else throw new IllegalArgumentException(String.format(
 					"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<User> convertToJPA(List<? extends UserDTO> sources) throws IllegalArgumentException {
+	public List<User> convertToJPA(List<? extends UserDTO> sources) {
 		List<User> result = new ArrayList<User>();
 		
 		if (sources.get(0) instanceof DefaultUserDTO) {
@@ -120,23 +130,38 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 		return dto;
 	}
 	
-	private User convertToJPA(DefaultUserDTO source) throws IllegalArgumentException {
-		if (source == null) return null;
+	private User convertToJPA(DefaultUserDTO source) {
+		if (source == null || source.getInstitution() == null || !institutionRepo.existsById(source.getInstitution().getId()))
+			throw new EntityValidationException();
 		
-		if (source.getInstitution() == null || !institutionRepo.existsById(source.getInstitution().getId()))
-			throw new IllegalArgumentException();
-		
-		User user = new User();
-//		user.setId(source.getId());
-		user.setUsername(source.getUsername());
-		user.setPassword(passwordEncoder.encode(source.getPassword()));
-		user.setFirstName(source.getFirstName());
-		user.setLastName(source.getLastName());
-		user.setEmail(source.getEmail());
-		user.setPhoneNumber(source.getPhoneNumber());
-		user.setInstitution(institutionRepo.getOne(source.getInstitution().getId()));
-		
-		return user;
+		for (DefaultAuthorityDTO authority : source.getAuthorities()) 
+			if (!authorityRepo.existsById(authority.getId()))
+				throw new EntityValidationException();
+		try {
+			User user = new User();
+	//		user.setId(source.getId());
+			user.setUsername(source.getUsername());
+			user.setPassword(passwordEncoder.encode(source.getPassword()));
+			user.setFirstName(source.getFirstName());
+			user.setLastName(source.getLastName());
+			user.setEmail(source.getEmail());
+			user.setPhoneNumber(source.getPhoneNumber());
+			user.setInstitution(institutionRepo.getOne(source.getInstitution().getId()));
+			
+			Set<UserAuthority> authorities = new HashSet<>();
+			for (DefaultAuthorityDTO dto : source.getAuthorities()) {
+				UserAuthority ua = new UserAuthority();
+				ua.setUser(user);
+				ua.setAuthority(authorityRepo.getOne(dto.getId()));
+				authorities.add(ua);
+			}
+			user.setUserAuthorities(authorities);
+			
+			return user;
+		}
+		catch (ConstraintViolationException | EntityNotFoundException ex) {
+			throw new EntityValidationException(ex);
+		}
 	}
 
 }

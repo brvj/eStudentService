@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,85 +20,110 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Stu
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
-import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 
 @Service
 public class DefaultUserService implements UserService {
 	
 	@Autowired
-	UserRepository userRepo;
+	private UserRepository userRepo;
 	
 	@Autowired
-	DtoConverter<User, UserDTO, DefaultUserDTO> userConverter;
+	private DtoConverter<User, UserDTO, DefaultUserDTO> userConverter;
 	
 	@Autowired
-	UserAuthorityService userAuthorityService;
+	private UserAuthorityService userAuthorityService;
 	
 	@Autowired
-	TeacherService teacherService;
+	private TeacherService teacherService;
 	
 	@Autowired
-	StudentService studentService;
+	private StudentService studentService;
 	
 	@Autowired
-	private PrincipalHolder principalHolder;
+	private PersonalizedAuthorizator authorizator;
 	
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new PersonalizedAccessDeniedException();
-	}
-
+	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
+	
+	@AuthorizeAny
 	@Override
 	public DefaultUserDTO getOne(Integer id) {
-		Optional<User> u = userRepo.findById(id);
-		return userConverter.convertToDTO(u.orElse(null));
+		if (!getPrincipal().isAdmin() && 
+				(getPrincipal().isTeacher() || getPrincipal().isStudent()))
+			authorizator.assertPrincipalIdIs(id, PersonalizedAccessDeniedException.class);
+		
+		User user = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+		
+		if (getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(user.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
+		user.setPassword(null);
+		return userConverter.convertToDTO(user);
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public Integer create(DefaultUserDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultUserDTO dto) {
+		authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), EntityValidationException.class);
+		
 		User user = userConverter.convertToJPA(dto);
 		
 		user = userRepo.save(user);
-		
+
 		return user.getId();
 	}
 
+	@AuthorizeAny
 	@Override
-	public void update(Integer id, DefaultUserDTO dto) throws EntityNotFoundException, IllegalArgumentException {
-		if (!userRepo.existsById(id)) throw new EntityNotFoundException();
+	public void update(Integer id, DefaultUserDTO dto) {
+		if (!getPrincipal().isAdmin() && 
+				(getPrincipal().isTeacher() || getPrincipal().isStudent()))
+			authorizator.assertPrincipalIdIs(id, PersonalizedAccessDeniedException.class);
+		
+		User u = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+		
+		if (getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(u.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
+		if (dto.getInstitution().getId() != u.getInstitution().getId()) throw new EntityValidationException();
 
 		User uNew = userConverter.convertToJPA(dto);
 		
-		User u = userRepo.findById(id).get();
 		u.setUsername(uNew.getUsername());
-//		u.setPassword(uNew.getPassword()); ?
+//		u.setPassword(uNew.getPassword());
 		u.setFirstName(uNew.getFirstName());
 		u.setLastName(uNew.getLastName());
 		u.setEmail(uNew.getEmail());
 		u.setPhoneNumber(uNew.getPhoneNumber());
 		userRepo.save(u);
-		
 	}
 
+	@AuthorizeAdmin
 	@Override
 	public void delete(Integer id) {
-		if (!userRepo.existsById(id)) {};
+		User user = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+		
+		authorizator.assertPrincipalIsFromInstitution(user.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
 		userRepo.deleteById(id);
 	}
 
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public List<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions) throws PersonalizedAccessDeniedException {
-		authorize(institutionId);
+	public List<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions) {
+		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 		
 		if (filterOptions == null) {
 			Page<User> page = userRepo.findByInstitution_Id(institutionId, pageable);
@@ -113,9 +136,12 @@ public class DefaultUserService implements UserService {
 		}
 	}
 	
+//	---------------------------------------------------------------------------------------------------------------------------
+//	No need to explicitly secure methods below since they completely depend on secured methods of another services
+	
 	@Override
-	public List<UserUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable) throws EntityNotFoundException {
-		if (!userRepo.existsById(userId)) throw new EntityNotFoundException();
+	public List<UserUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable) {
+		if (!userRepo.existsById(userId)) throw new ResourceNotFoundException();
 		return userAuthorityService.getByUserId(userId, pageable);
 	}
 

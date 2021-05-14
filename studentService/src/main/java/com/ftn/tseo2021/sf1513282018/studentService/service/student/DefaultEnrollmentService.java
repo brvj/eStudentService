@@ -65,10 +65,9 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!enrollmentRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if (!enrollmentRepo.existsById(id)) {}
 		enrollmentRepo.deleteById(id);
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")

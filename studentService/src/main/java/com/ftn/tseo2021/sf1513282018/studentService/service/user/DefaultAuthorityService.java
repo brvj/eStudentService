@@ -54,9 +54,8 @@ public class DefaultAuthorityService implements AuthorityService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!authorityRepo.existsById(id)) return false;
-		return true;
+	public void delete(Integer id) {
+		if (!authorityRepo.existsById(id)) {}
 	}
 
 }

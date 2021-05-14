@@ -62,10 +62,9 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 	@AuthorizeAdmin
 	@AuthorizeTeacher
 	@Override
-	public boolean delete(Integer id) {
-		if(!examObligationTypeRepo.existsById(id)) return  false;
+	public void delete(Integer id) {
+		if(!examObligationTypeRepo.existsById(id)) {}
 
 		examObligationTypeRepo.deleteById(id);
-		return true;
 	}
 }

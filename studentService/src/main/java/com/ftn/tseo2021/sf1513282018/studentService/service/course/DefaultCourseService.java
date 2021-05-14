@@ -100,15 +100,14 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAdmin
 	@Override
-	public boolean delete(Integer id) throws PersonalizedAccessDeniedException {
+	public void delete(Integer id) throws PersonalizedAccessDeniedException {
 		Course course= courseRepo.getOne(id);
 
 		authorize(course.getInstitution().getId());
 
-		if(!courseRepo.existsById(id)) return false;
+		if(!courseRepo.existsById(id)) {}
 
 		courseRepo.deleteById(id);
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")

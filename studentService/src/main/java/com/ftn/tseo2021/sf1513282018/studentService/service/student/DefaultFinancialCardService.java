@@ -65,10 +65,9 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!financialCardRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if (!financialCardRepo.existsById(id)) {}
 		financialCardRepo.deleteById(id);
-		return true;
 	}
 
 	@Override

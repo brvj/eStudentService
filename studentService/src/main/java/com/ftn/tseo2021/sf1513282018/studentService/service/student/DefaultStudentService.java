@@ -87,10 +87,9 @@ public class DefaultStudentService implements StudentService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!studentRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if (!studentRepo.existsById(id)) {}
 		studentRepo.deleteById(id);
-		return true;
 	}
 
 	@Override

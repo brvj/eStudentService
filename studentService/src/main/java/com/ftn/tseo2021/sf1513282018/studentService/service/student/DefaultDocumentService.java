@@ -61,10 +61,9 @@ public class DefaultDocumentService implements DocumentService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!documentRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if (!documentRepo.existsById(id)) {}
 		documentRepo.deleteById(id);
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -56,10 +56,9 @@ public class DefaultTeacherRoleService implements TeacherRoleService {
 
 	@AuthorizeSuperadmin
 	@Override
-	public boolean delete(Integer id) {
-		if(!teacherRoleRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if(!teacherRoleRepo.existsById(id)) {};
 
 		teacherRoleRepo.deleteById(id);
-		return true;
 	}
 }

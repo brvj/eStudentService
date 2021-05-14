@@ -9,7 +9,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.Tea
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
-import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeSuperadmin;
 
@@ -57,17 +57,12 @@ public class DefaultInstitutionService implements InstitutionService {
 	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 	
 	@Autowired
-	private PrincipalHolder principalHolder;
-	
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new PersonalizedAccessDeniedException();
-	}
+	private PersonalizedAuthorizator authorizator;
 	
 	@AuthorizeAny
 	@Override
 	public DefaultInstitutionDTO getOne(Integer id) throws PersonalizedAccessDeniedException {
-		authorize(id);
+		authorizator.assertPrincipalIsFromInstitution(id, PersonalizedAccessDeniedException.class);
 		
 		Optional<Institution> institution = institutionRepo.findById(id);
 		return institutionConverter.convertToDTO(institution.orElse(null));
@@ -100,11 +95,10 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@AuthorizeSuperadmin
 	@Override
-	public boolean delete(Integer id) {
-		if(!institutionRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if(!institutionRepo.existsById(id)) {}
 
 		institutionRepo.deleteById(id);
-		return true;
 	}
 	
 //	No need to explicitly secure methods below since they completely depend on secured methods of another services

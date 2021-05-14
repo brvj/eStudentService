@@ -92,14 +92,13 @@ public class DefaultExamService implements ExamService {
 	@AuthorizeAdmin
 	@AuthorizeTeacher
 	@Override
-	public boolean delete(Integer id) throws PersonalizedAccessDeniedException {
+	public void delete(Integer id) throws PersonalizedAccessDeniedException {
 		Exam exam = examRepo.getOne(id);
 		authorize(exam.getExamPeriod().getInstitution().getId());
 
-		if(!examRepo.existsById(id)) return false;
+		if(!examRepo.existsById(id)) {}
 
 		examRepo.deleteById(id);
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")

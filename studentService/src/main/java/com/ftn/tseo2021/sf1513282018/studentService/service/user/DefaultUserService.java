@@ -91,16 +91,9 @@ public class DefaultUserService implements UserService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!userRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if (!userRepo.existsById(id)) {};
 		userRepo.deleteById(id);
-		return true;
-	}
-
-	@Override
-	public DefaultUserDTO getByUsername(String username) {
-		Optional<User> u = userRepo.findByUsername(username);
-		return userConverter.convertToDTO(u.orElse(null));
 	}
 
 	@SuppressWarnings("unchecked")

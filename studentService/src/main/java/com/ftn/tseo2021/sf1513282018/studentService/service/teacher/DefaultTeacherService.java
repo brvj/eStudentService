@@ -89,11 +89,10 @@ public class DefaultTeacherService implements TeacherService {
 
 	@AuthorizeSuperadmin
 	@Override
-	public boolean delete(Integer id) {
-		if(!teacherRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if(!teacherRepo.existsById(id)) {}
 
 		teacherRepo.deleteById(id);
-		return true;
 	}
 
 	@Override

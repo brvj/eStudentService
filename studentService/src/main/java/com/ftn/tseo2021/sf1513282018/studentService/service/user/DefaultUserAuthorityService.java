@@ -55,9 +55,8 @@ public class DefaultUserAuthorityService implements UserAuthorityService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!userAuthorityRepo.existsById(id)) return false;
-		return true;
+	public void delete(Integer id) {
+		if (!userAuthorityRepo.existsById(id)) {}
 	}
 
 	@SuppressWarnings("unchecked")

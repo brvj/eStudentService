@@ -56,10 +56,9 @@ public class DefaultExamTakingService implements ExamTakingService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!examTakingRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if (!examTakingRepo.existsById(id)) {}
 		examTakingRepo.deleteById(id);
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")

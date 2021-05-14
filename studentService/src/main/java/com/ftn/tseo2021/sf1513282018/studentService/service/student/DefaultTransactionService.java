@@ -55,10 +55,9 @@ public class DefaultTransactionService implements TransactionService {
 	}
 
 	@Override
-	public boolean delete(Integer id) {
-		if (!transactionRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if (!transactionRepo.existsById(id)) {}
 		transactionRepo.deleteById(id);
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")

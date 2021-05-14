@@ -61,11 +61,10 @@ public class DefaultTeachingService implements TeachingService {
 
 	@AuthorizeAdmin
 	@Override
-	public boolean delete(Integer id) {
-		if(!teachingRepo.existsById(id)) return false;
+	public void delete(Integer id) {
+		if(!teachingRepo.existsById(id)) {}
 
 		teachingRepo.deleteById(id);
-		return true;
 	}
 
 	@AuthorizeAdmin

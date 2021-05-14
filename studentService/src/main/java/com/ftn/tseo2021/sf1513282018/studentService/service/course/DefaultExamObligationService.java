@@ -95,15 +95,14 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@AuthorizeAdmin
 	@AuthorizeTeacher
 	@Override
-	public boolean delete(Integer id) throws PersonalizedAccessDeniedException {
+	public void delete(Integer id) throws PersonalizedAccessDeniedException {
 		ExamObligation examObligation = examObligationRepo.getOne(id);
 
 		authorize(examObligation.getCourse().getInstitution().getId());
 
-		if(!examObligationRepo.existsById(id)) return false;
+		if(!examObligationRepo.existsById(id)) {}
 
 		examObligationRepo.deleteById(id);
-		return true;
 	}
 
 	@SuppressWarnings("unchecked")

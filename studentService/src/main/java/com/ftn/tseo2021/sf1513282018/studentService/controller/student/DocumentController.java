@@ -52,8 +52,8 @@ public class DocumentController {
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteDocument(@PathVariable("id") int id) {
-		if (documentService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		documentService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")

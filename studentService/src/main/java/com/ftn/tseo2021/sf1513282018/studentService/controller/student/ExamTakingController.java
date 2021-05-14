@@ -52,8 +52,8 @@ public class ExamTakingController {
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteExamTaking(@PathVariable("id") int id) {
-		if (examTakingService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		examTakingService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id", produces = "application/json")

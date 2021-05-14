@@ -52,8 +52,8 @@ public class TransactionController {
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteTransaction(@PathVariable("id") int id) {
-		if (transactionService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		transactionService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")

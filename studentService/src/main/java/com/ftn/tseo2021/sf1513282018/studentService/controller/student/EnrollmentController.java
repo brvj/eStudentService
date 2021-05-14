@@ -58,8 +58,8 @@ public class EnrollmentController {
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteEnrollment(@PathVariable("id") int id) {
-		if (enrollmentService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		enrollmentService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")

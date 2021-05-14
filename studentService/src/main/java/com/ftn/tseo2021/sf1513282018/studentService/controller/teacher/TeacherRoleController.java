@@ -47,8 +47,8 @@ public class TeacherRoleController {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteTeacherRole(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
-		if(roleService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		roleService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")

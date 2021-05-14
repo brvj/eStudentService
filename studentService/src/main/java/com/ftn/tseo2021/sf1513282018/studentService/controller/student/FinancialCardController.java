@@ -58,8 +58,8 @@ public class FinancialCardController {
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteFinancialCard(@PathVariable("id") int id) {
-		if (cardService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		cardService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")

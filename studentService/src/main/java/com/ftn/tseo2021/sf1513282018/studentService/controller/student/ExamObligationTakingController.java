@@ -52,8 +52,8 @@ public class ExamObligationTakingController {
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteExamObligationTaking(@PathVariable("id") int id) {
-		if (examObligationTakingService.delete(id)) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		examObligationTakingService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")

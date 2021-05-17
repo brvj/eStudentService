@@ -50,8 +50,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	public DefaultExamPeriodDTO getOne(Integer id) {
 		ExamPeriod ep = examPeriodRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 
-		if(getPrincipal().isAdmin() || getPrincipal().isTeacher() || getPrincipal().isStudent())
-			authorizator.assertPrincipalIsFromInstitution(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		authorizator.assertPrincipalIsFromInstitution(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 
 		return examPeriodConverter.convertToDTO(ep);
 	}
@@ -98,8 +97,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@Override
 	public List<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions) 
 			throws PersonalizedAccessDeniedException {
-		if(getPrincipal().isAdmin() || getPrincipal().isTeacher() || getPrincipal().isStudent())
-			authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
+		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 		
 		if (filterOptions == null) {
 			Page<ExamPeriod> page = examPeriodRepo.findByInstitution_Id(institutionId, pageable);

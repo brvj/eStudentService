@@ -2,12 +2,8 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationTypeDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligationType;
-import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
-import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
-import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
-import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacher;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +31,7 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 		return examObligationTypeConverter.convertToDTO(examObligationType.orElse(null));
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public Integer create(DefaultExamObligationTypeDTO dto) throws IllegalArgumentException {
 		ExamObligationType examObligationType = examObligationTypeConverter.convertToJPA(dto);
@@ -46,8 +41,7 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 		return examObligationType.getId();
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public void update(Integer id, DefaultExamObligationTypeDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if(!examObligationTypeRepo.existsById(id)) throw new EntityNotFoundException();
@@ -60,7 +54,6 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 	}
 
 	@AuthorizeAdmin
-	@AuthorizeTeacher
 	@Override
 	public void delete(Integer id) {
 		if(!examObligationTypeRepo.existsById(id)) {}

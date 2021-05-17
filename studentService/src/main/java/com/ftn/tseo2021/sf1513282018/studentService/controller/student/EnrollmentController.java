@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.EnrollmentExamTakingDTO;
@@ -33,46 +32,28 @@ public class EnrollmentController {
 	
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createEnrollment(@RequestBody DefaultEnrollmentDTO enrollmentDTO) {
-		try {
-			int id = enrollmentService.create(enrollmentDTO);
-			
-			return new ResponseEntity<>(id, HttpStatus.CREATED);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		int id = enrollmentService.create(enrollmentDTO);
+		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateEnrollment(@PathVariable("id") int id, 
 			@RequestBody DefaultEnrollmentDTO enrollmentDTO) {
-		try {
-			enrollmentService.update(id, enrollmentDTO);
-			
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		enrollmentService.update(id, enrollmentDTO);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteEnrollment(@PathVariable("id") int id) {
-		enrollmentService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		enrollmentService.delete(id); 
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultEnrollmentDTO> getEnrollmentById(@PathVariable("id") int id) {
-		DefaultEnrollmentDTO enrollment;
-		try {
-			enrollment = enrollmentService.getOne(id);
-			
-			if (enrollment == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(enrollment, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		DefaultEnrollmentDTO enrollment = enrollmentService.getOne(id);
+		
+		return new ResponseEntity<>(enrollment, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}/examObligationTakings", produces = "application/json")

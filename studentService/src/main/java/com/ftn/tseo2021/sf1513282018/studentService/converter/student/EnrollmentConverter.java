@@ -12,6 +12,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Enrollm
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.CourseRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
@@ -37,14 +38,14 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 	CourseRepository courseRepo;
 	
 	@Override
-	public Enrollment convertToJPA(EnrollmentDTO source) throws IllegalArgumentException {
+	public Enrollment convertToJPA(EnrollmentDTO source) {
 		if (source instanceof DefaultEnrollmentDTO) return convertToJPA((DefaultEnrollmentDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<Enrollment> convertToJPA(List<? extends EnrollmentDTO> sources) throws IllegalArgumentException {
+	public List<Enrollment> convertToJPA(List<? extends EnrollmentDTO> sources) {
 		List<Enrollment> result = new ArrayList<Enrollment>();
 		
 		if (sources.get(0) instanceof DefaultEnrollmentDTO) {
@@ -57,7 +58,7 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends EnrollmentDTO> T convertToDTO(Enrollment source, Class<? extends EnrollmentDTO> returnType) throws IllegalArgumentException {
+	public <T extends EnrollmentDTO> T convertToDTO(Enrollment source, Class<? extends EnrollmentDTO> returnType) {
 		if (returnType == DefaultEnrollmentDTO.class) return (T) convertToDefaultEnrollmentDTO(source);
 		else if (returnType == StudentEnrollmentDTO.class) return (T) convertToStudentEnrollmentDTO(source);
 		else if (returnType == CourseEnrollmentDTO.class) return (T) convertToCourseEnrollmentDTO(source);
@@ -67,7 +68,7 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 
 	@Override
 	public List<? extends EnrollmentDTO> convertToDTO(List<Enrollment> sources,
-			Class<? extends EnrollmentDTO> returnType) throws IllegalArgumentException {
+			Class<? extends EnrollmentDTO> returnType) {
 		if (returnType == DefaultEnrollmentDTO.class) {
 			List<DefaultEnrollmentDTO> result = new ArrayList<>();
 			for (Enrollment jpa : sources) result.add(convertToDefaultEnrollmentDTO(jpa));
@@ -127,13 +128,13 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 		return dto;
 	}
 	
-	private Enrollment convertToJPA(DefaultEnrollmentDTO source) throws IllegalArgumentException {
+	private Enrollment convertToJPA(DefaultEnrollmentDTO source) {
 		if (source == null) return null;
 		
 		if (source.getStudent() == null || source.getCourse() == null || 
 				!studentRepo.existsById(source.getStudent().getId()) || 
 				!courseRepo.existsById(source.getCourse().getId()))
-			throw new IllegalArgumentException();
+			throw new EntityValidationException();
 		
 		Enrollment enrollment = new Enrollment();
 //		enrollment.setId(source.getId());

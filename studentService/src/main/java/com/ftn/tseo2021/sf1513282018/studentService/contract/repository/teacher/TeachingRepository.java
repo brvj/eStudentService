@@ -24,4 +24,6 @@ public interface TeachingRepository extends JpaRepository<Teaching, Integer> {
             "(:teacherRoleId is null OR t.teacherRole.id = :teacherRoleId)")
     Page<Teaching> filterTeachingsByCourse(@Param("courseId") int courseId,
                                    @Param("teacherRoleId") Integer teacherRoleId, Pageable pageable);
+    
+    boolean existsByTeacher_IdAndCourse_Id(int teacherId, int courseId);
 }

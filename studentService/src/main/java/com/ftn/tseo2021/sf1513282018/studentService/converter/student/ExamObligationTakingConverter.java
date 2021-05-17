@@ -12,6 +12,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Enrollm
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.ExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.EnrollmentRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
@@ -37,14 +38,14 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 	ExamObligationRepository examObligationRepo;
 	
 	@Override
-	public ExamObligationTaking convertToJPA(ExamObligationTakingDTO source) throws IllegalArgumentException {
+	public ExamObligationTaking convertToJPA(ExamObligationTakingDTO source) {
 		if (source instanceof DefaultExamObligationTakingDTO) return convertToJPA((DefaultExamObligationTakingDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<ExamObligationTaking> convertToJPA(List<? extends ExamObligationTakingDTO> sources) throws IllegalArgumentException {
+	public List<ExamObligationTaking> convertToJPA(List<? extends ExamObligationTakingDTO> sources) {
 		List<ExamObligationTaking> result = new ArrayList<ExamObligationTaking>();
 		
 		if (sources.get(0) instanceof DefaultExamObligationTakingDTO) {
@@ -128,17 +129,17 @@ public class ExamObligationTakingConverter implements DtoConverter<ExamObligatio
 		return dto;
 	}
 	
-	private ExamObligationTaking convertToJPA(DefaultExamObligationTakingDTO source) throws IllegalArgumentException {
-		if (source == null) return null;
-		
-		if (source.getEnrollment() == null || source.getExamObligation() == null || 
+	private ExamObligationTaking convertToJPA(DefaultExamObligationTakingDTO source) {
+		if (source == null || source.getEnrollment() == null || source.getExamObligation() == null || 
 				!enrollmentRepo.existsById(source.getEnrollment().getId()) || 
 				!examObligationRepo.existsById(source.getExamObligation().getId()))
-			throw new IllegalArgumentException();
+			throw new EntityValidationException();
 		
-		ExamObligationTaking taking = new ExamObligationTaking(source.getId(), source.getScore(), 
-				enrollmentRepo.getOne(source.getEnrollment().getId()), 
-				examObligationRepo.getOne(source.getExamObligation().getId()));
+		ExamObligationTaking taking = new ExamObligationTaking();
+//		taking.setId(source.getId());
+		taking.setScore(source.getScore());
+		taking.setEnrollment(enrollmentRepo.getOne(source.getEnrollment().getId()));
+		taking.setExamObligation(examObligationRepo.getOne(source.getExamObligation().getId()));
 		
 		return taking;
 	}

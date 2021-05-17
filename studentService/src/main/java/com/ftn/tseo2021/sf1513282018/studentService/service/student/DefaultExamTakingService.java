@@ -91,9 +91,9 @@ public class DefaultExamTakingService implements ExamTakingService {
 		ExamTaking t = examTakingRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		
 		if (getPrincipal().isAdmin())
-			authorizator.assertPrincipalIsFromInstitution(t.getEnrollment().getCourse().getInstitution().getId(), EntityValidationException.class);
+			authorizator.assertPrincipalIsFromInstitution(t.getEnrollment().getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isTeacher())
-			authorizator.assertTeacherIsTeachingCourse(t.getEnrollment().getCourse().getId(), EntityValidationException.class);
+			authorizator.assertTeacherIsTeachingCourse(t.getEnrollment().getCourse().getId(), PersonalizedAccessDeniedException.class);
 		
 		if (dto.getEnrollment() == null || dto.getExam() == null || dto.getEnrollment().getId() != t.getEnrollment().getId() || dto.getExam().getId() != t.getExam().getId())
 			throw new EntityValidationException();
@@ -110,9 +110,9 @@ public class DefaultExamTakingService implements ExamTakingService {
 		ExamTaking t = examTakingRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		
 		if (getPrincipal().isAdmin())
-			authorizator.assertPrincipalIsFromInstitution(t.getEnrollment().getCourse().getInstitution().getId(), EntityValidationException.class);
+			authorizator.assertPrincipalIsFromInstitution(t.getEnrollment().getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isTeacher())
-			authorizator.assertTeacherIsTeachingCourse(t.getEnrollment().getCourse().getId(), EntityValidationException.class);
+			authorizator.assertTeacherIsTeachingCourse(t.getEnrollment().getCourse().getId(), PersonalizedAccessDeniedException.class);
 		
 		examTakingRepo.deleteById(id);
 	}
@@ -124,9 +124,9 @@ public class DefaultExamTakingService implements ExamTakingService {
 		DefaultExamDTO exam = examService.getOne(examId);
 		
 		if (getPrincipal().isAdmin())
-			authorizator.assertPrincipalIsFromInstitution(exam.getCourse().getInstitution().getId(), EntityValidationException.class);
+			authorizator.assertPrincipalIsFromInstitution(exam.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isTeacher())
-			authorizator.assertTeacherIsTeachingCourse(exam.getCourse().getId(), EntityValidationException.class);
+			authorizator.assertTeacherIsTeachingCourse(exam.getCourse().getId(), PersonalizedAccessDeniedException.class);
 		
 		if (filterOptions == null) {
 			Page<ExamTaking> page = examTakingRepo.findByExam_Id(examId, pageable);

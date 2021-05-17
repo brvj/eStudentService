@@ -97,12 +97,12 @@ public class DefaultEnrollmentService implements EnrollmentService {
 
 	@AuthorizeAdmin
 	@Override
-	public void update(Integer id, DefaultEnrollmentDTO dto) throws EntityNotFoundException, IllegalArgumentException {
+	public void update(Integer id, DefaultEnrollmentDTO dto) {
 		Enrollment e = enrollmentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		
 		authorizator.assertPrincipalIsFromInstitution(e.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		
-		if ((dto.getCourse() != null && dto.getCourse().getId() != e.getCourse().getId()) || (dto.getStudent() != null && dto.getStudent().getId() != e.getStudent().getId()))
+		if (dto.getCourse() == null || dto.getStudent() == null || dto.getCourse().getId() != e.getCourse().getId() || dto.getStudent().getId() != e.getStudent().getId())
 			throw new EntityValidationException();
 
 		Enrollment eNew = enrollmentConverter.convertToJPA(dto);
@@ -164,14 +164,14 @@ public class DefaultEnrollmentService implements EnrollmentService {
 
 	@Override
 	public List<EnrollmentExamObligationTakingDTO> getEnrollmentExamObligationTakings(int enrollmentId,
-			Pageable pageable) throws EntityNotFoundException {
+			Pageable pageable) {
 		if (!enrollmentRepo.existsById(enrollmentId)) throw new EntityNotFoundException();
 		
 		return examObligationTakingService.filterTakingsByEnrollment(enrollmentId, pageable, null);
 	}
 
 	@Override
-	public List<EnrollmentExamTakingDTO> getEnrollmentExamTakings(int enrollmentId, Pageable pageable) throws EntityNotFoundException {
+	public List<EnrollmentExamTakingDTO> getEnrollmentExamTakings(int enrollmentId, Pageable pageable) {
 		if (!enrollmentRepo.existsById(enrollmentId)) throw new EntityNotFoundException();
 		
 		return examTakingService.filterTakingsByEnrollment(enrollmentId, pageable, null);

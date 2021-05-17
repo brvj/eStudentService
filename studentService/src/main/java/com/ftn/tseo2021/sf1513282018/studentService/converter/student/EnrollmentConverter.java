@@ -129,9 +129,7 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 	}
 	
 	private Enrollment convertToJPA(DefaultEnrollmentDTO source) {
-		if (source == null) return null;
-		
-		if (source.getStudent() == null || source.getCourse() == null || 
+		if (source == null || source.getStudent() == null || source.getCourse() == null || 
 				!studentRepo.existsById(source.getStudent().getId()) || 
 				!courseRepo.existsById(source.getCourse().getId()))
 			throw new EntityValidationException();

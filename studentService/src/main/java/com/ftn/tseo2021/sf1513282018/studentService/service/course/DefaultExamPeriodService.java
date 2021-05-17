@@ -3,11 +3,12 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamPeriod;
-import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 
@@ -25,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DefaultExamPeriodService implements ExamPeriodService {
@@ -40,45 +40,42 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	private ExamService examService;
 
 	@Autowired
-	private InstitutionService institutionService;
+	private PersonalizedAuthorizator authorizator;
 	
 	@Autowired
-	private PrincipalHolder principalHolder;
-	
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new PersonalizedAccessDeniedException();
-	}
+	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
 
 	@AuthorizeAny
 	@Override
 	public DefaultExamPeriodDTO getOne(Integer id) {
-		Optional<ExamPeriod> examPeriod = examPeriodRepo.findById(id);
-		return examPeriodConverter.convertToDTO(examPeriod.orElse(null));
+		ExamPeriod ep = examPeriodRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+
+		authorizator.assertPrincipalIsFromInstitution(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+
+		return examPeriodConverter.convertToDTO(ep);
 	}
 
 	@AuthorizeAdmin
 	@Override
-	public Integer create(DefaultExamPeriodDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
-		ExamPeriod examPeriod = examPeriodConverter.convertToJPA(dto);
-		examPeriod.getInstitution().setId(principalHolder.getCurrentPrincipal().getInstitutionId());
+	public Integer create(DefaultExamPeriodDTO dto){
+		authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), EntityValidationException.class);
 
-		examPeriod = examPeriodRepo.save(examPeriod);
+		ExamPeriod ep = examPeriodConverter.convertToJPA(dto);
 
-		return examPeriod.getId();
+		ep = examPeriodRepo.save(ep);
+
+		return ep.getId();
 	}
 
 	@AuthorizeAdmin
 	@Override
 	public void update(Integer id, DefaultExamPeriodDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
-		DefaultInstitutionDTO institution = institutionService.getOne(dto.getInstitution().getId());
-		authorize(institution.getId());
+		ExamPeriod ep = examPeriodRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 
-		if(!examPeriodRepo.existsById(id)) throw new EntityNotFoundException();
+		authorizator.assertPrincipalIsFromInstitution(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 
 		ExamPeriod epNew = examPeriodConverter.convertToJPA(dto);
 
-		ExamPeriod ep = examPeriodRepo.findById(id).get();
 		ep.setName(epNew.getName());
 		ep.setStartDate(epNew.getStartDate());
 		ep.setEndDate(epNew.getEndDate());
@@ -88,11 +85,9 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@AuthorizeAdmin
 	@Override
 	public void delete(Integer id) throws PersonalizedAccessDeniedException {
-		ExamPeriod examPeriod = examPeriodRepo.getOne(id);
+		ExamPeriod examPeriod = examPeriodRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 
-		authorize(examPeriod.getInstitution().getId());
-
-		if(!examPeriodRepo.existsById(id)) {}
+		authorizator.assertPrincipalIsFromInstitution(examPeriod.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 
 		examPeriodRepo.deleteById(id);
 	}
@@ -102,7 +97,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@Override
 	public List<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions) 
 			throws PersonalizedAccessDeniedException {
-		authorize(institutionId);
+		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 		
 		if (filterOptions == null) {
 			Page<ExamPeriod> page = examPeriodRepo.findByInstitution_Id(institutionId, pageable);

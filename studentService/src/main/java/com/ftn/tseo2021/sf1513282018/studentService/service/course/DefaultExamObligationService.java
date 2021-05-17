@@ -4,16 +4,27 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacher;
 
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacherOrAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
@@ -27,8 +38,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.SecondaryTable;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class DefaultExamObligationService implements ExamObligationService {
@@ -49,58 +62,80 @@ public class DefaultExamObligationService implements ExamObligationService {
 	private InstitutionService institutionService;
 
 	@Autowired
-	private PrincipalHolder principalHolder;
+	private StudentService studentService;
 
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId)
-			throw new PersonalizedAccessDeniedException();
-	}
+	@Autowired
+	private EnrollmentService enrollmentService;
+
+	@Autowired
+	private PersonalizedAuthorizator authorizator;
+
+	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
+
+	@Autowired
+	private PrincipalHolder principalHolder;
 
 	@AuthorizeAny
 	@Override
 	public DefaultExamObligationDTO getOne(Integer id) {
-		Optional<ExamObligation> examObligation = examObligationRepo.findById(id);
-		return examObligationConverter.convertToDTO(examObligation.orElse(null));
+		ExamObligation eo = examObligationRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(eo.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(eo.getCourse().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isStudent()) { //
+			Set<Enrollment> enrollments = eo.getCourse().getEnrollments();
+			DefaultStudentDTO s = studentService.getOne(principalHolder.getCurrentPrincipal().getStudentId());
+
+			if(enrollments.contains(s))
+				authorizator.assertStudentIdIs(principalHolder.getCurrentPrincipal().getStudentId(), PersonalizedAccessDeniedException.class);
+		}
+
+		return examObligationConverter.convertToDTO(eo);
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
-	public Integer create(DefaultExamObligationDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
-		ExamObligation examObligation = examObligationConverter.convertToJPA(dto);
+	public Integer create(DefaultExamObligationDTO dto){
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(dto.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(dto.getCourse().getId(), PersonalizedAccessDeniedException.class);
 
-		examObligation = examObligationRepo.save(examObligation);
+		ExamObligation eo = examObligationConverter.convertToJPA(dto);
+		eo = examObligationRepo.save(eo);
 
-		return examObligation.getId();
+		return eo.getId();
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public void update(Integer id, DefaultExamObligationDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
-		DefaultInstitutionDTO institution = institutionService.getOne(dto.getCourse().getInstitution().getId());
-		authorize(institution.getId());
+		ExamObligation eo = examObligationRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 
-		if(!examObligationRepo.existsById(id)) throw new EntityNotFoundException();
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(dto.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(dto.getCourse().getId(), PersonalizedAccessDeniedException.class);
 
 		ExamObligation eoNew = examObligationConverter.convertToJPA(dto);
-		
-		ExamObligation eo = examObligationRepo.findById(id).get();
+
 		eo.setPoints(eoNew.getPoints());
 		eo.setDescription(eoNew.getDescription());
 		eo.setExamObligationType(eoNew.getExamObligationType());
 		examObligationRepo.save(eo);
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public void delete(Integer id) throws PersonalizedAccessDeniedException {
 		ExamObligation examObligation = examObligationRepo.getOne(id);
 
-		authorize(examObligation.getCourse().getInstitution().getId());
-
-		if(!examObligationRepo.existsById(id)) {}
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(examObligation.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(examObligation.getCourse().getId(), PersonalizedAccessDeniedException.class);
 
 		examObligationRepo.deleteById(id);
 	}
@@ -111,7 +146,13 @@ public class DefaultExamObligationService implements ExamObligationService {
 	public List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) throws PersonalizedAccessDeniedException {
 		DefaultCourseDTO course = courseService.getOne(courseId);
 
-		authorize(course.getInstitution().getId());
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(course.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(course.getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isStudent()) {
+			// treba implementirati
+		}
 
 		if (filterOptions == null) {
 			Page<ExamObligation> page = examObligationRepo.findByCourse_Id(courseId, pageable);

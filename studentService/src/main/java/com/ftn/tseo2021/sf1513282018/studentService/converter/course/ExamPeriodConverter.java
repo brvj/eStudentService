@@ -26,14 +26,14 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 	DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 
 	@Override
-	public ExamPeriod convertToJPA(ExamPeriodDTO source) throws IllegalArgumentException {
+	public ExamPeriod convertToJPA(ExamPeriodDTO source) {
 		if(source instanceof DefaultExamPeriodDTO) return convertToJPA((DefaultExamPeriodDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<ExamPeriod> convertToJPA(List<? extends ExamPeriodDTO> sources) throws IllegalArgumentException {
+	public List<ExamPeriod> convertToJPA(List<? extends ExamPeriodDTO> sources) {
 		List<ExamPeriod> result = new ArrayList<ExamPeriod>();
 
 		if(sources.get(0) instanceof DefaultExamPeriodDTO){
@@ -46,7 +46,7 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends ExamPeriodDTO> T convertToDTO(ExamPeriod source, Class<? extends ExamPeriodDTO> returnType) throws IllegalArgumentException {
+	public <T extends ExamPeriodDTO> T convertToDTO(ExamPeriod source, Class<? extends ExamPeriodDTO> returnType) {
 		if(returnType == DefaultExamPeriodDTO.class) return (T) convertToDefaultExamPeriodDTO(source);
 		else if (returnType == InstitutionExamPeriodDTO.class) return (T) convertToInstitutionExamPeriodDTO(source);
 		else throw new IllegalArgumentException(String.format(
@@ -55,7 +55,7 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 
 	@Override
 	public List<? extends ExamPeriodDTO> convertToDTO(List<ExamPeriod> sources,
-			Class<? extends ExamPeriodDTO> returnType) throws IllegalArgumentException {
+			Class<? extends ExamPeriodDTO> returnType) {
 		if(returnType == DefaultExamPeriodDTO.class){
 			List<DefaultExamPeriodDTO> result = new ArrayList<>();
 			for(ExamPeriod jpa : sources) result.add(convertToDefaultExamPeriodDTO(jpa));
@@ -98,7 +98,7 @@ public class ExamPeriodConverter implements DtoConverter<ExamPeriod, ExamPeriodD
 		return dto;
 	}
 
-	private ExamPeriod convertToJPA(DefaultExamPeriodDTO source) throws IllegalArgumentException {
+	private ExamPeriod convertToJPA(DefaultExamPeriodDTO source) {
 		if(source == null) return null;
 
 		if(source.getInstitution() == null || 

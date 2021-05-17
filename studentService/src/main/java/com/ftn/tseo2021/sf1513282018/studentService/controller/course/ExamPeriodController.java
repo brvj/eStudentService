@@ -27,52 +27,32 @@ public class ExamPeriodController {
 
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createExamPeriod(@RequestBody DefaultExamPeriodDTO examPeriodDTO){
-		try{
-			int id = examPeriodService.create(examPeriodDTO);
+		int id = examPeriodService.create(examPeriodDTO);
 
-			return new ResponseEntity<>(id, HttpStatus.CREATED);
-		}catch (IllegalArgumentException e){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (PersonalizedAccessDeniedException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateExamPeriod(@PathVariable("id") int id, @RequestBody DefaultExamPeriodDTO examPeriodDTO){
-		try{
-			examPeriodService.update(id, examPeriodDTO);
+		examPeriodService.update(id, examPeriodDTO);
 
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}catch (EntityNotFoundException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}catch (IllegalArgumentException e){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (PersonalizedAccessDeniedException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteExamPeriod(@PathVariable("id") int id){
-		try{
-			examPeriodService.delete(id);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}catch (PersonalizedAccessDeniedException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		examPeriodService.delete(id);
+
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultExamPeriodDTO> getExamPeriodById(@PathVariable("id") int id){
 		DefaultExamPeriodDTO examPeriodDTO;
-		try {
-			examPeriodDTO = examPeriodService.getOne(id);
-			if(examPeriodDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(examPeriodDTO, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+
+		examPeriodDTO = examPeriodService.getOne(id);
+		if(examPeriodDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(examPeriodDTO, HttpStatus.OK);
 	}
 	
 	@GetMapping

@@ -40,14 +40,14 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 	ExamObligationTakingRepository examObligationTakingRepository;
 
 	@Override
-	public ExamObligation convertToJPA(ExamObligationDTO source) throws IllegalArgumentException {
+	public ExamObligation convertToJPA(ExamObligationDTO source){
 		if(source instanceof DefaultExamObligationDTO) return convertToJPA((DefaultExamObligationDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<ExamObligation> convertToJPA(List<? extends ExamObligationDTO> sources) throws IllegalArgumentException {
+	public List<ExamObligation> convertToJPA(List<? extends ExamObligationDTO> sources) {
 		List<ExamObligation> result = new ArrayList<ExamObligation>();
 
 		if(sources.get(0) instanceof DefaultExamObligationDTO){
@@ -61,7 +61,7 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ExamObligationDTO> T convertToDTO(ExamObligation source,
-			Class<? extends ExamObligationDTO> returnType) throws IllegalArgumentException {
+			Class<? extends ExamObligationDTO> returnType){
 		if(returnType == DefaultExamObligationDTO.class) return (T) convertToDefaultExamObligationDTO(source);
 		else if (returnType == CourseExamObligationDTO.class) return (T) convertToCourseExamObligationDTO(source);
 		else throw new IllegalArgumentException(String.format(
@@ -70,7 +70,7 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 
 	@Override
 	public List<? extends ExamObligationDTO> convertToDTO(List<ExamObligation> sources,
-			Class<? extends ExamObligationDTO> returnType) throws IllegalArgumentException {
+			Class<? extends ExamObligationDTO> returnType) {
 		if(returnType == DefaultExamObligationDTO.class){
 			List<DefaultExamObligationDTO> result = new ArrayList<>();
 			for(ExamObligation jpa : sources) result.add(convertToDefaultExamObligationDTO(jpa));
@@ -115,7 +115,7 @@ public class ExamObligationConverter implements DtoConverter<ExamObligation, Exa
 		return dto;
 	}
 
-	private ExamObligation convertToJPA(DefaultExamObligationDTO source) throws IllegalArgumentException {
+	private ExamObligation convertToJPA(DefaultExamObligationDTO source) {
 		if (source == null) return null;
 		
 		if (source.getExamObligationType() == null || source.getCourse() == null || 

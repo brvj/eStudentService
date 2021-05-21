@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.DocumentService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 
 @RestController
 @RequestMapping(value = "api/documents")
@@ -27,46 +28,29 @@ public class DocumentController {
 
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createDocument(@RequestBody DefaultDocumentDTO documentDTO) {
-		try {
-			int id = documentService.create(documentDTO);
-			
-			return new ResponseEntity<>(id, HttpStatus.CREATED);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		int id = documentService.create(documentDTO);
+		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateDocument(@PathVariable("id") int id, 
 			@RequestBody DefaultDocumentDTO documentDTO) {
-		try {
-			documentService.update(id, documentDTO);
-			
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		documentService.update(id, documentDTO);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteDocument(@PathVariable("id") int id) {
-		documentService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		documentService.delete(id); 
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultDocumentDTO> getDocumentById(@PathVariable("id") int id) {
-		DefaultDocumentDTO document;
-		try {
-			document = documentService.getOne(id);
-			
-			if (document == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(document, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		DefaultDocumentDTO document = documentService.getOne(id);
+		
+		return new ResponseEntity<>(document, HttpStatus.OK);
 	}
 	
 }

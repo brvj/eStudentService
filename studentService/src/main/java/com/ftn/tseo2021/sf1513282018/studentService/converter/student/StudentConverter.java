@@ -14,6 +14,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
@@ -47,14 +48,14 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 	
 	
 	@Override
-	public Student convertToJPA(StudentDTO source) throws IllegalArgumentException {
+	public Student convertToJPA(StudentDTO source) {
 		if (source instanceof DefaultStudentDTO) return convertToJPA((DefaultStudentDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<Student> convertToJPA(List<? extends StudentDTO> sources) throws IllegalArgumentException {
+	public List<Student> convertToJPA(List<? extends StudentDTO> sources) {
 		List<Student> result = new ArrayList<Student>();
 		
 		if (sources.get(0) instanceof DefaultStudentDTO) {
@@ -67,7 +68,7 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends StudentDTO> T convertToDTO(Student source, Class<? extends StudentDTO> returnType) throws IllegalArgumentException {
+	public <T extends StudentDTO> T convertToDTO(Student source, Class<? extends StudentDTO> returnType) {
 		if (returnType == DefaultStudentDTO.class) return (T) convertToDefaultStudentDTO(source);
 		else if (returnType == InstitutionStudentDTO.class) return (T) convertToInstitutionStudentDTO(source);
 		else throw new IllegalArgumentException(String.format(
@@ -75,7 +76,7 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 	}
 
 	@Override
-	public List<? extends StudentDTO> convertToDTO(List<Student> sources, Class<? extends StudentDTO> returnType) throws IllegalArgumentException {
+	public List<? extends StudentDTO> convertToDTO(List<Student> sources, Class<? extends StudentDTO> returnType) {
 		if (returnType == DefaultStudentDTO.class) {
 			List<DefaultStudentDTO> result = new ArrayList<>();
 			for (Student jpa : sources) result.add(convertToDefaultStudentDTO(jpa));
@@ -122,12 +123,12 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 		return dto;
 	}
 	
-	private Student convertToJPA(DefaultStudentDTO source) throws IllegalArgumentException {
+	private Student convertToJPA(DefaultStudentDTO source) {
 		if (source == null) return null;
 		
 		if (source.getInstitution() == null || source.getUser() == null ||
 				!institutionRepo.existsById(source.getInstitution().getId()))
-			throw new IllegalArgumentException();
+			throw new EntityValidationException();
 		
 		Institution institution = institutionRepo.getOne(source.getInstitution().getId());
 		DefaultInstitutionDTO iDTO = new DefaultInstitutionDTO();

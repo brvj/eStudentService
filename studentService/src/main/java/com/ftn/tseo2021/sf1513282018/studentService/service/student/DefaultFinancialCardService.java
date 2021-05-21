@@ -20,6 +20,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Fin
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeStudentOrAdmin;
 
 
 @Service
@@ -36,7 +38,11 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	
 	@Autowired
 	DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> financialCardConverter;
+	
+	@Autowired
+	private PersonalizedAuthorizator authorizator;
 
+	@AuthorizeStudentOrAdmin
 	@Override
 	public DefaultFinancialCardDTO getOne(Integer id) {
 		Optional<FinancialCard> fc = financialCardRepo.findById(id);
@@ -70,6 +76,7 @@ public class DefaultFinancialCardService implements FinancialCardService {
 		financialCardRepo.deleteById(id);
 	}
 
+	@AuthorizeStudentOrAdmin
 	@Override
 	public DefaultFinancialCardDTO getByStudentId(int studentId) {
 		Optional<FinancialCard> fc = financialCardRepo.findByStudent_Id(studentId);

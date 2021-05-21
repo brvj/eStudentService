@@ -18,6 +18,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Doc
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Document;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeStudentOrAdmin;
 
 @Service
 public class DefaultDocumentService implements DocumentService {
@@ -30,13 +32,18 @@ public class DefaultDocumentService implements DocumentService {
 	
 	@Autowired
 	DtoConverter<Document, DocumentDTO, DefaultDocumentDTO> documentConverter;
+	
+	@Autowired
+	private PersonalizedAuthorizator authorizator;
 
+	@AuthorizeStudentOrAdmin
 	@Override
 	public DefaultDocumentDTO getOne(Integer id) {
 		Optional<Document> doc = documentRepo.findById(id);
 		return documentConverter.convertToDTO(doc.orElse(null));
 	}
 
+	@AuthorizeStudentOrAdmin
 	@Override
 	public Integer create(DefaultDocumentDTO dto) throws IllegalArgumentException {
 		Document doc = documentConverter.convertToJPA(dto);
@@ -46,6 +53,7 @@ public class DefaultDocumentService implements DocumentService {
 		return doc.getId();
 	}
 
+	@AuthorizeStudentOrAdmin
 	@Override
 	public void update(Integer id, DefaultDocumentDTO dto) throws EntityNotFoundException, IllegalArgumentException {
 		if (!documentRepo.existsById(id)) throw new EntityNotFoundException();
@@ -60,12 +68,14 @@ public class DefaultDocumentService implements DocumentService {
 		
 	}
 
+	@AuthorizeStudentOrAdmin
 	@Override
 	public void delete(Integer id) {
 		if (!documentRepo.existsById(id)) {}
 		documentRepo.deleteById(id);
 	}
 
+	@AuthorizeStudentOrAdmin
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<StudentDocumentDTO> filterDocuments(int studentId, Pageable pageable, StudentDocumentDTO filterOptions) {

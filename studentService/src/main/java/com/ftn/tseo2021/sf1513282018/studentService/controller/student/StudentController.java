@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
@@ -37,45 +38,29 @@ public class StudentController {
 
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createStudent(@RequestBody DefaultStudentDTO studentDTO) {
-		try {
-			int id = studentService.create(studentDTO);
-			
-			return new ResponseEntity<>(id, HttpStatus.CREATED);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		int id = studentService.create(studentDTO);
+		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateStudent(@PathVariable("id") int id, 
 			@RequestBody DefaultStudentDTO studentDTO) {
-		try {
-			studentService.update(id, studentDTO);
-			
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		studentService.update(id, studentDTO);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteStudent(@PathVariable("id") int id) {
-		studentService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		studentService.delete(id); 
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultStudentDTO> getStudentById(@PathVariable("id") int id) {
-		DefaultStudentDTO student;
-		try {
-			student = studentService.getOne(id);
-			if (student == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(student, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		DefaultStudentDTO student = studentService.getOne(id);
+		
+		return new ResponseEntity<>(student, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/user/{id}", produces = "application/json")

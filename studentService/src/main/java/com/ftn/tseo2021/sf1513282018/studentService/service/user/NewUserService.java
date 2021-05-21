@@ -169,7 +169,7 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 			ownerId = studentService.getByUserId(user.getId()).getId();
 		}
 		
-		return new CustomPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getInstitution().getId(), ownerId, grantedAuthorities);
+		return new CustomPrincipal(user.getId(), user.getUsername(),user.getFirstName(), user.getLastName(), user.getPassword(), user.getInstitution().getId(), ownerId, grantedAuthorities);
 	}
 
 }

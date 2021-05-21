@@ -14,14 +14,14 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialC
 public class FinancialCardConverter implements DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> {
 	
 	@Override
-	public FinancialCard convertToJPA(FinancialCardDTO source) throws IllegalArgumentException {
+	public FinancialCard convertToJPA(FinancialCardDTO source) {
 		if (source instanceof DefaultFinancialCardDTO) return convertToJPA((DefaultFinancialCardDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<FinancialCard> convertToJPA(List<? extends FinancialCardDTO> sources) throws IllegalArgumentException {
+	public List<FinancialCard> convertToJPA(List<? extends FinancialCardDTO> sources) {
 		List<FinancialCard> result = new ArrayList<FinancialCard>();
 		
 		if (sources.get(0) instanceof DefaultFinancialCardDTO) {
@@ -35,7 +35,7 @@ public class FinancialCardConverter implements DtoConverter<FinancialCard, Finan
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends FinancialCardDTO> T convertToDTO(FinancialCard source,
-			Class<? extends FinancialCardDTO> returnType) throws IllegalArgumentException {
+			Class<? extends FinancialCardDTO> returnType) {
 		if (returnType == DefaultFinancialCardDTO.class) return (T) convertToDefaultFinancialCardDTO(source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting to %s type is not supported", returnType.toString()));
@@ -43,7 +43,7 @@ public class FinancialCardConverter implements DtoConverter<FinancialCard, Finan
 
 	@Override
 	public List<? extends FinancialCardDTO> convertToDTO(List<FinancialCard> sources,
-			Class<? extends FinancialCardDTO> returnType) throws IllegalArgumentException {
+			Class<? extends FinancialCardDTO> returnType) {
 		if (returnType == DefaultFinancialCardDTO.class) {
 			List<DefaultFinancialCardDTO> result = new ArrayList<DefaultFinancialCardDTO>();
 			for (FinancialCard jpa : sources) result.add(convertToDefaultFinancialCardDTO(jpa));
@@ -73,7 +73,7 @@ public class FinancialCardConverter implements DtoConverter<FinancialCard, Finan
 		return dto;
 	}
 	
-	private FinancialCard convertToJPA(DefaultFinancialCardDTO source) throws IllegalArgumentException {
+	private FinancialCard convertToJPA(DefaultFinancialCardDTO source)  {
 		if (source == null) return null;
 		
 		FinancialCard financialCard = new FinancialCard();

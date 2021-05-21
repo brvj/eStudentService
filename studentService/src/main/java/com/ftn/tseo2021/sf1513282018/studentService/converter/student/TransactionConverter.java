@@ -10,6 +10,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.FinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.TransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
@@ -27,14 +28,14 @@ public class TransactionConverter implements DtoConverter<Transaction, Transacti
 	
 	
 	@Override
-	public Transaction convertToJPA(TransactionDTO source) throws IllegalArgumentException {
+	public Transaction convertToJPA(TransactionDTO source) {
 		if (source instanceof DefaultTransactionDTO) return convertToJPA((DefaultTransactionDTO) source);
 		else throw new IllegalArgumentException(String.format(
 				"Converting from %s type is not supported", source.getClass().toString()));
 	}
 
 	@Override
-	public List<Transaction> convertToJPA(List<? extends TransactionDTO> sources) throws IllegalArgumentException {
+	public List<Transaction> convertToJPA(List<? extends TransactionDTO> sources) {
 		List<Transaction> result = new ArrayList<Transaction>();
 		
 		if (sources.get(0) instanceof DefaultTransactionDTO) {
@@ -47,7 +48,7 @@ public class TransactionConverter implements DtoConverter<Transaction, Transacti
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends TransactionDTO> T convertToDTO(Transaction source, Class<? extends TransactionDTO> returnType) throws IllegalArgumentException {
+	public <T extends TransactionDTO> T convertToDTO(Transaction source, Class<? extends TransactionDTO> returnType) {
 		if (returnType == DefaultTransactionDTO.class) return (T) convertToDefaultTransactionDTO(source);
 		else if (returnType == FinancialCardTransactionDTO.class) return (T) convertToFinancialCardTransactionDTO(source);
 		else throw new IllegalArgumentException(String.format(
@@ -56,7 +57,7 @@ public class TransactionConverter implements DtoConverter<Transaction, Transacti
 
 	@Override
 	public List<? extends TransactionDTO> convertToDTO(List<Transaction> sources,
-			Class<? extends TransactionDTO> returnType) throws IllegalArgumentException {
+			Class<? extends TransactionDTO> returnType)  {
 		if (returnType == DefaultTransactionDTO.class) {
 			List<DefaultTransactionDTO> result = new ArrayList<>();
 			for (Transaction jpa : sources) result.add(convertToDefaultTransactionDTO(jpa));
@@ -101,12 +102,12 @@ public class TransactionConverter implements DtoConverter<Transaction, Transacti
 		return dto;
 	}
 
-	private Transaction convertToJPA(DefaultTransactionDTO source) throws IllegalArgumentException {
+	private Transaction convertToJPA(DefaultTransactionDTO source) {
 		if (source == null) return null;
 		
 		if (source.getFinancialCard() == null || 
 				!financialCardRepo.existsById(source.getFinancialCard().getId()))
-			throw new IllegalArgumentException();
+			throw new EntityValidationException();
 		
 		Transaction transaction = new Transaction(source.getId(), source.getAmmount(), source.getDate(), 
 				source.getDescription(), source.getType(), 

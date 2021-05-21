@@ -2,6 +2,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.controller.student;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
 
@@ -33,47 +34,30 @@ public class FinancialCardController {
 	
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createFinancialCard(@RequestBody DefaultFinancialCardDTO financialCardDTO) {
-		try {
-			int id = cardService.create(financialCardDTO);
-			
-			return new ResponseEntity<>(id, HttpStatus.CREATED);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		int id = cardService.create(financialCardDTO);
+		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateFinancialCard(@PathVariable("id") int id, 
 			@RequestBody DefaultFinancialCardDTO financialCardDTO) {
-		try {
-			cardService.update(id, financialCardDTO);
-			
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (IllegalArgumentException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		cardService.update(id, financialCardDTO);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteFinancialCard(@PathVariable("id") int id) {
-		cardService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		cardService.delete(id); 
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultFinancialCardDTO> getFinancialCardById(@PathVariable("id") int id) {
-		DefaultFinancialCardDTO financialCard;
-		try {
-			financialCard = cardService.getOne(id);
-			
-			if (financialCard == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(financialCard, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		DefaultFinancialCardDTO card = cardService.getOne(id);
+		
+		return new ResponseEntity<>(card, HttpStatus.OK);
 		}
-	}
 	
 	@GetMapping(value = "/student/{id}", produces = "application/json")
 	public ResponseEntity<DefaultFinancialCardDTO> getFinancialCardByStudentId(@PathVariable("id") int id){

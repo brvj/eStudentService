@@ -18,15 +18,21 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeStudentOrAdmin;
 
 @Service
 public class DefaultStudentService implements StudentService {
@@ -49,49 +55,80 @@ public class DefaultStudentService implements StudentService {
 	@Autowired
 	private PrincipalHolder principalHolder;
 	
+	@Autowired
+	private PersonalizedAuthorizator authorizator;
+	
+	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
+	
 	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
 		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
 			throw new PersonalizedAccessDeniedException();
 	}
 
+	@AuthorizeStudentOrAdmin
 	@Override
 	public DefaultStudentDTO getOne(Integer id) {
-		Optional<Student> s = studentRepo.findById(id);
-		return studentConverter.convertToDTO(s.orElse(null));
+		if (!getPrincipal().isAdmin() && 
+				(getPrincipal().isAdmin() || getPrincipal().isStudent()))
+			authorizator.assertPrincipalIdIs(id, PersonalizedAccessDeniedException.class);
+		
+		Student student = studentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+		
+		if (getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(student.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
+		return studentConverter.convertToDTO(student);
 	}
 
+	@AuthorizeAdmin
 	@Override
-	public Integer create(DefaultStudentDTO dto) throws IllegalArgumentException {
-		Student s = studentConverter.convertToJPA(dto);
+	public Integer create(DefaultStudentDTO dto) {
+		authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), EntityValidationException.class);
 		
-		s = studentRepo.save(s);
+		Student student = studentConverter.convertToJPA(dto);
 		
-		return s.getId();
+		student = studentRepo.save(student);
+
+		return student.getId();
 	}
 
+	@AuthorizeStudentOrAdmin
 	@Override
-	public void update(Integer id, DefaultStudentDTO dto) throws EntityNotFoundException, IllegalArgumentException {
-		if (!studentRepo.existsById(id)) throw new EntityNotFoundException();
+	public void update(Integer id, DefaultStudentDTO dto) throws EntityNotFoundException {
 		
+		if (!getPrincipal().isAdmin() && 
+				(getPrincipal().isAdmin() || getPrincipal().isStudent()))
+			authorizator.assertPrincipalIdIs(id, PersonalizedAccessDeniedException.class);
+		
+		Student s = studentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+		
+		if (getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(s.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
+		if (dto.getInstitution().getId() != s.getInstitution().getId()) throw new EntityValidationException();
+
 		Student sNew = studentConverter.convertToJPA(dto);
 		
-		Student s = studentRepo.findById(id).get();
 		s.setFirstName(sNew.getFirstName());
 		s.setLastName(sNew.getLastName());
 		s.setStudentCard(sNew.getStudentCard());
 		s.setAddress(sNew.getAddress());
 		s.setDateOfBirth(sNew.getDateOfBirth());
 		s.setGeneration(sNew.getGeneration());
-		studentRepo.save(s);
-		
+		studentRepo.save(s);		
 	}
 
+	@AuthorizeAdmin
 	@Override
 	public void delete(Integer id) {
-		if (!studentRepo.existsById(id)) {}
+		Student student = studentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+		
+		authorizator.assertPrincipalIsFromInstitution(student.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
 		studentRepo.deleteById(id);
 	}
-
+	
+	
 	@Override
 	public DefaultStudentDTO getByUserId(int userId) {
 		Optional<Student> student = studentRepo.findByUser_Id(userId);
@@ -102,9 +139,8 @@ public class DefaultStudentService implements StudentService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public List<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions) 
-			throws PersonalizedAccessDeniedException {
-		authorize(institutionId);
+	public List<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions)  {
+		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 			
 		if (filterOptions == null) {
 			Page<Student> page = studentRepo.findByInstitution_Id(institutionId, pageable);

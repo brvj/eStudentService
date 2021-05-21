@@ -24,6 +24,10 @@ public class CustomPrincipal implements UserDetails {
 
 	private final String username;
 	
+	private final String firstName;
+	
+	private final String lastName;
+	
 	private final Integer institutionId;
 	
 	private final Integer ownerId;
@@ -38,17 +42,19 @@ public class CustomPrincipal implements UserDetails {
 
 	private final boolean enabled;
 	
-	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, Integer ownerId, Collection<? extends GrantedAuthority> authorities) {
-		this(id, username, password, institutionId, ownerId, true, true, true, true, authorities);
+	public CustomPrincipal(Integer id, String username, String firstName, String lastName, String password, Integer institutionId, Integer ownerId, Collection<? extends GrantedAuthority> authorities) {
+		this(id, username, firstName, lastName, password, institutionId, ownerId, true, true, true, true, authorities);
 	}
 	
-	public CustomPrincipal(Integer id, String username, String password, Integer institutionId, Integer ownerId, boolean enabled, boolean accountNonExpired,
+	public CustomPrincipal(Integer id, String username, String firstName, String lastName, String password, Integer institutionId, Integer ownerId, boolean enabled, boolean accountNonExpired,
 			boolean credentialsNonExpired, boolean accountNonLocked,
 			Collection<? extends GrantedAuthority> authorities) {
 		Assert.isTrue(id != null && institutionId != null && username != null && !"".equals(username) && password != null,
 				"Cannot pass null or empty values to constructor");
 		this.id = id;
 		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.password = password;
 		this.institutionId = institutionId;
 		this.ownerId = ownerId;
@@ -64,23 +70,28 @@ public class CustomPrincipal implements UserDetails {
 		return this.authorities;
 	}
 	
+	private final SimpleGrantedAuthority superadminAuthority = new SimpleGrantedAuthority("SUPERADMIN");
+	private final SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority("ADMIN");
+	private final SimpleGrantedAuthority teacherAuthority = new SimpleGrantedAuthority("TEACHER");
+	private final SimpleGrantedAuthority studentAuthority = new SimpleGrantedAuthority("STUDENT");
+	
 	public boolean isSuperadmin() {
-		if (this.authorities.contains(new SimpleGrantedAuthority("SUPERADMIN"))) return true;
+		if (this.authorities.contains(superadminAuthority)) return true;
 		return false;
 	}
 	
 	public boolean isAdmin() {
-		if (this.authorities.contains(new SimpleGrantedAuthority("ADMIN"))) return true;
+		if (this.authorities.contains(adminAuthority)) return true;
 		return false;
 	}
 	
 	public boolean isTeacher() {
-		if (this.authorities.contains(new SimpleGrantedAuthority("TEACHER"))) return true;
+		if (this.authorities.contains(teacherAuthority)) return true;
 		return false;
 	}
 
 	public boolean isStudent() {
-		if (this.authorities.contains(new SimpleGrantedAuthority("STUDENT"))) return true;
+		if (this.authorities.contains(studentAuthority)) return true;
 		return false;
 	}
 	
@@ -106,6 +117,14 @@ public class CustomPrincipal implements UserDetails {
 	@Override
 	public String getUsername() {
 		return this.username;
+	}
+	
+	public String getFirstName() {
+		return this.firstName;
+	}
+	
+	public String getLastName() {
+		return this.lastName;
 	}
 	
 	public Integer getInstitutionId() {

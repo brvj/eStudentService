@@ -1,5 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.security;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -49,6 +52,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
+			.cors().configurationSource(request -> {
+				var cors = new CorsConfiguration();
+				cors.setAllowedOrigins(List.of("*"));
+				cors.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS"));
+				cors.setAllowedHeaders(List.of("*"));
+				return cors;
+			})
+			.and()
 			.csrf().disable()
 			.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

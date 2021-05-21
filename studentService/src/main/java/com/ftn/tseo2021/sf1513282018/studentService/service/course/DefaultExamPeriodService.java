@@ -42,7 +42,6 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@Autowired
 	private PersonalizedAuthorizator authorizator;
 	
-	@Autowired
 	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
 
 	@AuthorizeAny

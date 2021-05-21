@@ -4,8 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -66,8 +68,27 @@ public class TokenUtils {
 	}
 	
 	public String generateToken(UserDetails userDetails) {
+		CustomPrincipal principal = (CustomPrincipal) userDetails;
 		Map<String, Object> claims = new HashMap<String, Object>();
-		claims.put("sub", userDetails.getUsername());
+		claims.put("id", principal.getId());
+		claims.put("username", principal.getUsername());
+		claims.put("firstName", principal.getFirstName());
+		claims.put("lastName", principal.getLastName());
+		claims.put("institutionId", principal.getInstitutionId());
+		
+		List<String> authorities = new ArrayList<>();
+		if (principal.isSuperadmin()) authorities.add("SUPERADMIN");
+		if (principal.isAdmin()) authorities.add("ADMIN");
+		if (principal.isTeacher()) {
+			authorities.add("TEACHER");
+			claims.put("teacherId", principal.getTeacherId());
+		}
+		if (principal.isSuperadmin()) {
+			authorities.add("STUDENT");
+			claims.put("studentId", principal.getStudentId());
+		}
+		claims.put("authorities", authorities);
+		
 		claims.put("created", new Date(System.currentTimeMillis()));
 		return Jwts.builder().setClaims(claims)
 				.setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))

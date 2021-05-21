@@ -8,6 +8,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.Institutio
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,44 +31,27 @@ public class InstitutionController {
 	
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createInstitution(@NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws PersonalizedAccessDeniedException {
-		try{
-			int institutionId = institutionService.create(institutionDTO);
-			return new ResponseEntity<>(institutionId, HttpStatus.CREATED);
-
-		}catch(IllegalArgumentException e){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		int institutionId = institutionService.create(institutionDTO);
+		return new ResponseEntity<>(institutionId, HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateInstitution(@PathVariable("id") int id, @NotNull @RequestBody DefaultInstitutionDTO institutionDTO) throws PersonalizedAccessDeniedException {
-		try{
-			institutionService.update(id, institutionDTO);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-		}catch(EntityNotFoundException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}catch (IllegalArgumentException ex){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		institutionService.update(id, institutionDTO);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteInstitution(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
-		institutionService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		institutionService.delete(id);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultInstitutionDTO> getInstitutionById(@PathVariable("id") int id){
 		DefaultInstitutionDTO institutionDTO;
-		try {
-			institutionDTO = institutionService.getOne(id);
-			if (institutionDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(institutionDTO, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		institutionDTO = institutionService.getOne(id);
+		return new ResponseEntity<>(institutionDTO, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}/users", produces = "application/json")
@@ -75,6 +59,17 @@ public class InstitutionController {
 		try{
 			List<InstitutionUserDTO> users = institutionService.getInstitutionUsers(id, Pageable.unpaged());
 			return new ResponseEntity<>(users, HttpStatus.OK);
+		}
+		catch(EntityNotFoundException | PersonalizedAccessDeniedException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+		} 
+	}
+	
+	@GetMapping(value = "/{id}/admins", produces = "application/json")
+	public ResponseEntity<Page<InstitutionUserDTO>> getInstitutionAdmins(@PathVariable("id") int id, Pageable pageable) {
+		try{
+			Page<InstitutionUserDTO> admins = institutionService.getInstitutionAdmins(id, pageable);
+			return new ResponseEntity<>(admins, HttpStatus.OK);
 		}
 		catch(EntityNotFoundException | PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 

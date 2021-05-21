@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
@@ -26,5 +27,7 @@ public interface InstitutionService extends BaseService<DefaultInstitutionDTO, I
 	List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 	
 	List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
+
+	Page<InstitutionUserDTO> getInstitutionAdmins(int institutionId, Pageable pageable);
 	
 }

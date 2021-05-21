@@ -8,12 +8,14 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Stu
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeSuperadmin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
@@ -30,7 +32,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DefaultInstitutionService implements InstitutionService {
@@ -61,16 +62,17 @@ public class DefaultInstitutionService implements InstitutionService {
 	
 	@AuthorizeAny
 	@Override
-	public DefaultInstitutionDTO getOne(Integer id) throws PersonalizedAccessDeniedException {
+	public DefaultInstitutionDTO getOne(Integer id) {
 		authorizator.assertPrincipalIsFromInstitution(id, PersonalizedAccessDeniedException.class);
 		
-		Optional<Institution> institution = institutionRepo.findById(id);
-		return institutionConverter.convertToDTO(institution.orElse(null));
+		Institution institution = institutionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+		
+		return institutionConverter.convertToDTO(institution);
 	}
 
 	@AuthorizeSuperadmin
 	@Override
-	public Integer create(DefaultInstitutionDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultInstitutionDTO dto) {
 		Institution institution = institutionConverter.convertToJPA(dto);
 
 		institution = institutionRepo.save(institution);
@@ -80,12 +82,11 @@ public class DefaultInstitutionService implements InstitutionService {
 
 	@AuthorizeSuperadmin
 	@Override
-	public void update(Integer id, DefaultInstitutionDTO dto) throws EntityNotFoundException, IllegalArgumentException {
-		if(!institutionRepo.existsById(id)) throw new EntityNotFoundException();
+	public void update(Integer id, DefaultInstitutionDTO dto) {
+		Institution i = institutionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		
 		Institution iNew = institutionConverter.convertToJPA(dto);
 		
-		Institution i = institutionRepo.findById(id).get();
 		i.setName(iNew.getName());
 		i.setAddress(iNew.getAddress());
 		i.setPhoneNumber(iNew.getPhoneNumber());
@@ -96,7 +97,7 @@ public class DefaultInstitutionService implements InstitutionService {
 	@AuthorizeSuperadmin
 	@Override
 	public void delete(Integer id) {
-		if(!institutionRepo.existsById(id)) {}
+		if(!institutionRepo.existsById(id)) throw new ResourceNotFoundException();
 
 		institutionRepo.deleteById(id);
 	}
@@ -111,6 +112,13 @@ public class DefaultInstitutionService implements InstitutionService {
 		List<InstitutionUserDTO> users = userService.filterUsers(institutionId, pageable, null);
 
 		return users;
+	}
+	
+	@Override
+	public Page<InstitutionUserDTO> getInstitutionAdmins(int institutionId, Pageable pageable) {
+		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+
+		return userService.filterAdminsForInstitution(institutionId, pageable);
 	}
 
 	@Override

@@ -70,6 +70,11 @@ public class UserController {
 		return new ModelAndView(String.format("forward:/api/institutions/%d/users", principal.getInstitutionId()));
 	}
 	
+	@GetMapping(value = "/admins", produces = "application/json")
+	public ModelAndView getInstitutionAdmins(@CurrentPrincipal CustomPrincipal principal) {
+		return new ModelAndView(String.format("forward:/api/institutions/%d/admins", principal.getInstitutionId()));
+	}
+	
 	@PostMapping(value = "/login", consumes = "application/json")
 	public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
 		try {

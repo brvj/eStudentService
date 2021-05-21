@@ -3,8 +3,10 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.user;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,6 +35,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthori
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 
+@Primary
 @Service
 public class DefaultUserService implements UserService {
 	
@@ -136,6 +139,36 @@ public class DefaultUserService implements UserService {
 		}
 	}
 	
+	@AuthorizeAdmin
+	@Override
+	public Page<InstitutionUserDTO> getAdminsForInstitution(int institutionId, Pageable pageable) {
+		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
+		
+		Page<User> page = userRepo.findByInstitution_IdAndUserAuthorities_Authority_Name(institutionId, "ADMIN", pageable);
+		
+		return page.map(new Function<User, InstitutionUserDTO>() {
+			@Override
+			public InstitutionUserDTO apply(User t) {
+				return userConverter.convertToDTO(t, InstitutionUserDTO.class);
+			}
+		});
+	}
+	
+	@AuthorizeAdmin
+	@Override
+	public Page<InstitutionUserDTO> filterAdminsForInstitution(int institutionId, Pageable pageable) {
+		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
+		
+		Page<User> page = userRepo.filterAdmins(institutionId, null, null, null, null, pageable);
+		
+		return page.map(new Function<User, InstitutionUserDTO>() {
+			@Override
+			public InstitutionUserDTO apply(User t) {
+				return userConverter.convertToDTO(t, InstitutionUserDTO.class);
+			}
+		});
+	}
+	
 //	---------------------------------------------------------------------------------------------------------------------------
 //	No need to explicitly secure methods below since they completely depend on secured methods of another services
 	
@@ -169,7 +202,7 @@ public class DefaultUserService implements UserService {
 			ownerId = studentService.getByUserId(user.getId()).getId();
 		}
 		
-		return new CustomPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getInstitution().getId(), ownerId, grantedAuthorities);
+		return new CustomPrincipal(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getPassword(), user.getInstitution().getId(), ownerId, grantedAuthorities);
 	}
 
 }

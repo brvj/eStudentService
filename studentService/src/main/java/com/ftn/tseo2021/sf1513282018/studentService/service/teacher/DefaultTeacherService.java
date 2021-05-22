@@ -3,13 +3,18 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.Teacher;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeSuperadmin;
 
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacherOrAdmin;
 import lombok.RequiredArgsConstructor;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherRepository;
@@ -39,25 +44,31 @@ public class DefaultTeacherService implements TeacherService {
 
 	@Autowired
 	private DtoConverter<Teacher, TeacherDTO, DefaultTeacherDTO> teacherConverter;
-	
-	@Autowired
-	private PrincipalHolder principalHolder;
-	
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new PersonalizedAccessDeniedException();
-	}
 
-	@AuthorizeAny
+	@Autowired
+	private PersonalizedAuthorizator authorizator;
+
+	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
+
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public DefaultTeacherDTO getOne(Integer id) {
-		Optional<Teacher> teacher = teacherRepo.findById(id);
-		return teacherConverter.convertToDTO(teacher.orElse(null));
+		if(!getPrincipal().isAdmin() && getPrincipal().isTeacher()){
+			authorizator.assertPrincipalTeacherIdIs(id, PersonalizedAccessDeniedException.class);
+		}
+		Teacher teacher = teacherRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(teacher.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+
+		return teacherConverter.convertToDTO(teacher);
 	}
 
-	@AuthorizeSuperadmin
+	@AuthorizeAdmin
 	@Override
 	public Integer create(DefaultTeacherDTO dto) throws IllegalArgumentException {
+		authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), EntityValidationException.class);
+
 		Teacher teacher = teacherConverter.convertToJPA(dto);
 
 		teacher = teacherRepo.save(teacher);
@@ -65,14 +76,21 @@ public class DefaultTeacherService implements TeacherService {
 		return teacher.getId();
 	}
 
-	@AuthorizeSuperadmin
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public void update(Integer id, DefaultTeacherDTO dto) throws EntityNotFoundException, IllegalArgumentException {
-		if(!teacherRepo.existsById(id)) throw new EntityNotFoundException();
+		if(!getPrincipal().isAdmin() && getPrincipal().isTeacher()){
+			authorizator.assertPrincipalTeacherIdIs(id, PersonalizedAccessDeniedException.class);
+		}
+		Teacher t = teacherRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(t.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+
+		if (dto.getInstitution().getId() != t.getInstitution().getId()) throw new EntityValidationException();
 
 		Teacher tNew = teacherConverter.convertToJPA(dto);
 
-		Teacher t = teacherRepo.findById(id).get();
 		t.setFirstName(tNew.getFirstName());
 		t.setLastName(tNew.getLastName());
 		t.setAddress(tNew.getAddress());
@@ -84,13 +102,14 @@ public class DefaultTeacherService implements TeacherService {
 		t.getUser().setEmail(tNew.getUser().getEmail());
 		t.getUser().setPhoneNumber(tNew.getUser().getPhoneNumber());
 		teacherRepo.save(t);
-
 	}
 
-	@AuthorizeSuperadmin
+	@AuthorizeAdmin
 	@Override
 	public void delete(Integer id) {
-		if(!teacherRepo.existsById(id)) {}
+		Teacher teacher = teacherRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+
+		authorizator.assertPrincipalIsFromInstitution(teacher.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 
 		teacherRepo.deleteById(id);
 	}
@@ -105,9 +124,8 @@ public class DefaultTeacherService implements TeacherService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions)
-		throws PersonalizedAccessDeniedException {
-		authorize(institutionId);
+	public List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) {
+		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 
 		Page<Teacher> page;
 		if (filterOptions == null) {
@@ -121,9 +139,8 @@ public class DefaultTeacherService implements TeacherService {
 	}
 
 	@Override
-	public List<TeacherTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable)
-			throws EntityNotFoundException {
-		if(!teacherRepo.existsById(teacherId)) throw new EntityNotFoundException();
+	public List<TeacherTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable) {
+		if(!teacherRepo.existsById(teacherId)) throw new ResourceNotFoundException();
 
 		List<TeacherTeachingDTO> teachings = teachingService.filterTeachingsByTeacher(teacherId, pageable, null);
 

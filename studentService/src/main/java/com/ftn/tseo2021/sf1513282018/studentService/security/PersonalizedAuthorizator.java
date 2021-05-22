@@ -70,5 +70,15 @@ public class PersonalizedAuthorizator {
 	public void assertStudentIdIs(int studentId, Class<? extends RuntimeException> exceptionType) {
 		assertStudentIdIs(studentId, exceptionType, null);
 	}
-	
+
+	public void assertPrincipalTeacherIdIs(int id, Class<? extends RuntimeException> exceptionType, String errorMessage) {
+		if (getPrincipal().isSuperadmin()) return;
+		else if (getPrincipal().getTeacherId() == id) return;
+
+		throwException(exceptionType, errorMessage);
+	}
+
+	public void assertPrincipalTeacherIdIs(int id, Class<? extends RuntimeException> exceptionType) {
+		assertPrincipalIdIs(id, exceptionType, null);
+	}
 }

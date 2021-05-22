@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.security;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.EnrollmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,9 @@ public class PersonalizedAuthorizator {
 	
 	@Autowired
 	private TeachingRepository teachingRepo;
+
+	@Autowired
+	private EnrollmentRepository enrollmentRepo;
 	
 	private void throwException(Class<? extends RuntimeException> exceptionType, String errorMessage) {
 		if (exceptionType == PersonalizedAccessDeniedException.class)
@@ -60,6 +64,16 @@ public class PersonalizedAuthorizator {
 	public void assertTeacherIsTeachingCourse(int courseId, Class<? extends RuntimeException> exceptionType) {
 		assertTeacherIsTeachingCourse(courseId, exceptionType, null);
 	}
+
+	private void assertStudentIsEnrollingCourse(int courseId, Class<? extends RuntimeException> exceptionType, String errorMessage){
+		if (enrollmentRepo.existsByStudent_IdAndCourse_Id(getPrincipal().getStudentId(), courseId)) return;
+
+		throwException(exceptionType, errorMessage);
+	}
+
+	public void assertStudentIsEnrollingCourse(int courseId, Class<? extends RuntimeException> exceptionType){
+		assertStudentIsEnrollingCourse(courseId, exceptionType, null);
+	}
 	
 	public void assertStudentIdIs(int studentId, Class<? extends RuntimeException> exceptionType, String errorMessage) {
 		if (getPrincipal().getStudentId() == studentId) return;
@@ -71,7 +85,7 @@ public class PersonalizedAuthorizator {
 		assertStudentIdIs(studentId, exceptionType, null);
 	}
 
-	public void assertPrincipalTeacherIdIs(int id, Class<? extends RuntimeException> exceptionType, String errorMessage) {
+	private void assertPrincipalTeacherIdIs(int id, Class<? extends RuntimeException> exceptionType, String errorMessage) {
 		if (getPrincipal().isSuperadmin()) return;
 		else if (getPrincipal().getTeacherId() == id) return;
 
@@ -79,6 +93,6 @@ public class PersonalizedAuthorizator {
 	}
 
 	public void assertPrincipalTeacherIdIs(int id, Class<? extends RuntimeException> exceptionType) {
-		assertPrincipalIdIs(id, exceptionType, null);
+		assertPrincipalTeacherIdIs(id, exceptionType, null);
 	}
 }

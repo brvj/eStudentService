@@ -69,6 +69,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
 							@Param("gradeFrom") Integer gradeFrom, @Param("gradeTo") Integer gradeTo, 
 							Pageable pageable);
 	
-	
+	boolean existsByStudent_IdAndCourse_Id(int studentId, int courseId);
 
 }

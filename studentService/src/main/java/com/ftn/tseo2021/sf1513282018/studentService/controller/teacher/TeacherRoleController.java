@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherRoleService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 
 @RestController
@@ -21,47 +20,24 @@ public class TeacherRoleController {
 
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createTeacherRole(@NotNull @RequestBody DefaultTeacherRoleDTO teacherRoleDTO){
-		try{
-			int id = roleService.create(teacherRoleDTO);
-			return new ResponseEntity<>(id, HttpStatus.CREATED);
-
-		}catch(IllegalArgumentException e){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (PersonalizedAccessDeniedException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		int id = roleService.create(teacherRoleDTO);
+		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateTeacherRole(@PathVariable("id") int id, @NotNull @RequestBody DefaultTeacherRoleDTO teacherRoleDTO){
-		try{
-			roleService.update(id, teacherRoleDTO);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-		} catch(EntityNotFoundException | PersonalizedAccessDeniedException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}catch (IllegalArgumentException e){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		roleService.update(id, teacherRoleDTO);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteTeacherRole(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
 		roleService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultTeacherRoleDTO> getTeacherRoleById(@PathVariable("id") int id){
-		DefaultTeacherRoleDTO teacherRoleDTO;
-		try {
-			teacherRoleDTO = roleService.getOne(id);
-			
-			if(teacherRoleDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(teacherRoleDTO, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		DefaultTeacherRoleDTO teacherRoleDTO = roleService.getOne(id);
+		return new ResponseEntity<>(teacherRoleDTO, HttpStatus.OK);
 	}
-
 }

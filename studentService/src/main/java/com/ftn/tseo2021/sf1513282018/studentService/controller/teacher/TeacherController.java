@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -28,64 +26,37 @@ public class TeacherController {
 
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createTeacher(@NotNull @RequestBody DefaultTeacherDTO teacherDTO){
-		try{
-			int teacherId = teacherService.create(teacherDTO);
-			return new ResponseEntity<>(teacherId, HttpStatus.CREATED);
-
-		}catch(IllegalArgumentException e){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}catch (PersonalizedAccessDeniedException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		int teacherId = teacherService.create(teacherDTO);
+		return new ResponseEntity<>(teacherId, HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/{id}", consumes = "application/json")
 	public ResponseEntity<Void> updateTeacher(@PathVariable("id") int id, @NotNull @RequestBody DefaultTeacherDTO teacherDTO){
-		try{
-			teacherService.update(id, teacherDTO);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-		}catch(EntityNotFoundException | PersonalizedAccessDeniedException e){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}catch (IllegalArgumentException e){
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		teacherService.update(id, teacherDTO);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteTeacher(@PathVariable("id") int id) throws PersonalizedAccessDeniedException {
+	public ResponseEntity<Void> deleteTeacher(@PathVariable("id") int id) {
 		teacherService.delete(id); return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultTeacherDTO> getTeacherById(@PathVariable("id") int id){
-		DefaultTeacherDTO teacherDTO;
-		try {
-			teacherDTO = teacherService.getOne(id);
-			if(teacherDTO == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
-		} catch (PersonalizedAccessDeniedException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		DefaultTeacherDTO teacherDTO = teacherService.getOne(id);
+		return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/user/{id}", produces = "application/json")
 	public ResponseEntity<DefaultTeacherDTO> getTeacherByUserId(@PathVariable("id") int id){
-		try{
-			DefaultTeacherDTO teacherDTO = teacherService.getByUserId(id);
-			return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		DefaultTeacherDTO teacherDTO = teacherService.getByUserId(id);
+		return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/{id}/teachings", produces = "application/json")
 	public ResponseEntity<List<TeacherTeachingDTO>> getTeacherTeachings(@PathVariable("id") int id){
-		try{
-			List<TeacherTeachingDTO> teachings = teacherService.getTeacherTeachings(id, Pageable.unpaged());
-			return new ResponseEntity<>(teachings, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		List<TeacherTeachingDTO> teachings = teacherService.getTeacherTeachings(id, Pageable.unpaged());
+		return new ResponseEntity<>(teachings, HttpStatus.OK);
 	}
 	
 	@GetMapping

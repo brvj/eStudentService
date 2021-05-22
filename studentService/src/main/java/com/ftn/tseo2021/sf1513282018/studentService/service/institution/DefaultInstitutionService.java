@@ -29,8 +29,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUs
 
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
-
 import java.util.List;
 
 @Service
@@ -105,9 +103,8 @@ public class DefaultInstitutionService implements InstitutionService {
 //	No need to explicitly secure methods below since they completely depend on secured methods of another services
 	
 	@Override
-	public List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, PersonalizedAccessDeniedException {
-		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+	public List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable) {
+		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
 		List<InstitutionUserDTO> users = userService.filterUsers(institutionId, pageable, null);
 
@@ -116,15 +113,14 @@ public class DefaultInstitutionService implements InstitutionService {
 	
 	@Override
 	public Page<InstitutionUserDTO> getInstitutionAdmins(int institutionId, Pageable pageable) {
-		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
 		return userService.filterAdminsForInstitution(institutionId, pageable);
 	}
 
 	@Override
-	public List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, PersonalizedAccessDeniedException {
-		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+	public List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable) {
+		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
 		List<InstitutionTeacherDTO> teachers = teacherService.filterTeachers(institutionId, pageable, null);
 
@@ -132,9 +128,8 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, PersonalizedAccessDeniedException {
-		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+	public List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) {
+		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
 		List<InstitutionStudentDTO> students = studentService.filterStudents(institutionId, pageable, null);
 
@@ -142,9 +137,8 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, PersonalizedAccessDeniedException {
-		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+	public List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) {
+		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
 		List<InstitutionCourseDTO> courses = courseService.filterCourses(institutionId, pageable, null);
 
@@ -152,9 +146,8 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable)
-			throws EntityNotFoundException, PersonalizedAccessDeniedException {
-		if(!institutionRepo.existsById(institutionId)) throw new EntityNotFoundException();
+	public List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) {
+		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
 		List<InstitutionExamPeriodDTO> examPeriods = examPeriodService.filterExamPeriods(institutionId, pageable, null);
 

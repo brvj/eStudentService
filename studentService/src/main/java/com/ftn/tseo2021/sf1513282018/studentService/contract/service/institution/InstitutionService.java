@@ -26,7 +26,7 @@ public interface InstitutionService extends BaseService<DefaultInstitutionDTO, I
 	
 	List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 	
-	List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
+	Page<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 
 	Page<InstitutionUserDTO> getInstitutionAdmins(int institutionId, Pageable pageable);
 	

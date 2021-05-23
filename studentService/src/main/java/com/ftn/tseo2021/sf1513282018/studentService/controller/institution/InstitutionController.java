@@ -84,8 +84,8 @@ public class InstitutionController {
 	}
 
 	@GetMapping(value = "/{id}/examPeriods", produces = "application/json")
-	public ResponseEntity<List<InstitutionExamPeriodDTO>> getInstitutionExamPeriods(@PathVariable("id") int id){
-		List<InstitutionExamPeriodDTO> examPeriods = institutionService.getInstitutionExamPeriods(id, Pageable.unpaged());
+	public ResponseEntity<Page<InstitutionExamPeriodDTO>> getInstitutionExamPeriods(@PathVariable("id") int id, Pageable pageable){
+		Page<InstitutionExamPeriodDTO> examPeriods = institutionService.getInstitutionExamPeriods(id, pageable);
 		return new ResponseEntity<>(examPeriods, HttpStatus.OK);
 	}
 }

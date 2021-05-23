@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class DefaultExamPeriodService implements ExamPeriodService {
@@ -94,19 +95,23 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAny
 	@Override
-	public List<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions) 
+	public Page<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions)
 			throws PersonalizedAccessDeniedException {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
-		
-		if (filterOptions == null) {
-			Page<ExamPeriod> page = examPeriodRepo.findByInstitution_Id(institutionId, pageable);
-			return (List<InstitutionExamPeriodDTO>) examPeriodConverter.convertToDTO(page.getContent(), InstitutionExamPeriodDTO.class);
+
+		Page<ExamPeriod> page;
+		if(filterOptions == null) {
+			page = examPeriodRepo.findByInstitution_Id(institutionId, pageable);
 		}
 		else {
-			Page<ExamPeriod> page = examPeriodRepo.filterExamPeriods(institutionId, filterOptions.getName(), null, null, pageable);
-			return (List<InstitutionExamPeriodDTO>) examPeriodConverter.convertToDTO(page.getContent(), InstitutionExamPeriodDTO.class);
+			page = examPeriodRepo.filterExamPeriods(institutionId, filterOptions.getName(), null, null, pageable);
 		}
-
+		return page.map(new Function<ExamPeriod, InstitutionExamPeriodDTO>() {
+			@Override
+			public InstitutionExamPeriodDTO apply(ExamPeriod examPeriod) {
+				return examPeriodConverter.convertToDTO(examPeriod, InstitutionExamPeriodDTO.class);
+			}
+		});
 	}
 
 	@AuthorizeAny

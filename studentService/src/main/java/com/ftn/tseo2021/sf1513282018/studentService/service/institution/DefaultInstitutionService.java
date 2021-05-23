@@ -30,6 +30,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUs
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class DefaultInstitutionService implements InstitutionService {
@@ -146,12 +147,12 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public List<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) {
+	public Page<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable) {
 		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
-		List<InstitutionExamPeriodDTO> examPeriods = examPeriodService.filterExamPeriods(institutionId, pageable, null);
+		Page<InstitutionExamPeriodDTO> page = examPeriodService.filterExamPeriods(institutionId, pageable, null);
 
-		return examPeriods;
+		return page;
 	}
 
 }

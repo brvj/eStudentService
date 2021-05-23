@@ -143,7 +143,7 @@ public class DefaultUserService implements UserService {
 	@Override
 	public Page<InstitutionUserDTO> getAdminsForInstitution(int institutionId, Pageable pageable) {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
-		
+
 		Page<User> page = userRepo.findByInstitution_IdAndUserAuthorities_Authority_Name(institutionId, "ADMIN", pageable);
 		
 		return page.map(new Function<User, InstitutionUserDTO>() {

@@ -36,7 +36,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthori
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 
-@Primary
+//@Primary
 @Service
 public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.NewUserService {
 	

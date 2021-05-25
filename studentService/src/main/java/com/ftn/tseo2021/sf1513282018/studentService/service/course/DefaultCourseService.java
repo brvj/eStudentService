@@ -32,6 +32,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCour
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class DefaultCourseService implements CourseService {
@@ -113,18 +114,27 @@ public class DefaultCourseService implements CourseService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public List<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions) 
+	public Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions)
 		throws PersonalizedAccessDeniedException {
 		authorize(institutionId);
 		
 		if (filterOptions == null) {
 			Page<Course> page = courseRepo.findByInstitution_Id(institutionId, pageable);
-			return (List<InstitutionCourseDTO>) courseConverter.convertToDTO(page.getContent(), InstitutionCourseDTO.class);
+			return page.map(new Function<Course, InstitutionCourseDTO>() {
+				@Override
+				public InstitutionCourseDTO apply(Course course) {
+					return courseConverter.convertToDTO(course, InstitutionCourseDTO.class);
+				}
+			});
 		}
 		else {
 			Page<Course> page = courseRepo.filterCourses(institutionId, filterOptions.name, pageable);
-			return (List<InstitutionCourseDTO>) courseConverter.convertToDTO(page.getContent(), InstitutionCourseDTO.class);
-		}
+			return page.map(new Function<Course, InstitutionCourseDTO>() {
+				@Override
+				public InstitutionCourseDTO apply(Course course) {
+					return courseConverter.convertToDTO(course, InstitutionCourseDTO.class);
+				}
+			});		}
 	}
 
 	@AuthorizeAny

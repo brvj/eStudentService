@@ -21,4 +21,5 @@ public interface ExamObligationRepository extends JpaRepository<ExamObligation, 
     Page<ExamObligation> filterExamObligations(@Param("courseId") int courseId, @Param("description") String description,
                                                @Param("examObligationTypeId") Integer examObligationTypeId,
                                                Pageable pageable);
+
 }

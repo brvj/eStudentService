@@ -138,10 +138,10 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public List<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) {
+	public Page<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) {
 		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
-		List<InstitutionCourseDTO> courses = courseService.filterCourses(institutionId, pageable, null);
+		Page<InstitutionCourseDTO> courses = courseService.filterCourses(institutionId, pageable, null);
 
 		return courses;
 	}

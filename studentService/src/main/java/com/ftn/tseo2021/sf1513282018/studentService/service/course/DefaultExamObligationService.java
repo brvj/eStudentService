@@ -3,26 +3,14 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.EnrollmentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
-import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
-import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
-import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacherOrAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.SecondaryTable;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class DefaultExamObligationService implements ExamObligationService {
@@ -59,21 +44,9 @@ public class DefaultExamObligationService implements ExamObligationService {
 	private CourseService courseService;
 
 	@Autowired
-	private InstitutionService institutionService;
-
-	@Autowired
-	private StudentService studentService;
-
-	@Autowired
-	private EnrollmentService enrollmentService;
-
-	@Autowired
 	private PersonalizedAuthorizator authorizator;
 
 	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
-
-	@Autowired
-	private PrincipalHolder principalHolder;
 
 	@AuthorizeAny
 	@Override
@@ -84,12 +57,8 @@ public class DefaultExamObligationService implements ExamObligationService {
 			authorizator.assertPrincipalIsFromInstitution(eo.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		else if(getPrincipal().isTeacher())
 			authorizator.assertTeacherIsTeachingCourse(eo.getCourse().getId(), PersonalizedAccessDeniedException.class);
-		else if(getPrincipal().isStudent()) { //
-			Set<Enrollment> enrollments = eo.getCourse().getEnrollments();
-			DefaultStudentDTO s = studentService.getOne(principalHolder.getCurrentPrincipal().getStudentId());
-
-			if(enrollments.contains(s))
-				authorizator.assertStudentIdIs(principalHolder.getCurrentPrincipal().getStudentId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isStudent()) {
+			authorizator.assertStudentIsEnrollingCourse(eo.getCourse().getId(), PersonalizedAccessDeniedException.class);
 		}
 
 		return examObligationConverter.convertToDTO(eo);
@@ -151,7 +120,7 @@ public class DefaultExamObligationService implements ExamObligationService {
 		else if(getPrincipal().isTeacher())
 			authorizator.assertTeacherIsTeachingCourse(course.getId(), PersonalizedAccessDeniedException.class);
 		else if(getPrincipal().isStudent()) {
-			// treba implementirati
+			authorizator.assertStudentIsEnrollingCourse(courseId, PersonalizedAccessDeniedException.class);
 		}
 
 		if (filterOptions == null) {

@@ -8,6 +8,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface CourseRepository extends JpaRepository<Course, Integer> {
 	
 	Page<Course> findByInstitution_Id(int institutionId, Pageable pageable);

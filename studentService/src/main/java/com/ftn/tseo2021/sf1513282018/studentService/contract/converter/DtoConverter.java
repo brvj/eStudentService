@@ -3,6 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.contract.converter;
 import java.util.List;
 
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
+import org.springframework.data.domain.Page;
 
 public interface DtoConverter<JPA, DTO, DefaultDTO extends DTO> {
 	

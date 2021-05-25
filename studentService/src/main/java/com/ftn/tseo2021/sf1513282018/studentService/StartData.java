@@ -33,11 +33,11 @@ public class StartData {
 	private void init() {
 		
 //		int iId = iService.create(new DefaultInstitutionDTO(null, "Fakultet tehničkih nauka", "Trg Dositeja Obradovića 6, Novi Sad", "+381 21 450 810"));
-//		
+//
 //		int aId = aService.create(new DefaultAuthorityDTO(null, "ADMIN"));
-//		
+//
 //		int uId = uService.create(new DefaultUserDTO(null, "admin", "admin", "Admin", "Admin", "admin.admin@student-service.com", "064-351-35-75", new DefaultInstitutionDTO(iId, null, null, null), null));
-//		
+//
 //		uaService.create(new DefaultUserAuthorityDTO(null, new DefaultUserDTO(uId, null, null, null, null, null, null, null, null), new DefaultAuthorityDTO(aId, null)));
 		
 	}

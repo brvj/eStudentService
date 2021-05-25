@@ -16,21 +16,27 @@ import org.springframework.web.util.WebUtils;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
-	@ExceptionHandler({EntityNotFoundException.class, PersonalizedAccessDeniedException.class})
+	@ExceptionHandler({ResourceNotFoundException.class, PersonalizedAccessDeniedException.class, EntityNotFoundException.class})
 	public ResponseEntity<ErrorMessage> handleNotFound(Exception ex, WebRequest request) {
-		ErrorMessage error = new ErrorMessage(HttpStatus.NOT_FOUND.value(), ex.getMessage(), "");
+		ErrorMessage error = new ErrorMessage(HttpStatus.NOT_FOUND.value(), ex.getMessage(), null);
 		return handleException(ex, error, null, HttpStatus.NOT_FOUND, request);
+	}
+	
+	@ExceptionHandler(EntityValidationException.class)
+	public ResponseEntity<ErrorMessage> handleEntityValidation(EntityValidationException ex, WebRequest request) {
+		ErrorMessage error = new ErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage(), null);
+		return handleException(ex, error, null, HttpStatus.UNPROCESSABLE_ENTITY, request);
 	}
 	
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ErrorMessage> handleAccessDenied(AccessDeniedException ex, WebRequest request) {
-		ErrorMessage error = new ErrorMessage(HttpStatus.FORBIDDEN.value(), ex.getMessage(), "");
+		ErrorMessage error = new ErrorMessage(HttpStatus.FORBIDDEN.value(), ex.getMessage(), null);
 		return handleException(ex, error, null, HttpStatus.FORBIDDEN, request);
 	}
 	
 	@ExceptionHandler
 	public ResponseEntity<ErrorMessage> handleOther(Exception ex, WebRequest request) {
-		ErrorMessage error = new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), "");
+		ErrorMessage error = new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null);
 		return handleException(ex, error, null, HttpStatus.INTERNAL_SERVER_ERROR, request);
 	}
 	
@@ -43,7 +49,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		}
 		
 		if (body == null || !(body instanceof ErrorMessage)) {
-			body = new ErrorMessage(status.value(), ex.getMessage(), "");
+			body = new ErrorMessage(status.value(), ex.getMessage(), null);
 		}
 		
 		if (headers == null) {

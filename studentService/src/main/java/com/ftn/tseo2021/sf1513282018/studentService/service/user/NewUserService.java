@@ -23,10 +23,12 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.user.views
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.AuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
@@ -45,6 +47,9 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 	
 	@Autowired
 	private DtoConverter<User, UserDTO, UserView> userConverter;
+	
+	@Autowired
+	private AuthorityService authorityService;
 	
 	@Autowired
 	private UserAuthorityService userAuthorityService;
@@ -74,11 +79,45 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 		
 		return userConverter.convertToDTO(user);
 	}
+	
+	@AuthorizeAny
+	@Override
+	public UserView getByUsername(String username) {
+		if (!getPrincipal().isAdmin() && 
+				(getPrincipal().isTeacher() || getPrincipal().isStudent()))
+			authorizator.assertPrincipalUsernameIs(username, PersonalizedAccessDeniedException.class);
+		
+		User user = userRepo.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException());
+		
+		if (getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(user.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
+		return userConverter.convertToDTO(user);
+	}
+
 
 	@AuthorizeAdmin
 	@Override
 	public Integer create(UserCreate dto) {
-		authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), EntityValidationException.class);
+		if (dto.getInstitutionId() != null) 
+			authorizator.assertPrincipalIsFromInstitution(dto.getInstitutionId(), EntityValidationException.class);
+		else
+			dto.setInstitutionId(getPrincipal().getInstitutionId());
+		
+		if (dto.getAuthorities() == null) dto.setAuthorities(new ArrayList<DefaultAuthorityDTO>());
+		try {
+			DefaultAuthorityDTO adminAuth = authorityService.getAuthorityByName("ADMIN");
+		
+			boolean adminAuthorityExists = false;
+			for (DefaultAuthorityDTO a : dto.getAuthorities()) {
+				if (a.getId() == adminAuth.getId()) { adminAuthorityExists = true; break; }
+			}
+			if (!adminAuthorityExists) {
+				dto.getAuthorities().add(adminAuth);
+			}
+		} catch (ResourceNotFoundException e) {
+			throw new RuntimeException();
+		}
 		
 		User user = userConverter.convertToJPA(dto);
 		
@@ -171,6 +210,5 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 		
 		return new CustomPrincipal(user.getId(), user.getUsername(),user.getFirstName(), user.getLastName(), user.getPassword(), user.getInstitution().getId(), ownerId, grantedAuthorities);
 	}
-
 }
 

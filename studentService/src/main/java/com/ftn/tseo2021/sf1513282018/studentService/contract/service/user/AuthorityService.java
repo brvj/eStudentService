@@ -5,4 +5,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthor
 
 public interface AuthorityService extends BaseService<DefaultAuthorityDTO, Integer> {
 	
+	DefaultAuthorityDTO getAuthorityByName(String name);
+	
 }

@@ -15,6 +15,7 @@ public interface UserUpdate extends UserDTO {
 	public String getFirstName();
 	@NotBlank
 	public String getLastName();
+	@NotBlank
 	@Email
 	public String getEmail();
 	@NotBlank

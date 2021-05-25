@@ -47,33 +47,39 @@ public class UserController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
-	@PostMapping(consumes = "application/json")
-	public ResponseEntity<Integer> createUser(@Validated @RequestBody UserCreate userDTO) {
-		int userId = userService.create(userDTO);
-		return new ResponseEntity<>(userId, HttpStatus.CREATED);
+	@GetMapping(value="/username/{username}", produces = "application/json")
+	public ResponseEntity<UserView> getOneByUsername(@PathVariable("username") String username) {
+		UserView user = userService.getByUsername(username);
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
-	@PutMapping(path = "/{id}", consumes = "application/json")
-	public ResponseEntity<Void> updateUser(@PathVariable("id") int id, @Validated @RequestBody UserUpdate userDTO) {
-		userService.update(id, userDTO);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
+//	@PostMapping(consumes = "application/json")
+//	public ResponseEntity<Integer> createUser(@Validated @RequestBody UserCreate userDTO) {
+//		int userId = userService.create(userDTO);
+//		return new ResponseEntity<>(userId, HttpStatus.CREATED);
+//	}
 	
-	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<Void> deleteUser(@PathVariable("id") int id) {
-		userService.delete(id);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
+//	@PutMapping(path = "/{id}", consumes = "application/json")
+//	public ResponseEntity<Void> updateUser(@PathVariable("id") int id, @Validated @RequestBody UserUpdate userDTO) {
+//		userService.update(id, userDTO);
+//		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//	}
 	
-	@GetMapping
-	public ModelAndView getInstituionUsers(@CurrentPrincipal CustomPrincipal principal) {
-		return new ModelAndView(String.format("forward:/api/institutions/%d/users", principal.getInstitutionId()));
-	}
+//	@DeleteMapping(path = "/{id}")
+//	public ResponseEntity<Void> deleteUser(@PathVariable("id") int id) {
+//		userService.delete(id);
+//		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//	}
 	
-	@GetMapping(value = "/admins", produces = "application/json")
-	public ModelAndView getInstitutionAdmins(@CurrentPrincipal CustomPrincipal principal) {
-		return new ModelAndView(String.format("forward:/api/institutions/%d/admins", principal.getInstitutionId()));
-	}
+//	@GetMapping
+//	public ModelAndView getInstituionUsers(@CurrentPrincipal CustomPrincipal principal) {
+//		return new ModelAndView(String.format("forward:/api/institutions/%d/users", principal.getInstitutionId()));
+//	}
+	
+//	@GetMapping(value = "/admins", produces = "application/json")
+//	public ModelAndView getInstitutionAdmins(@CurrentPrincipal CustomPrincipal principal) {
+//		return new ModelAndView(String.format("forward:/api/institutions/%d/admins", principal.getInstitutionId()));
+//	}
 	
 	@PostMapping(value = "/login", consumes = "application/json")
 	public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {

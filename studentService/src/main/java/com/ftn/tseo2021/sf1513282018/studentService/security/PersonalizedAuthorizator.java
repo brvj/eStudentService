@@ -55,6 +55,17 @@ public class PersonalizedAuthorizator {
 		assertPrincipalIdIs(id, exceptionType, null);
 	}
 	
+	public void assertPrincipalUsernameIs(String username, Class<? extends RuntimeException> exceptionType, String errorMessage) {
+		if (getPrincipal().isSuperadmin()) return;
+		else if (getPrincipal().getUsername() == username) return;
+		
+		throwException(exceptionType, errorMessage);
+	}
+	
+	public void assertPrincipalUsernameIs(String username, Class<? extends RuntimeException> exceptionType) {
+		assertPrincipalUsernameIs(username, exceptionType, null);
+	}
+	
 	public void assertTeacherIsTeachingCourse(int courseId, Class<? extends RuntimeException> exceptionType, String errorMessage) {
 		if (teachingRepo.existsByTeacher_IdAndCourse_Id(getPrincipal().getTeacherId(), courseId)) return;
 		

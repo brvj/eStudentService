@@ -33,6 +33,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority
 @Component
 public class NewUserConverter implements DtoConverter<User, UserDTO, UserView> {
 	
+	private static final String DEFAULT_PASSWORD = "fakultet";
+	
 	@Autowired
 	private InstitutionRepository institutionRepo;
 	
@@ -137,7 +139,7 @@ public class NewUserConverter implements DtoConverter<User, UserDTO, UserView> {
 	}
 	
 	private User convertToJPA(UserCreate source) {
-		if (source == null || source.getInstitution() == null || !institutionRepo.existsById(source.getInstitution().getId()))
+		if (source == null || source.getInstitutionId() == null || !institutionRepo.existsById(source.getInstitutionId()))
 			throw new EntityValidationException();
 		
 		for (DefaultAuthorityDTO authority : source.getAuthorities()) 
@@ -146,12 +148,12 @@ public class NewUserConverter implements DtoConverter<User, UserDTO, UserView> {
 		try {
 			User user = new User();
 			user.setUsername(source.getUsername());
-			user.setPassword(passwordEncoder.encode(source.getPassword()));
+			user.setPassword(passwordEncoder.encode(source.getPassword() == null ? DEFAULT_PASSWORD : source.getPassword()));
 			user.setFirstName(source.getFirstName());
 			user.setLastName(source.getLastName());
 			user.setEmail(source.getEmail());
 			user.setPhoneNumber(source.getPhoneNumber());
-			user.setInstitution(institutionRepo.getOne(source.getInstitution().getId()));
+			user.setInstitution(institutionRepo.getOne(source.getInstitutionId()));
 			
 			Set<UserAuthority> authorities = new HashSet<>();
 			for (DefaultAuthorityDTO dto : source.getAuthorities()) {

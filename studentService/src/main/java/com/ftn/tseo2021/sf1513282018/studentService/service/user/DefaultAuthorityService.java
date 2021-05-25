@@ -12,6 +12,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.AuthorityD
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.AuthorityRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.AuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.UserAuthorityService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.Authority;
 
@@ -56,6 +57,12 @@ public class DefaultAuthorityService implements AuthorityService {
 	@Override
 	public void delete(Integer id) {
 		if (!authorityRepo.existsById(id)) {}
+	}
+
+	@Override
+	public DefaultAuthorityDTO getAuthorityByName(String name) {
+		Authority a = authorityRepo.findByName(name).orElseThrow(() -> new ResourceNotFoundException());
+		return authorityConverter.convertToDTO(a);
 	}
 
 }

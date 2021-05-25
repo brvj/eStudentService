@@ -15,6 +15,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.UserUserAutho
 
 public interface NewUserService extends NewBaseService<UserView, Integer, UserCreate, UserUpdate>, UserDetailsService {
 	
+	UserView getByUsername(String username);
+	
 	List<UserUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable);
 	
 	List<InstitutionUser> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions);

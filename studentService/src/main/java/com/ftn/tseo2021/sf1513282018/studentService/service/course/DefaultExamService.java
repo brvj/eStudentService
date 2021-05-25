@@ -2,24 +2,27 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamPeriodService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.*;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Exam;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacher;
 
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacherOrAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamExamTakingDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamPeriodExamDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,24 +48,39 @@ public class DefaultExamService implements ExamService {
 	private InstitutionService institutionService;
 
 	@Autowired
-	private PrincipalHolder principalHolder;
+	private CourseService courseService;
 
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId)
-			throw new PersonalizedAccessDeniedException();
-	}
+	@Autowired
+	private ExamPeriodService examPeriodService;
+
+	@Autowired
+	private PersonalizedAuthorizator authorizator;
+
+	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
 
 	@AuthorizeAny
 	@Override
 	public DefaultExamDTO getOne(Integer id) {
 		Optional<Exam> exam = examRepo.findById(id);
+
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(exam.orElse(null).getExamPeriod().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(exam.orElse(null).getCourse().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isStudent())
+			authorizator.assertStudentIsEnrollingCourse(exam.orElse(null).getCourse().getId(), PersonalizedAccessDeniedException.class);
+
 		return examConverter.convertToDTO(exam.orElse(null));
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public Integer create(DefaultExamDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(dto.getExamPeriod().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(dto.getCourse().getId(), PersonalizedAccessDeniedException.class);
+
 		Exam exam = examConverter.convertToJPA(dto);
 
 		exam = examRepo.save(exam);
@@ -70,12 +88,14 @@ public class DefaultExamService implements ExamService {
 		return exam.getId();
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public void update(Integer id, DefaultExamDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
 		DefaultInstitutionDTO institution = institutionService.getOne(dto.getExamPeriod().getInstitution().getId());
-		authorize(institution.getId());
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(institution.getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(dto.getCourse().getId(), PersonalizedAccessDeniedException.class);
 
 		if(!examRepo.existsById(id)) throw new EntityNotFoundException();
 
@@ -89,12 +109,14 @@ public class DefaultExamService implements ExamService {
 		examRepo.save(e);
 	}
 
-	@AuthorizeAdmin
-	@AuthorizeTeacher
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public void delete(Integer id) throws PersonalizedAccessDeniedException {
 		Exam exam = examRepo.getOne(id);
-		authorize(exam.getExamPeriod().getInstitution().getId());
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(exam.getExamPeriod().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(exam.getCourse().getId(), PersonalizedAccessDeniedException.class);
 
 		if(!examRepo.existsById(id)) {}
 
@@ -105,6 +127,14 @@ public class DefaultExamService implements ExamService {
 	@AuthorizeAny
 	@Override
 	public List<CourseExamDTO> filterExamsByCourse(int courseId, Pageable pageable, CourseExamDTO filterOptions) {
+		DefaultCourseDTO course = courseService.getOne(courseId);
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(course.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(courseId, PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isStudent())
+			authorizator.assertStudentIsEnrollingCourse(courseId, PersonalizedAccessDeniedException.class);
+
 		if (filterOptions == null) {
 			Page<Exam> page = examRepo.findByCourse_Id(courseId, pageable);
 			return (List<CourseExamDTO>) examConverter.convertToDTO(page.getContent(), CourseExamDTO.class);
@@ -120,6 +150,17 @@ public class DefaultExamService implements ExamService {
 	@AuthorizeAny
 	@Override
 	public List<ExamPeriodExamDTO> filterExamsByExamPeriod(int examPeriodId, Pageable pageable, ExamPeriodExamDTO filterOptions) {
+		DefaultExamPeriodDTO ep = examPeriodService.getOne(examPeriodId);
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher()) {
+			authorizator.assertPrincipalIsFromInstitution(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+			// TO DO - implementirati vracanje onih ispita koji pripadaju kursu koji profesor predaje
+		}
+		else if(getPrincipal().isStudent())
+			authorizator.assertStudentIsEnrollingCourse(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+			// TO DO - implementirati vracanje onih ispita koji pripadaju kursu u kom student ucestvuje
+
 		if (filterOptions == null) {
 			Page<Exam> page = examRepo.findByExamPeriod_Id(examPeriodId, pageable);
 			return (List<ExamPeriodExamDTO>) examConverter.convertToDTO(page.getContent(), ExamPeriodExamDTO.class);

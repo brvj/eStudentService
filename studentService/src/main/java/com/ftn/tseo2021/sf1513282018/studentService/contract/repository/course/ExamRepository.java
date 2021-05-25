@@ -39,4 +39,6 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
     		 				@Param("description") String description,
                            @Param("classroom") String classroom, @Param("startDate") LocalDateTime startDate,
                            @Param("endDate") LocalDateTime endDate, Pageable pageable);
+
+	// Page<Exam> findByTeaching_IdAndCourse_Id(int teacherId, int courseId);
 }

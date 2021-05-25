@@ -7,6 +7,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.Institution
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.Course;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
+import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
+import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
@@ -60,22 +62,33 @@ public class DefaultCourseService implements CourseService {
 	
 	@Autowired
 	private PrincipalHolder principalHolder;
-	
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new PersonalizedAccessDeniedException();
-	}
+
+	@Autowired
+	private PersonalizedAuthorizator authorizator;
+
+	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
 
 	@AuthorizeAny
 	@Override
 	public DefaultCourseDTO getOne(Integer id) {
 		Optional<Course> course = courseRepo.findById(id);
+
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(course.orElse(null).getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isTeacher())
+			authorizator.assertTeacherIsTeachingCourse(id, PersonalizedAccessDeniedException.class);
+		else if(getPrincipal().isStudent())
+			authorizator.assertStudentIsEnrollingCourse(id, PersonalizedAccessDeniedException.class);
+
 		return courseConverter.convertToDTO(course.orElse(null));
 	}
 
 	@AuthorizeAdmin
 	@Override
 	public Integer create(DefaultCourseDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+
 		Course course = courseConverter.convertToJPA(dto);
 		course.getInstitution().setId(principalHolder.getCurrentPrincipal().getInstitutionId());
 
@@ -87,8 +100,8 @@ public class DefaultCourseService implements CourseService {
 	@AuthorizeAdmin
 	@Override
 	public void update(Integer id, DefaultCourseDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
-		DefaultInstitutionDTO institution = institutionService.getOne(dto.getInstitution().getId());
-		authorize(institution.getId());
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 
 		if(!courseRepo.existsById(id)) throw new EntityNotFoundException();
 
@@ -104,7 +117,8 @@ public class DefaultCourseService implements CourseService {
 	public void delete(Integer id) throws PersonalizedAccessDeniedException {
 		Course course= courseRepo.getOne(id);
 
-		authorize(course.getInstitution().getId());
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(course.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 
 		if(!courseRepo.existsById(id)) {}
 
@@ -116,7 +130,8 @@ public class DefaultCourseService implements CourseService {
 	@Override
 	public Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions)
 		throws PersonalizedAccessDeniedException {
-		authorize(institutionId);
+		if(getPrincipal().isAdmin())
+			authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 		
 		if (filterOptions == null) {
 			Page<Course> page = courseRepo.findByInstitution_Id(institutionId, pageable);

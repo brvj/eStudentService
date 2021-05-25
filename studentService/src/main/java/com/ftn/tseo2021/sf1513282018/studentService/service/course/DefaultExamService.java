@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class DefaultExamService implements ExamService {
@@ -126,7 +127,7 @@ public class DefaultExamService implements ExamService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAny
 	@Override
-	public List<CourseExamDTO> filterExamsByCourse(int courseId, Pageable pageable, CourseExamDTO filterOptions) {
+	public Page<CourseExamDTO> filterExamsByCourse(int courseId, Pageable pageable, CourseExamDTO filterOptions) {
 		DefaultCourseDTO course = courseService.getOne(courseId);
 		if(getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(course.getInstitution().getId(), PersonalizedAccessDeniedException.class);
@@ -137,19 +138,29 @@ public class DefaultExamService implements ExamService {
 
 		if (filterOptions == null) {
 			Page<Exam> page = examRepo.findByCourse_Id(courseId, pageable);
-			return (List<CourseExamDTO>) examConverter.convertToDTO(page.getContent(), CourseExamDTO.class);
+			return page.map(new Function<Exam, CourseExamDTO>() {
+				@Override
+				public CourseExamDTO apply(Exam exam) {
+					return examConverter.convertToDTO(exam, CourseExamDTO.class);
+				}
+			});
 		}
 		else {
 			Page<Exam> page = examRepo.filterExamsByCourse(courseId, filterOptions.getDescription(),
 					filterOptions.getClassroom(), null, null, pageable);
-			return (List<CourseExamDTO>) examConverter.convertToDTO(page.getContent(), CourseExamDTO.class);
+			return page.map(new Function<Exam, CourseExamDTO>() {
+				@Override
+				public CourseExamDTO apply(Exam exam) {
+					return examConverter.convertToDTO(exam, CourseExamDTO.class);
+				}
+			});
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@AuthorizeAny
 	@Override
-	public List<ExamPeriodExamDTO> filterExamsByExamPeriod(int examPeriodId, Pageable pageable, ExamPeriodExamDTO filterOptions) {
+	public Page<ExamPeriodExamDTO> filterExamsByExamPeriod(int examPeriodId, Pageable pageable, ExamPeriodExamDTO filterOptions) {
 		DefaultExamPeriodDTO ep = examPeriodService.getOne(examPeriodId);
 		if(getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(ep.getInstitution().getId(), PersonalizedAccessDeniedException.class);
@@ -163,12 +174,22 @@ public class DefaultExamService implements ExamService {
 
 		if (filterOptions == null) {
 			Page<Exam> page = examRepo.findByExamPeriod_Id(examPeriodId, pageable);
-			return (List<ExamPeriodExamDTO>) examConverter.convertToDTO(page.getContent(), ExamPeriodExamDTO.class);
+			return page.map(new Function<Exam, ExamPeriodExamDTO>() {
+				@Override
+				public ExamPeriodExamDTO apply(Exam exam) {
+					return examConverter.convertToDTO(exam, ExamPeriodExamDTO.class);
+				}
+			});
 		}
 		else {
 			Page<Exam> page = examRepo.filterExamsByExamPeriod(examPeriodId, filterOptions.getDescription(), 
 					filterOptions.getClassroom(), null, null, pageable);
-			return (List<ExamPeriodExamDTO>) examConverter.convertToDTO(page.getContent(), ExamPeriodExamDTO.class);
+			return page.map(new Function<Exam, ExamPeriodExamDTO>() {
+				@Override
+				public ExamPeriodExamDTO apply(Exam exam) {
+					return examConverter.convertToDTO(exam, ExamPeriodExamDTO.class);
+				}
+			});
 		}
 	}
 

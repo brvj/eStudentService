@@ -16,5 +16,5 @@ public interface ExamPeriodService extends BaseService<DefaultExamPeriodDTO, Int
 	
     Page<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions) throws PersonalizedAccessDeniedException;
 
-    List<ExamPeriodExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException;
+    Page<ExamPeriodExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException;
 }

@@ -6,6 +6,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.CurrentPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,8 +62,8 @@ public class ExamPeriodController {
 	}
 
 	@GetMapping(value = "/{id}/examPeriodExams", produces = "application/json")
-	public ResponseEntity<List<ExamPeriodExamDTO>> getExamPeriodExams(@PathVariable("id") int id){
-		List<ExamPeriodExamDTO> examPeriodExamDTOList = examPeriodService.getExamPeriodExams(id, Pageable.unpaged());
+	public ResponseEntity<Page<ExamPeriodExamDTO>> getExamPeriodExams(@PathVariable("id") int id){
+		Page<ExamPeriodExamDTO> examPeriodExamDTOList = examPeriodService.getExamPeriodExams(id, Pageable.unpaged());
 
 		if(examPeriodExamDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<>(examPeriodExamDTOList, HttpStatus.OK);

@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -122,7 +123,7 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 	@AuthorizeTeacherOrAdmin
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ExamOblExamObligationTakingDTO> filterTakingsByExamObligation(int examObligationId, Pageable pageable, ExamOblExamObligationTakingDTO filterOptions) {
+	public Page<ExamOblExamObligationTakingDTO> filterTakingsByExamObligation(int examObligationId, Pageable pageable, ExamOblExamObligationTakingDTO filterOptions) {
 		DefaultExamObligationDTO exam = examObligationService.getOne(examObligationId);
 		
 		if (getPrincipal().isAdmin())
@@ -132,11 +133,21 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 		
 		if (filterOptions == null) {
 			Page<ExamObligationTaking> page = examObligationTakingRepo.findByExamObligation_Id(examObligationId, pageable);
-			return (List<ExamOblExamObligationTakingDTO>) examObligationTakingConverter.convertToDTO(page.getContent(), ExamOblExamObligationTakingDTO.class);
+			return page.map(new Function<ExamObligationTaking, ExamOblExamObligationTakingDTO>() {
+				@Override
+				public ExamOblExamObligationTakingDTO apply(ExamObligationTaking examObligationTaking) {
+					return examObligationTakingConverter.convertToDTO(examObligationTaking, ExamOblExamObligationTakingDTO.class);
+				}
+			});
 		}
 		else {
 			Page<ExamObligationTaking> page = examObligationTakingRepo.filterTakingsByExamObligation(examObligationId, null, null, pageable);
-			return (List<ExamOblExamObligationTakingDTO>) examObligationTakingConverter.convertToDTO(page.getContent(), ExamOblExamObligationTakingDTO.class);
+			return page.map(new Function<ExamObligationTaking, ExamOblExamObligationTakingDTO>() {
+				@Override
+				public ExamOblExamObligationTakingDTO apply(ExamObligationTaking examObligationTaking) {
+					return examObligationTakingConverter.convertToDTO(examObligationTaking, ExamOblExamObligationTakingDTO.class);
+				}
+			});
 		}
 	}
 

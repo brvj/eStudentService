@@ -116,7 +116,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 
 	@AuthorizeAny
 	@Override
-	public List<ExamPeriodExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException {
+	public Page<ExamPeriodExamDTO> getExamPeriodExams(int examPeriodId, Pageable pageable) throws EntityNotFoundException {
 		if(!examPeriodRepo.existsById(examPeriodId)) throw new EntityNotFoundException();
 
 		return examService.filterExamsByExamPeriod(examPeriodId, pageable, null);

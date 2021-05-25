@@ -6,8 +6,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Cour
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.ExamObligationTakingService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.*;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligation;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
@@ -17,9 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamObligationService;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class DefaultExamObligationService implements ExamObligationService {
@@ -112,7 +111,7 @@ public class DefaultExamObligationService implements ExamObligationService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAny
 	@Override
-	public List<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) throws PersonalizedAccessDeniedException {
+	public Page<CourseExamObligationDTO> filterExamObligations(int courseId, Pageable pageable, CourseExamObligationDTO filterOptions) throws PersonalizedAccessDeniedException {
 		DefaultCourseDTO course = courseService.getOne(courseId);
 
 		if(getPrincipal().isAdmin())
@@ -125,18 +124,28 @@ public class DefaultExamObligationService implements ExamObligationService {
 
 		if (filterOptions == null) {
 			Page<ExamObligation> page = examObligationRepo.findByCourse_Id(courseId, pageable);
-			return (List<CourseExamObligationDTO>) examObligationConverter.convertToDTO(page.getContent(), CourseExamObligationDTO.class);
+			return page.map(new Function<ExamObligation, CourseExamObligationDTO>() {
+				@Override
+				public CourseExamObligationDTO apply(ExamObligation examObligation) {
+					return examObligationConverter.convertToDTO(examObligation, CourseExamObligationDTO.class);
+				}
+			});
 		}
 		else {
 			Page<ExamObligation> page = examObligationRepo.filterExamObligations(courseId,
 					filterOptions.getDescription(), filterOptions.getExamObligationType().getId(), pageable);
-			return (List<CourseExamObligationDTO>) examObligationConverter.convertToDTO(page.getContent(), CourseExamObligationDTO.class);
+			return page.map(new Function<ExamObligation, CourseExamObligationDTO>() {
+				@Override
+				public CourseExamObligationDTO apply(ExamObligation examObligation) {
+					return examObligationConverter.convertToDTO(examObligation, CourseExamObligationDTO.class);
+				}
+			});
 		}
 	}
 
 	@AuthorizeAny
 	@Override
-	public List<ExamOblExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable)
+	public Page<ExamOblExamObligationTakingDTO> getExamObligationTakings(int examObligationId, Pageable pageable)
 			throws EntityNotFoundException {
 		if(!examObligationRepo.existsById(examObligationId)) throw new EntityNotFoundException();
 		

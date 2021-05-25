@@ -5,6 +5,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.CurrentPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.Cour
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/courses")
@@ -72,8 +72,8 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/{id}/teachings", produces = "application/json")
-	public ResponseEntity<List<CourseTeachingDTO>> getCourseTeachings(@PathVariable("id") int id){
-		List<CourseTeachingDTO> courseTeachingDTOList;
+	public ResponseEntity<Page<CourseTeachingDTO>> getCourseTeachings(@PathVariable("id") int id){
+		Page<CourseTeachingDTO> courseTeachingDTOList;
 
 		courseTeachingDTOList = courseService.getCourseTeachings(id, Pageable.unpaged());
 		if(courseTeachingDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -81,8 +81,8 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/{id}/enrollments", produces = "application/json")
-	public ResponseEntity<List<CourseEnrollmentDTO>> getCourseEnrollments(@PathVariable("id") int id){
-		List<CourseEnrollmentDTO> courseEnrollmentDTOList;
+	public ResponseEntity<Page<CourseEnrollmentDTO>> getCourseEnrollments(@PathVariable("id") int id){
+		Page<CourseEnrollmentDTO> courseEnrollmentDTOList;
 
 		courseEnrollmentDTOList = courseService.getCourseEnrollments(id, Pageable.unpaged());
 		if(courseEnrollmentDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -90,9 +90,9 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/{id}/examObligations", produces = "application/json")
-	public ResponseEntity<List<CourseExamObligationDTO>> getCourseExamObligations(@PathVariable("id") int id){
+	public ResponseEntity<Page<CourseExamObligationDTO>> getCourseExamObligations(@PathVariable("id") int id){
 		try{
-			List<CourseExamObligationDTO> courseExamObligationDTOList = courseService.getCourseExamObligations(id, Pageable.unpaged());
+			Page<CourseExamObligationDTO> courseExamObligationDTOList = courseService.getCourseExamObligations(id, Pageable.unpaged());
 			return new ResponseEntity<>(courseExamObligationDTOList, HttpStatus.OK);
 		}
 		catch (PersonalizedAccessDeniedException e){
@@ -101,8 +101,8 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/{id}/exams", produces = "application/json")
-	public ResponseEntity<List<CourseExamDTO>> getCourseExams(@PathVariable("id") int id){
-		List<CourseExamDTO> courseExamDTOList;
+	public ResponseEntity<Page<CourseExamDTO>> getCourseExams(@PathVariable("id") int id){
+		Page<CourseExamDTO> courseExamDTOList;
 
 		courseExamDTOList = courseService.getCourseExams(id, Pageable.unpaged());
 		if(courseExamDTOList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);

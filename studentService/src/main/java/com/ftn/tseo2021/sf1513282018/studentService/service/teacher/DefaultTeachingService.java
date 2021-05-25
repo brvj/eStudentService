@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class DefaultTeachingService implements TeachingService {
@@ -135,7 +136,7 @@ public class DefaultTeachingService implements TeachingService {
 	@AuthorizeAny
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<CourseTeachingDTO> filterTeachingsByCourse(int courseId, Pageable pageable, CourseTeachingDTO filterOptions) {
+	public Page<CourseTeachingDTO> filterTeachingsByCourse(int courseId, Pageable pageable, CourseTeachingDTO filterOptions) {
 		if(getPrincipal().isTeacher()){
 			authorizator.assertTeacherIsTeachingCourse(courseId, PersonalizedAccessDeniedException.class);
 		}else if(getPrincipal().isStudent()){
@@ -152,6 +153,11 @@ public class DefaultTeachingService implements TeachingService {
 		else {
 			page = teachingRepo.filterTeachingsByCourse(courseId, filterOptions.getTeacherRole().getId(), pageable);
 		}
-		return (List<CourseTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), CourseTeachingDTO.class);
+		return page.map(new Function<Teaching, CourseTeachingDTO>() {
+			@Override
+			public CourseTeachingDTO apply(Teaching teaching) {
+				return teachingConverter.convertToDTO(teaching, CourseTeachingDTO.class);
+			}
+		});
 	}
 }

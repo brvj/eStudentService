@@ -12,7 +12,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.Institution
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -20,12 +19,12 @@ public interface CourseService extends BaseService<DefaultCourseDTO, Integer> {
 
 	Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions) throws PersonalizedAccessDeniedException;
 	
-	List<CourseTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException;
+	Page<CourseTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<CourseEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable) throws EntityNotFoundException;
+	Page<CourseEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
+	Page<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 	
-	List<CourseExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException;
+	Page<CourseExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException;
 	
 }

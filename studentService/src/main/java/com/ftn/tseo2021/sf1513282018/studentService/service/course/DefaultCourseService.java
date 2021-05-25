@@ -154,7 +154,7 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAny
 	@Override
-	public List<CourseTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException {
+	public Page<CourseTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
 		
 		return teachingService.filterTeachingsByCourse(courseId, pageable, null);
@@ -162,7 +162,7 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAny
 	@Override
-	public List<CourseEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable)
+	public Page<CourseEnrollmentDTO> getCourseEnrollments(int courseId, Pageable pageable)
 			throws EntityNotFoundException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
 		
@@ -171,7 +171,7 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAny
 	@Override
-	public List<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable)
+	public Page<CourseExamObligationDTO> getCourseExamObligations(int courseId, Pageable pageable)
 			throws EntityNotFoundException, PersonalizedAccessDeniedException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
 		
@@ -180,7 +180,7 @@ public class DefaultCourseService implements CourseService {
 
 	@AuthorizeAny
 	@Override
-	public List<CourseExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException {
+	public Page<CourseExamDTO> getCourseExams(int courseId, Pageable pageable) throws EntityNotFoundException {
 		if (!courseRepo.existsById(courseId)) throw new EntityNotFoundException();
 		
 		return examService.filterExamsByCourse(courseId, pageable, null);

@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
 import java.util.List;
+import java.util.function.Function;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -145,7 +146,7 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	@AuthorizeTeacherOrAdmin
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<CourseEnrollmentDTO> filterEnrollmentsByCourse(int courseId, Pageable pageable, CourseEnrollmentDTO filterOptions) {
+	public Page<CourseEnrollmentDTO> filterEnrollmentsByCourse(int courseId, Pageable pageable, CourseEnrollmentDTO filterOptions) {
 		if (getPrincipal().isTeacher())
 			authorizator.assertTeacherIsTeachingCourse(courseId, PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isAdmin()) {
@@ -154,11 +155,21 @@ public class DefaultEnrollmentService implements EnrollmentService {
 		}
 		if (filterOptions == null) {
 			Page<Enrollment> page = enrollmentRepo.findByCourse_Id(courseId, pageable);
-			return (List<CourseEnrollmentDTO>) enrollmentConverter.convertToDTO(page.getContent(), CourseEnrollmentDTO.class);
+			return page.map(new Function<Enrollment, CourseEnrollmentDTO>() {
+				@Override
+				public CourseEnrollmentDTO apply(Enrollment enrollment) {
+					return enrollmentConverter.convertToDTO(enrollment, CourseEnrollmentDTO.class);
+				}
+			});
 		}
 		else {
 			Page<Enrollment> page = enrollmentRepo.filterEnrollmentsByCourse(courseId, null, null, null, null, null, null, null, pageable);
-			return (List<CourseEnrollmentDTO>) enrollmentConverter.convertToDTO(page.getContent(), CourseEnrollmentDTO.class);
+			return page.map(new Function<Enrollment, CourseEnrollmentDTO>() {
+				@Override
+				public CourseEnrollmentDTO apply(Enrollment enrollment) {
+					return enrollmentConverter.convertToDTO(enrollment, CourseEnrollmentDTO.class);
+				}
+			});
 		}
 	}
 

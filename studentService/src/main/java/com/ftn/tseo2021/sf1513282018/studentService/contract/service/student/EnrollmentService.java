@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
@@ -17,7 +18,7 @@ public interface EnrollmentService extends BaseService<DefaultEnrollmentDTO, Int
 	
 	List<StudentEnrollmentDTO> filterEnrollmentsByStudent(int studentId, Pageable pageable, StudentEnrollmentDTO filterOptions);
 	
-	List<CourseEnrollmentDTO> filterEnrollmentsByCourse(int courseId, Pageable pageable, CourseEnrollmentDTO filterOptions);
+	Page<CourseEnrollmentDTO> filterEnrollmentsByCourse(int courseId, Pageable pageable, CourseEnrollmentDTO filterOptions);
 	
 	List<EnrollmentExamObligationTakingDTO> getEnrollmentExamObligationTakings(int enrollmentId, Pageable pageable) throws EntityNotFoundException;
 	

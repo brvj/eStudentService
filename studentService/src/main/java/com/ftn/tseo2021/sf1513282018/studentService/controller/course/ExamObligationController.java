@@ -4,6 +4,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExam
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +55,8 @@ public class ExamObligationController {
 	}
 
 	@GetMapping(value = "/{id}/examObligationTakings", produces = "application/json")
-	public ResponseEntity<List<ExamOblExamObligationTakingDTO>> getExamObligationTakings(@PathVariable("id") int id){
-		List<ExamOblExamObligationTakingDTO> examObligationTakingList = examObligationService.getExamObligationTakings(id, Pageable.unpaged());
+	public ResponseEntity<Page<ExamOblExamObligationTakingDTO>> getExamObligationTakings(@PathVariable("id") int id){
+		Page<ExamOblExamObligationTakingDTO> examObligationTakingList = examObligationService.getExamObligationTakings(id, Pageable.unpaged());
 
 		if(examObligationTakingList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<>(examObligationTakingList, HttpStatus.OK);

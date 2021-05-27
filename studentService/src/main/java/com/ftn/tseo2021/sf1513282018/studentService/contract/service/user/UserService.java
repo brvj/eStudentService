@@ -15,7 +15,7 @@ public interface UserService extends BaseService<DefaultUserDTO, Integer>, UserD
 	
 	List<UserUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable);
 	
-	List<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions);
+	Page<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions);
 
 	Page<InstitutionUserDTO> getAdminsForInstitution(int institutionId, Pageable pageable);
 

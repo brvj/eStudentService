@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -124,10 +125,11 @@ public class DefaultTeacherService implements TeacherService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) {
+	public Page<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 
 		Page<Teacher> page;
+
 		if (filterOptions == null) {
 			page = teacherRepo.findByInstitution_Id(institutionId, pageable);
 		}
@@ -135,14 +137,20 @@ public class DefaultTeacherService implements TeacherService {
 			page = teacherRepo.filterTeachers(institutionId, filterOptions.getTeacherTitle().getId(),
 					filterOptions.getFirstName(), filterOptions.getLastName(), pageable);
 		}
-		return (List<InstitutionTeacherDTO>) teacherConverter.convertToDTO(page.getContent(), InstitutionTeacherDTO.class);
+
+		return page.map(new Function<Teacher, InstitutionTeacherDTO>() {
+			@Override
+			public InstitutionTeacherDTO apply(Teacher teacher) {
+				return teacherConverter.convertToDTO(teacher, InstitutionTeacherDTO.class);
+			}
+		});
 	}
 
 	@Override
-	public List<TeacherTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable) {
+	public Page<TeacherTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable) {
 		if(!teacherRepo.existsById(teacherId)) throw new ResourceNotFoundException();
 
-		List<TeacherTeachingDTO> teachings = teachingService.filterTeachingsByTeacher(teacherId, pageable, null);
+		Page<TeacherTeachingDTO> teachings = teachingService.filterTeachingsByTeacher(teacherId, pageable, null);
 
 		return teachings;
 	}

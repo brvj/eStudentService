@@ -6,9 +6,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTea
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.InstitutionTeacherDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.TeacherTeachingDTO;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -16,7 +15,7 @@ public interface TeacherService extends BaseService<DefaultTeacherDTO, Integer> 
 
     DefaultTeacherDTO getByUserId(int userId);
 
-    List<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) throws PersonalizedAccessDeniedException;
+    Page<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) throws PersonalizedAccessDeniedException;
     
-    List<TeacherTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable) throws EntityNotFoundException;
+    Page<TeacherTeachingDTO> getTeacherTeachings(int teacherId, Pageable pageable) throws EntityNotFoundException;
 }

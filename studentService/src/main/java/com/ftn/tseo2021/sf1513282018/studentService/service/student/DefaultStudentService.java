@@ -2,6 +2,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -139,19 +140,25 @@ public class DefaultStudentService implements StudentService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public List<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions)  {
+	public Page<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions)  {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
-			
+
+		Page<Student> page;
+
 		if (filterOptions == null) {
-			Page<Student> page = studentRepo.findByInstitution_Id(institutionId, pageable);
-			return (List<InstitutionStudentDTO>) studentConverter.convertToDTO(page.getContent(), InstitutionStudentDTO.class);
+			page = studentRepo.findByInstitution_Id(institutionId, pageable);
 		}
 		else {
-			Page<Student> page = studentRepo.filterStudent(institutionId, filterOptions.getFirstName(), 
-					filterOptions.getLastName(), filterOptions.getStudentCard(), filterOptions.getAddress(), 
+			page = studentRepo.filterStudent(institutionId, filterOptions.getFirstName(),
+					filterOptions.getLastName(), filterOptions.getStudentCard(), filterOptions.getAddress(),
 					null, null, null, null, pageable);
-			return (List<InstitutionStudentDTO>) studentConverter.convertToDTO(page.getContent(), InstitutionStudentDTO.class);
 		}
+		return page.map(new Function<Student, InstitutionStudentDTO>() {
+			@Override
+			public InstitutionStudentDTO apply(Student student) {
+				return studentConverter.convertToDTO(student, InstitutionStudentDTO.class);
+			}
+		});
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution;
 
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.data.domain.Page;
@@ -18,11 +16,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUs
 
 public interface InstitutionService extends BaseService<DefaultInstitutionDTO, Integer> {
 	
-	List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
+	Page<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 	
-	List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
+	Page<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 	
-	List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
+	Page<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 	
 	Page<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable) throws EntityNotFoundException, PersonalizedAccessDeniedException;
 	

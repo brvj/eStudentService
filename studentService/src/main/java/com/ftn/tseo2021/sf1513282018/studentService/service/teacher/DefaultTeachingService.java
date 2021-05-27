@@ -115,7 +115,7 @@ public class DefaultTeachingService implements TeachingService {
 	@AuthorizeTeacherOrAdmin
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<TeacherTeachingDTO> filterTeachingsByTeacher(int teacherId, Pageable pageable, TeacherTeachingDTO filterOptions) {
+	public Page<TeacherTeachingDTO> filterTeachingsByTeacher(int teacherId, Pageable pageable, TeacherTeachingDTO filterOptions) {
 		if(getPrincipal().isTeacher()){
 			authorizator.assertPrincipalTeacherIdIs(teacherId, PersonalizedAccessDeniedException.class);
 		}else if(getPrincipal().isAdmin()){
@@ -130,7 +130,12 @@ public class DefaultTeachingService implements TeachingService {
 		else {
 			page = teachingRepo.filterTeachingsByTeacher(teacherId, filterOptions.getTeacherRole().getId(), pageable);
 		}
-		return (List<TeacherTeachingDTO>) teachingConverter.convertToDTO(page.getContent(), TeacherTeachingDTO.class);
+		return page.map(new Function<Teaching, TeacherTeachingDTO>() {
+			@Override
+			public TeacherTeachingDTO apply(Teaching teaching) {
+				return teachingConverter.convertToDTO(teaching, TeacherTeachingDTO.class);
+			}
+		});
 	}
 
 	@AuthorizeAny

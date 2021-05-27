@@ -104,12 +104,12 @@ public class DefaultInstitutionService implements InstitutionService {
 //	No need to explicitly secure methods below since they completely depend on secured methods of another services
 	
 	@Override
-	public List<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable) {
+	public Page<InstitutionUserDTO> getInstitutionUsers(int institutionId, Pageable pageable) {
 		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
-		List<InstitutionUserDTO> users = userService.filterUsers(institutionId, pageable, null);
+		Page<InstitutionUserDTO> page = userService.filterUsers(institutionId, pageable, null);
 
-		return users;
+		return page;
 	}
 	
 	@Override
@@ -120,19 +120,19 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public List<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable) {
+	public Page<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable) {
 		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
-		List<InstitutionTeacherDTO> teachers = teacherService.filterTeachers(institutionId, pageable, null);
+		Page<InstitutionTeacherDTO> teachers = teacherService.filterTeachers(institutionId, pageable, null);
 
 		return teachers;
 	}
 
 	@Override
-	public List<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) {
+	public Page<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) {
 		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
-		List<InstitutionStudentDTO> students = studentService.filterStudents(institutionId, pageable, null);
+		Page<InstitutionStudentDTO> students = studentService.filterStudents(institutionId, pageable, null);
 
 		return students;
 	}

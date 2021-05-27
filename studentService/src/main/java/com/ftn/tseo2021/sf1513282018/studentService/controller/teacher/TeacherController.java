@@ -6,6 +6,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.CurrentPrincipal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +55,8 @@ public class TeacherController {
 	}
 
 	@GetMapping(value = "/{id}/teachings", produces = "application/json")
-	public ResponseEntity<List<TeacherTeachingDTO>> getTeacherTeachings(@PathVariable("id") int id){
-		List<TeacherTeachingDTO> teachings = teacherService.getTeacherTeachings(id, Pageable.unpaged());
+	public ResponseEntity<Page<TeacherTeachingDTO>> getTeacherTeachings(@PathVariable("id") int id, Pageable pageable){
+		Page<TeacherTeachingDTO> teachings = teacherService.getTeacherTeachings(id, pageable);
 		return new ResponseEntity<>(teachings, HttpStatus.OK);
 	}
 	

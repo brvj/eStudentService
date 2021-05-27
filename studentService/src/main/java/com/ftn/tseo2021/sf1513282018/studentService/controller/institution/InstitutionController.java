@@ -53,8 +53,8 @@ public class InstitutionController {
 	}
 	
 	@GetMapping(value = "/{id}/users", produces = "application/json")
-	public ResponseEntity<List<InstitutionUserDTO>> getInstitutionUsers(@PathVariable("id") int id) {
-		List<InstitutionUserDTO> users = institutionService.getInstitutionUsers(id, Pageable.unpaged());
+	public ResponseEntity<Page<InstitutionUserDTO>> getInstitutionUsers(@PathVariable("id") int id, Pageable pageable) {
+		Page<InstitutionUserDTO> users = institutionService.getInstitutionUsers(id, pageable);
 		return new ResponseEntity<>(users, HttpStatus.OK);
 
 	}
@@ -66,14 +66,14 @@ public class InstitutionController {
 	}
 
 	@GetMapping(value = "/{id}/teachers", produces = "application/json")
-	public ResponseEntity<List<InstitutionTeacherDTO>> getInstitutionTeachers(@PathVariable("id") int id){
-		List<InstitutionTeacherDTO> teachers = institutionService.getInstitutionTeachers(id, Pageable.unpaged());
+	public ResponseEntity<Page<InstitutionTeacherDTO>> getInstitutionTeachers(@PathVariable("id") int id, Pageable pageable){
+		Page<InstitutionTeacherDTO> teachers = institutionService.getInstitutionTeachers(id, pageable);
 		return new ResponseEntity<>(teachers, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/{id}/students", produces = "application/json")
-	public ResponseEntity<List<InstitutionStudentDTO>> getInstitutionStudents(@PathVariable("id") int id){
-		List<InstitutionStudentDTO> students = institutionService.getInstitutionStudents(id, Pageable.unpaged());
+	public ResponseEntity<Page<InstitutionStudentDTO>> getInstitutionStudents(@PathVariable("id") int id, Pageable pageable){
+		Page<InstitutionStudentDTO> students = institutionService.getInstitutionStudents(id, pageable);
 		return new ResponseEntity<>(students, HttpStatus.OK);
 	}
 

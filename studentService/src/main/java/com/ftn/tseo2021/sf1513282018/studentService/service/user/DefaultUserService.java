@@ -125,18 +125,24 @@ public class DefaultUserService implements UserService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public List<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions) {
+	public Page<InstitutionUserDTO> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions) {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
-		
+
+		Page<User> page;
+
 		if (filterOptions == null) {
-			Page<User> page = userRepo.findByInstitution_Id(institutionId, pageable);
-			return (List<InstitutionUserDTO>) userConverter.convertToDTO(page.getContent(), InstitutionUserDTO.class);
+			page = userRepo.findByInstitution_Id(institutionId, pageable);
 		}
 		else {
-			Page<User> page = userRepo.filterUsers(institutionId, filterOptions.getUsername(), filterOptions.getFirstName(), 
-					filterOptions.getLastName(), filterOptions.getEmail() , pageable);
-			return (List<InstitutionUserDTO>) userConverter.convertToDTO(page.getContent(), InstitutionUserDTO.class);
+			page = userRepo.filterUsers(institutionId, filterOptions.getUsername(), filterOptions.getFirstName(),
+					filterOptions.getLastName(), filterOptions.getEmail(), pageable);
 		}
+		return page.map(new Function<User, InstitutionUserDTO>() {
+			@Override
+			public InstitutionUserDTO apply(User user) {
+				return userConverter.convertToDTO(user, InstitutionUserDTO.class);
+			}
+		});
 	}
 	
 	@AuthorizeAdmin

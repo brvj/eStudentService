@@ -1,6 +1,5 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -28,10 +27,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.Institutio
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
-import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeStudentOrAdmin;
 
@@ -54,17 +51,9 @@ public class DefaultStudentService implements StudentService {
 	private DtoConverter<Student, StudentDTO, DefaultStudentDTO> studentConverter;
 	
 	@Autowired
-	private PrincipalHolder principalHolder;
-	
-	@Autowired
 	private PersonalizedAuthorizator authorizator;
 	
 	private CustomPrincipal getPrincipal() { return authorizator.getPrincipal(); }
-	
-	private void authorize(Integer institutionId) throws PersonalizedAccessDeniedException {
-		if (principalHolder.getCurrentPrincipal().getInstitutionId() != institutionId) 
-			throw new PersonalizedAccessDeniedException();
-	}
 
 	@AuthorizeStudentOrAdmin
 	@Override
@@ -134,7 +123,7 @@ public class DefaultStudentService implements StudentService {
 	public DefaultStudentDTO getByUserId(int userId) {
 		Optional<Student> student = studentRepo.findByUser_Id(userId);
 
-		return studentConverter.convertToDTO(student.orElse(null));
+		return studentConverter.convertToDTO(student.orElseThrow(() -> new ResourceNotFoundException()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -162,26 +151,26 @@ public class DefaultStudentService implements StudentService {
 	}
 
 	@Override
-	public List<StudentEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException {
-		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
+	public Page<StudentEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) {
+		if(!studentRepo.existsById(studentId)) throw new ResourceNotFoundException();
 
-		List<StudentEnrollmentDTO> enrollments = enrollmentService.filterEnrollmentsByStudent(studentId, pageable, null);
+		Page<StudentEnrollmentDTO> enrollments = enrollmentService.filterEnrollmentsByStudent(studentId, pageable, null);
 
 		return enrollments;
 	}
 
 	@Override
-	public List<StudentDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException {
-		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
+	public Page<StudentDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) {
+		if(!studentRepo.existsById(studentId)) throw new ResourceNotFoundException();
 
-		List<StudentDocumentDTO> documents = documentService.filterDocuments(studentId, pageable, null);
+		Page<StudentDocumentDTO> documents = documentService.filterDocuments(studentId, pageable, null);
 
 		return documents;
 	}
 
 	@Override
-	public DefaultFinancialCardDTO getStudentFinancialCard(int studentId) throws EntityNotFoundException {
-		if(!studentRepo.existsById(studentId)) throw new EntityNotFoundException();
+	public DefaultFinancialCardDTO getStudentFinancialCard(int studentId) {
+		if(!studentRepo.existsById(studentId)) throw new ResourceNotFoundException();
 
 		DefaultFinancialCardDTO financialCard = financialCardService.getByStudentId(studentId);
 

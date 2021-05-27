@@ -1,7 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.function.Function;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -11,10 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.FinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.TransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.TransactionRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
@@ -22,16 +19,10 @@ import com.ftn.tseo2021.sf1513282018.studentService.converter.student.FinancialC
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultCourseDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Enrollment;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
-import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Student;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
 import com.ftn.tseo2021.sf1513282018.studentService.security.CustomPrincipal;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
@@ -97,7 +88,7 @@ public class DefaultTransactionService implements TransactionService {
 	
 	@AuthorizeAdmin
 	@Override
-	public void update(Integer id, DefaultTransactionDTO dto) throws EntityNotFoundException, IllegalArgumentException {
+	public void update(Integer id, DefaultTransactionDTO dto) {
 		Transaction t = transactionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		
 		authorizator.assertPrincipalIsFromInstitution(t.getFinancialCard().getStudent().getInstitution().getId(), PersonalizedAccessDeniedException.class);
@@ -125,7 +116,7 @@ public class DefaultTransactionService implements TransactionService {
 	@AuthorizeStudentOrAdmin
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<FinancialCardTransactionDTO> filterTransactions(int financialCardId, Pageable pageable, FinancialCardTransactionDTO filterOptions) {
+	public Page<FinancialCardTransactionDTO> filterTransactions(int financialCardId, Pageable pageable, FinancialCardTransactionDTO filterOptions) {
 		DefaultFinancialCardDTO fCard = financialCardService.getOne(financialCardId);
 		
 		FinancialCard financialCard = cardConverter.convertToJPA(fCard);
@@ -134,14 +125,20 @@ public class DefaultTransactionService implements TransactionService {
 		else if (getPrincipal().isAdmin()) {
 			authorizator.assertPrincipalIsFromInstitution(financialCard.getStudent().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		}
+
+		Page<Transaction> page;
+
 		if (filterOptions == null) {
-			Page<Transaction> page = transactionRepo.findByFinancialCard_Id(financialCardId, pageable);
-			return (List<FinancialCardTransactionDTO>) transactionConverter.convertToDTO(page.getContent(), FinancialCardTransactionDTO.class);
+			page = transactionRepo.findByFinancialCard_Id(financialCardId, pageable);
 		}
 		else {
-			Page<Transaction> page = transactionRepo.filterTransaction(financialCardId, null, null, null, null, pageable);
-			return (List<FinancialCardTransactionDTO>) transactionConverter.convertToDTO(page.getContent(), FinancialCardTransactionDTO.class);
+			page = transactionRepo.filterTransaction(financialCardId, null, null, null, null, pageable);
 		}
+		return page.map(new Function<Transaction, FinancialCardTransactionDTO>() {
+			@Override
+			public FinancialCardTransactionDTO apply(Transaction transaction) {
+				return transactionConverter.convertToDTO(transaction, FinancialCardTransactionDTO.class);
+			}
+		});
 	}
-
 }

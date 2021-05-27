@@ -125,22 +125,28 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	@AuthorizeStudentOrAdmin
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<StudentEnrollmentDTO> filterEnrollmentsByStudent(int studentId, Pageable pageable, StudentEnrollmentDTO filterOptions) {
+	public Page<StudentEnrollmentDTO> filterEnrollmentsByStudent(int studentId, Pageable pageable, StudentEnrollmentDTO filterOptions) {
 		if (getPrincipal().isStudent())
 			authorizator.assertStudentIdIs(studentId, PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isAdmin()) {
 			DefaultStudentDTO s = studentService.getOne(studentId);
 			authorizator.assertPrincipalIsFromInstitution(s.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		}
-		
+
+		Page<Enrollment> page;
+
 		if (filterOptions == null) {
-			Page<Enrollment> page = enrollmentRepo.findByStudent_Id(studentId, pageable);
-			return (List<StudentEnrollmentDTO>) enrollmentConverter.convertToDTO(page.getContent(), StudentEnrollmentDTO.class);
+			page = enrollmentRepo.findByStudent_Id(studentId, pageable);
 		}
 		else {
-			Page<Enrollment> page = enrollmentRepo.filterEnrollmentsByStudent(studentId, null, null, null, null, null, null, null, pageable);
-			return (List<StudentEnrollmentDTO>) enrollmentConverter.convertToDTO(page.getContent(), StudentEnrollmentDTO.class);
+			page = enrollmentRepo.filterEnrollmentsByStudent(studentId, null, null, null, null, null, null, null, pageable);
 		}
+		return page.map(new Function<Enrollment, StudentEnrollmentDTO>() {
+			@Override
+			public StudentEnrollmentDTO apply(Enrollment enrollment) {
+				return enrollmentConverter.convertToDTO(enrollment, StudentEnrollmentDTO.class);
+			}
+		});
 	}
 
 	@AuthorizeTeacherOrAdmin

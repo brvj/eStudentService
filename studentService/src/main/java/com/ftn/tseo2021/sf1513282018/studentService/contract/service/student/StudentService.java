@@ -1,7 +1,5 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.student;
 
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.data.domain.Page;
@@ -21,9 +19,9 @@ public interface StudentService extends BaseService<DefaultStudentDTO, Integer> 
 	
 	Page<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions) throws PersonalizedAccessDeniedException;
 	
-	List<StudentEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException;
+	Page<StudentEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException;
 	
-	List<StudentDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException;
+	Page<StudentDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException;
 	
 	DefaultFinancialCardDTO getStudentFinancialCard(int studentId) throws EntityNotFoundException;
 }

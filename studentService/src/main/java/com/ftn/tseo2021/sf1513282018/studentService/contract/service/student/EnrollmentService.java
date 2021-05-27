@@ -16,7 +16,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentEnr
 
 public interface EnrollmentService extends BaseService<DefaultEnrollmentDTO, Integer> {
 	
-	List<StudentEnrollmentDTO> filterEnrollmentsByStudent(int studentId, Pageable pageable, StudentEnrollmentDTO filterOptions);
+	Page<StudentEnrollmentDTO> filterEnrollmentsByStudent(int studentId, Pageable pageable, StudentEnrollmentDTO filterOptions);
 	
 	Page<CourseEnrollmentDTO> filterEnrollmentsByCourse(int courseId, Pageable pageable, CourseEnrollmentDTO filterOptions);
 	

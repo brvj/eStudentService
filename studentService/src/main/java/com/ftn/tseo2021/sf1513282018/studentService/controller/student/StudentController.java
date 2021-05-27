@@ -1,17 +1,12 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.student;
 
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.StudentDocumentDTO;
@@ -65,49 +60,30 @@ public class StudentController {
 	
 	@GetMapping(value = "/user/{id}", produces = "application/json")
 	public ResponseEntity<DefaultStudentDTO> getStudentByUserId(@PathVariable("id") int id){
-		try{
-			DefaultStudentDTO studentDTO = studentService.getByUserId(id);
-			return new ResponseEntity<>(studentDTO, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		DefaultStudentDTO studentDTO = studentService.getByUserId(id);
+		return new ResponseEntity<>(studentDTO, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}/enrollments", produces = "application/json")
-	public ResponseEntity<List<StudentEnrollmentDTO>> getStudentEnrollments(@PathVariable("id") int id) {
-		try {
-			List<StudentEnrollmentDTO> enrollments = studentService.getStudentEnrollments(id, Pageable.unpaged());
-			
-			return new ResponseEntity<>(enrollments, HttpStatus.OK);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<Page<StudentEnrollmentDTO>> getStudentEnrollments(@PathVariable("id") int id, Pageable pageable) {
+		Page<StudentEnrollmentDTO> enrollments = studentService.getStudentEnrollments(id, pageable);
+		return new ResponseEntity<>(enrollments, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}/documents", produces = "application/json")
-	public ResponseEntity<List<StudentDocumentDTO>> getStudentDocuments(@PathVariable("id") int id) {
-		try {
-			List<StudentDocumentDTO> documents = studentService.getStudentDocuments(id, Pageable.unpaged());
-			
-			return new ResponseEntity<>(documents, HttpStatus.OK);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<Page<StudentDocumentDTO>> getStudentDocuments(@PathVariable("id") int id, Pageable pageable) {
+		Page<StudentDocumentDTO> documents = studentService.getStudentDocuments(id, pageable);
+		return new ResponseEntity<>(documents, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}/financialCard", produces = "application/json")
 	public ResponseEntity<DefaultFinancialCardDTO> getStudentFinancialCard(@PathVariable("id") int id) {
-		try {
-			DefaultFinancialCardDTO fcard = studentService.getStudentFinancialCard(id);
-			
-			return new ResponseEntity<>(fcard, HttpStatus.OK);
-		} catch (EntityNotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		DefaultFinancialCardDTO fcard = studentService.getStudentFinancialCard(id);
+		return new ResponseEntity<>(fcard, HttpStatus.OK);
 	}
 	
 	@GetMapping
 	public ModelAndView getInstitutionStudents(@CurrentPrincipal CustomPrincipal principal) {
 		return new ModelAndView(String.format("forward:/api/institutions/%d/students", principal.getInstitutionId()));
 	}
-	
 }

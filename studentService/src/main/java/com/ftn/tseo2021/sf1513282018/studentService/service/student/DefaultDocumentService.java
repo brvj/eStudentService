@@ -1,11 +1,10 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
-import java.util.List;
 import java.util.Optional;
-
-import javax.persistence.EntityNotFoundException;
+import java.util.function.Function;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +44,7 @@ public class DefaultDocumentService implements DocumentService {
 
 	@AuthorizeStudentOrAdmin
 	@Override
-	public Integer create(DefaultDocumentDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultDocumentDTO dto) {
 		Document doc = documentConverter.convertToJPA(dto);
 		
 		doc = documentRepo.save(doc);
@@ -55,8 +54,8 @@ public class DefaultDocumentService implements DocumentService {
 
 	@AuthorizeStudentOrAdmin
 	@Override
-	public void update(Integer id, DefaultDocumentDTO dto) throws EntityNotFoundException, IllegalArgumentException {
-		if (!documentRepo.existsById(id)) throw new EntityNotFoundException();
+	public void update(Integer id, DefaultDocumentDTO dto) {
+		if (!documentRepo.existsById(id)) throw new ResourceNotFoundException();
 		
 		Document dNew = documentConverter.convertToJPA(dto);
 		
@@ -78,15 +77,20 @@ public class DefaultDocumentService implements DocumentService {
 	@AuthorizeStudentOrAdmin
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<StudentDocumentDTO> filterDocuments(int studentId, Pageable pageable, StudentDocumentDTO filterOptions) {
+	public Page<StudentDocumentDTO> filterDocuments(int studentId, Pageable pageable, StudentDocumentDTO filterOptions) {
+		Page<Document> page;
+
 		if (filterOptions == null) {
-			Page<Document> page = documentRepo.findByStudent_Id(studentId, pageable);
-			return (List<StudentDocumentDTO>) documentConverter.convertToDTO(page.getContent(), StudentDocumentDTO.class);
+			page = documentRepo.findByStudent_Id(studentId, pageable);
 		}
 		else {
-			Page<Document> page = documentRepo.filterDocuments(studentId, filterOptions.getName(), pageable);
-			return (List<StudentDocumentDTO>) documentConverter.convertToDTO(page.getContent(), StudentDocumentDTO.class);
+			page = documentRepo.filterDocuments(studentId, filterOptions.getName(), pageable);
 		}
+		return page.map(new Function<Document, StudentDocumentDTO>() {
+			@Override
+			public StudentDocumentDTO apply(Document document) {
+				return documentConverter.convertToDTO(document, StudentDocumentDTO.class);
+			}
+		});
 	}
-
 }

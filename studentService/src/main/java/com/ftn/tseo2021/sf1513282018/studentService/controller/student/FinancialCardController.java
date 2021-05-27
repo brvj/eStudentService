@@ -1,16 +1,11 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.student;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
-import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
-import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultEnrollmentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
 
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +25,6 @@ public class FinancialCardController {
 	
 	@Autowired
 	FinancialCardService cardService;
-	
 	
 	@PostMapping(consumes = "application/json")
 	public ResponseEntity<Integer> createFinancialCard(@RequestBody DefaultFinancialCardDTO financialCardDTO) {
@@ -55,25 +49,18 @@ public class FinancialCardController {
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<DefaultFinancialCardDTO> getFinancialCardById(@PathVariable("id") int id) {
 		DefaultFinancialCardDTO card = cardService.getOne(id);
-		
 		return new ResponseEntity<>(card, HttpStatus.OK);
 		}
 	
 	@GetMapping(value = "/student/{id}", produces = "application/json")
 	public ResponseEntity<DefaultFinancialCardDTO> getFinancialCardByStudentId(@PathVariable("id") int id){
-		try{
-			DefaultFinancialCardDTO financialCardDTO = cardService.getByStudentId(id);
-			return new ResponseEntity<>(financialCardDTO, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+		DefaultFinancialCardDTO financialCardDTO = cardService.getByStudentId(id);
+		return new ResponseEntity<>(financialCardDTO, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}/transactions", produces = "application/json")
-	public ResponseEntity<List<FinancialCardTransactionDTO>> getFinancialCardTransactions(@PathVariable("id") int id){
-		try{
-			List<FinancialCardTransactionDTO> transactions = cardService.getFinancialCardTransactions(id, Pageable.unpaged());
-			return new ResponseEntity<>(transactions, HttpStatus.OK);
-
-		}catch(EntityNotFoundException e){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+	public ResponseEntity<Page<FinancialCardTransactionDTO>> getFinancialCardTransactions(@PathVariable("id") int id, Pageable pageable){
+		Page<FinancialCardTransactionDTO> transactions = cardService.getFinancialCardTransactions(id, pageable);
+		return new ResponseEntity<>(transactions, HttpStatus.OK);
 	}
 }

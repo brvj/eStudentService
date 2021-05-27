@@ -1,15 +1,15 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.student;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.TransactionService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +50,7 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	}
 
 	@Override
-	public Integer create(DefaultFinancialCardDTO dto) throws IllegalArgumentException {
+	public Integer create(DefaultFinancialCardDTO dto) {
 		FinancialCard fc = financialCardConverter.convertToJPA(dto);
 		
 //		fc = financialCardRepo.save(fc);
@@ -59,8 +59,8 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	}
 
 	@Override
-	public void update(Integer id, DefaultFinancialCardDTO dto) throws EntityNotFoundException, IllegalArgumentException {
-		if (!financialCardRepo.existsById(id)) throw new EntityNotFoundException();
+	public void update(Integer id, DefaultFinancialCardDTO dto) {
+		if (!financialCardRepo.existsById(id)) throw new ResourceNotFoundException();
 		
 		FinancialCard fNew = financialCardConverter.convertToJPA(dto);
 		
@@ -81,14 +81,14 @@ public class DefaultFinancialCardService implements FinancialCardService {
 	public DefaultFinancialCardDTO getByStudentId(int studentId) {
 		Optional<FinancialCard> fc = financialCardRepo.findByStudent_Id(studentId);
 
-		return financialCardConverter.convertToDTO(fc.orElse(null));
+		return financialCardConverter.convertToDTO(fc.orElseThrow(() -> new ResourceNotFoundException()));
 	}
 
 	@Override
-	public List<FinancialCardTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable) throws EntityNotFoundException {
-		if(!financialCardRepo.existsById(cardId)) throw new EntityNotFoundException();
+	public Page<FinancialCardTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable) {
+		if(!financialCardRepo.existsById(cardId)) throw new ResourceNotFoundException();
 
-		List<FinancialCardTransactionDTO> transactions = transactionService.filterTransactions(cardId, pageable, null);
+		Page<FinancialCardTransactionDTO> transactions = transactionService.filterTransactions(cardId, pageable, null);
 
 		return transactions;
 	}

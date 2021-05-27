@@ -1,9 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.student;
 
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
@@ -14,6 +11,6 @@ public interface FinancialCardService extends BaseService<DefaultFinancialCardDT
 	
 	DefaultFinancialCardDTO getByStudentId(int sutdentId);
 	
-	List<FinancialCardTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable) throws EntityNotFoundException;
+	Page<FinancialCardTransactionDTO> getFinancialCardTransactions(int cardId, Pageable pageable);
 
 }

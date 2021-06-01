@@ -26,10 +26,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 			+ "(:username is null OR u.username LIKE CONCAT('%', :username, '%')) AND "
 			+ "(:firstName is null OR lower(u.firstName) LIKE lower(CONCAT('%', :firstName, '%'))) AND "
 			+ "(:lastName is null OR lower(u.lastName) LIKE lower(CONCAT('%', :lastName, '%'))) AND "
-			+ "(:email is null OR lower(u.email) LIKE lower(CONCAT('%', :email, '%')))")
+			+ "(:email is null OR lower(u.email) LIKE lower(CONCAT('%', :email, '%'))) AND "
+			+ "(:phoneNumber is null OR lower(u.phoneNumber) LIKE lower(CONCAT('%', :phoneNumber, '%')))")
 	Page<User> filterAdmins(@Param("institutionId") int institutionId, @Param("username")String username, 
 							@Param("firstName") String firstName, @Param("lastName") String lastName, 
-							@Param("email") String email, Pageable pageable);
+							@Param("email") String email, @Param("phoneNumber") String phoneNumber, Pageable pageable);
 	
 	@Query("SELECT u from User u WHERE "
 			+ "u.institution.id = :institutionId AND "

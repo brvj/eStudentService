@@ -2,6 +2,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.institution;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.user.UserFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamPeriodService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
@@ -113,10 +114,10 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 	
 	@Override
-	public Page<InstitutionUserDTO> getInstitutionAdmins(int institutionId, Pageable pageable) {
+	public Page<InstitutionUserDTO> getInstitutionAdmins(int institutionId, Pageable pageable, UserFilterOptions filterOptions) {
 		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
-		return userService.filterAdminsForInstitution(institutionId, pageable);
+		return userService.filterAdminsForInstitution(institutionId, pageable, filterOptions);
 	}
 
 	@Override

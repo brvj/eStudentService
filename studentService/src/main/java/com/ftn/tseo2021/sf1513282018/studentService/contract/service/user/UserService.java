@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.user.UserFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
@@ -19,6 +20,6 @@ public interface UserService extends BaseService<DefaultUserDTO, Integer>, UserD
 
 	Page<InstitutionUserDTO> getAdminsForInstitution(int institutionId, Pageable pageable);
 
-	Page<InstitutionUserDTO> filterAdminsForInstitution(int institutionId, Pageable pageable);
+	Page<InstitutionUserDTO> filterAdminsForInstitution(int institutionId, Pageable pageable, UserFilterOptions filterOptions);
 	
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.user.UserFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
@@ -162,10 +163,11 @@ public class DefaultUserService implements UserService {
 	
 	@AuthorizeAdmin
 	@Override
-	public Page<InstitutionUserDTO> filterAdminsForInstitution(int institutionId, Pageable pageable) {
+	public Page<InstitutionUserDTO> filterAdminsForInstitution(int institutionId, Pageable pageable, UserFilterOptions filterOptions) {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 		
-		Page<User> page = userRepo.filterAdmins(institutionId, null, null, null, null, pageable);
+		Page<User> page = userRepo.filterAdmins(institutionId, filterOptions.username, filterOptions.firstName, 
+				filterOptions.lastName, filterOptions.email, filterOptions.phoneNumber, pageable);
 		
 		return page.map(new Function<User, InstitutionUserDTO>() {
 			@Override

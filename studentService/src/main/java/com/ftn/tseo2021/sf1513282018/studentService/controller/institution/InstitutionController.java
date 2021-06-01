@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.user.UserFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 
 import javax.validation.constraints.NotNull;
@@ -60,8 +61,16 @@ public class InstitutionController {
 	}
 	
 	@GetMapping(value = "/{id}/admins", produces = "application/json")
-	public ResponseEntity<Page<InstitutionUserDTO>> getInstitutionAdmins(@PathVariable("id") int id, Pageable pageable) {
-		Page<InstitutionUserDTO> admins = institutionService.getInstitutionAdmins(id, pageable);
+	public ResponseEntity<Page<InstitutionUserDTO>> getInstitutionAdmins(@PathVariable("id") int id, Pageable pageable, 
+			@RequestParam(name = "firstName", required = false) String firstName, 
+			@RequestParam(name = "lastName", required = false) String lastName, 
+			@RequestParam(name = "username", required = false) String username, 
+			@RequestParam(name = "email", required = false) String email, 
+			@RequestParam(name = "phoneNumber", required = false) String phoneNumber
+			) {
+		
+		UserFilterOptions filterOptions = new UserFilterOptions(username, firstName, lastName, email, phoneNumber);
+		Page<InstitutionUserDTO> admins = institutionService.getInstitutionAdmins(id, pageable, filterOptions);
 		return new ResponseEntity<>(admins, HttpStatus.OK);
 	}
 

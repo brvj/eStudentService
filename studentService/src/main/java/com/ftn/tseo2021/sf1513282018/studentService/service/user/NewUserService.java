@@ -105,6 +105,9 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 			dto.setInstitutionId(getPrincipal().getInstitutionId());
 		
 		if (dto.getAuthorities() == null) dto.setAuthorities(new ArrayList<DefaultAuthorityDTO>());
+		
+		userRepo.findByUsername(dto.getUsername()).ifPresent(u -> { throw new EntityValidationException("Username already taken"); });
+		
 		try {
 			DefaultAuthorityDTO adminAuth = authorityService.getAuthorityByName("ADMIN");
 		

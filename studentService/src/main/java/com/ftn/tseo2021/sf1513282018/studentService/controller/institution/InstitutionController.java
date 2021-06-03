@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.institution;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.ExamPeriodFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
@@ -19,7 +20,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution
 
 import javax.validation.constraints.NotNull;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping(value = "api/institutions")
@@ -93,8 +94,14 @@ public class InstitutionController {
 	}
 
 	@GetMapping(value = "/{id}/examPeriods", produces = "application/json")
-	public ResponseEntity<Page<InstitutionExamPeriodDTO>> getInstitutionExamPeriods(@PathVariable("id") int id, Pageable pageable){
-		Page<InstitutionExamPeriodDTO> examPeriods = institutionService.getInstitutionExamPeriods(id, pageable);
+	public ResponseEntity<Page<InstitutionExamPeriodDTO>> getInstitutionExamPeriods(@PathVariable("id") int id, Pageable pageable,
+																					@RequestParam(name = "name", required = false) String name,
+																					@RequestParam(name = "startDate", required = false) String startDate,
+																					@RequestParam(name = "endDate", required = false) String endDate){
+		LocalDate start = (startDate == null || startDate.isEmpty()) ? null : LocalDate.parse(startDate);
+		LocalDate end = (endDate == null || endDate.isEmpty()) ? null : LocalDate.parse(endDate);
+		ExamPeriodFilterOptions filterOptions = new ExamPeriodFilterOptions(name, start, end);
+		Page<InstitutionExamPeriodDTO> examPeriods = institutionService.getInstitutionExamPeriods(id, pageable, filterOptions);
 		return new ResponseEntity<>(examPeriods, HttpStatus.OK);
 	}
 }

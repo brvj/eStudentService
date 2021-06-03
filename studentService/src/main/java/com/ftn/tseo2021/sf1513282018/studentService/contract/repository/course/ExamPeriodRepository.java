@@ -20,7 +20,7 @@ public interface ExamPeriodRepository extends JpaRepository<ExamPeriod, Integer>
     @Query("select ep from ExamPeriod ep where " +
             "ep.institution.id = :institutionId and " +
             "(:name is null or lower(ep.name) like lower(concat('%', :name, '%'))) and " +
-            "(:stardDate is null or ep.endDate >= :startDate) and " +
+            "(:startDate is null or ep.endDate >= :startDate) and " +
             "(:endDate is null or ep.startDate <= :endDate)")
     Page<ExamPeriod> filterExamPeriods(@Param("institutionId") int institutionId, @Param("name") String name,
                                        @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate,

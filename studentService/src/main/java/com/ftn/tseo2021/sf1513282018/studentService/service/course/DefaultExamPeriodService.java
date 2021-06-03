@@ -2,6 +2,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamPeriodDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.ExamPeriodFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
@@ -95,8 +96,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAny
 	@Override
-	public Page<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, InstitutionExamPeriodDTO filterOptions)
-			throws PersonalizedAccessDeniedException {
+	public Page<InstitutionExamPeriodDTO> filterExamPeriods(int institutionId, Pageable pageable, ExamPeriodFilterOptions filterOptions) {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 
 		Page<ExamPeriod> page;
@@ -104,7 +104,7 @@ public class DefaultExamPeriodService implements ExamPeriodService {
 			page = examPeriodRepo.findByInstitution_Id(institutionId, pageable);
 		}
 		else {
-			page = examPeriodRepo.filterExamPeriods(institutionId, filterOptions.getName(), null, null, pageable);
+			page = examPeriodRepo.filterExamPeriods(institutionId, filterOptions.getName(), filterOptions.getStartDate(), filterOptions.getEndDate(), pageable);
 		}
 		return page.map(new Function<ExamPeriod, InstitutionExamPeriodDTO>() {
 			@Override

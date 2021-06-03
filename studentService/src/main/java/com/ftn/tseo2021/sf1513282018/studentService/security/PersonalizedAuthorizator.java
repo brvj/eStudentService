@@ -86,14 +86,14 @@ public class PersonalizedAuthorizator {
 		assertStudentIsEnrollingCourse(courseId, exceptionType, null);
 	}
 	
-	public void assertStudentIdIs(int studentId, Class<? extends RuntimeException> exceptionType, String errorMessage) {
+	public void assertPrincipalStudentIdIs(int studentId, Class<? extends RuntimeException> exceptionType, String errorMessage) {
 		if (getPrincipal().getStudentId() == studentId) return;
 		
 		throwException(exceptionType, errorMessage);
 	}
 	
-	public void assertStudentIdIs(int studentId, Class<? extends RuntimeException> exceptionType) {
-		assertStudentIdIs(studentId, exceptionType, null);
+	public void assertPrincipalStudentIdIs(int studentId, Class<? extends RuntimeException> exceptionType) {
+		assertPrincipalStudentIdIs(studentId, exceptionType, null);
 	}
 
 	private void assertPrincipalTeacherIdIs(int id, Class<? extends RuntimeException> exceptionType, String errorMessage) {

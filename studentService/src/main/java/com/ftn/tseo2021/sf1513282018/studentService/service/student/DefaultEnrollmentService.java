@@ -127,7 +127,7 @@ public class DefaultEnrollmentService implements EnrollmentService {
 	@Override
 	public Page<StudentEnrollmentDTO> filterEnrollmentsByStudent(int studentId, Pageable pageable, StudentEnrollmentDTO filterOptions) {
 		if (getPrincipal().isStudent())
-			authorizator.assertStudentIdIs(studentId, PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalStudentIdIs(studentId, PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isAdmin()) {
 			DefaultStudentDTO s = studentService.getOne(studentId);
 			authorizator.assertPrincipalIsFromInstitution(s.getInstitution().getId(), PersonalizedAccessDeniedException.class);

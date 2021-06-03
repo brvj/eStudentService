@@ -121,7 +121,7 @@ public class DefaultTransactionService implements TransactionService {
 		
 		FinancialCard financialCard = cardConverter.convertToJPA(fCard);
 		if (getPrincipal().isStudent())
-			authorizator.assertStudentIdIs(financialCard.getStudent().getId(), PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalStudentIdIs(financialCard.getStudent().getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isAdmin()) {
 			authorizator.assertPrincipalIsFromInstitution(financialCard.getStudent().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		}

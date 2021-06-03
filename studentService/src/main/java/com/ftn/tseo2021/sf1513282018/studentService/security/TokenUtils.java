@@ -84,7 +84,7 @@ public class TokenUtils {
 			authorities.add("TEACHER");
 			claims.put("teacherId", principal.getTeacherId());
 		}
-		if (principal.isSuperadmin()) {
+		if (principal.isStudent()) {
 			authorities.add("STUDENT");
 			claims.put("studentId", principal.getStudentId());
 		}

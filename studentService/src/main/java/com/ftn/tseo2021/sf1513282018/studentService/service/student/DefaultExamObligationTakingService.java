@@ -57,7 +57,7 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 		if (getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(taking.getExamObligation().getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isStudent())
-			authorizator.assertStudentIdIs(taking.getEnrollment().getStudent().getId(), PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalStudentIdIs(taking.getEnrollment().getStudent().getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isTeacher())
 			authorizator.assertTeacherIsTeachingCourse(taking.getExamObligation().getCourse().getId(), PersonalizedAccessDeniedException.class);
 		
@@ -158,7 +158,7 @@ public class DefaultExamObligationTakingService implements ExamObligationTakingS
 		DefaultEnrollmentDTO enrollment = enrollmentService.getOne(enrollmentId);
 		
 		if (getPrincipal().isStudent())
-			authorizator.assertStudentIdIs(enrollment.getStudent().getId(), PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalStudentIdIs(enrollment.getStudent().getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isAdmin()) {
 			authorizator.assertPrincipalIsFromInstitution(enrollment.getStudent().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		}

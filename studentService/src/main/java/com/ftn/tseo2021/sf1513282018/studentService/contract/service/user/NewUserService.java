@@ -20,5 +20,7 @@ public interface NewUserService extends NewBaseService<UserView, Integer, UserCr
 	List<UserUserAuthorityDTO> getUserUserAuthorities(int userId, Pageable pageable);
 	
 	List<InstitutionUser> filterUsers(int institutionId, Pageable pageable, DefaultUserDTO filterOptions);
+
+	boolean existsByUsername(String username);
 	
 }

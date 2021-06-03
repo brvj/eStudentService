@@ -24,7 +24,7 @@ public class Student {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "student_id", unique = true, nullable = false)
-    private int id;
+    private Integer id;
 	
 	@Column(name = "first_name")
 	private String firstName;
@@ -32,7 +32,7 @@ public class Student {
 	@Column(name = "last_name")
 	private String lastName;
 	
-	@Column(name = "student_card", nullable = false)
+	@Column(name = "student_card", nullable = false, unique = true)
 	private String studentCard;
 	
 	@Column(name = "address")
@@ -48,16 +48,17 @@ public class Student {
 	@JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)
 	private Institution institution;
 	
-	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 	
-	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "student")
+	@OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, fetch = FetchType.LAZY, mappedBy = "student")
 	private Set<Document> documents;
 	
-	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER, mappedBy = "student")
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+	@JoinColumn(name = "financial_card_id", referencedColumnName = "financial_card_id", nullable = false)
 	private FinancialCard financialCard;
 	
-	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "student")
+	@OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, fetch = FetchType.LAZY, mappedBy = "student")
 	private Set<Enrollment> enrollments;
 }

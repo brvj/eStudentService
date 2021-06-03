@@ -109,7 +109,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 			authorities.add(authorityConverter.convertToDTO(ua.getAuthority()));
 		}
 		
-		DefaultUserDTO dto = new DefaultUserDTO(source.getId(), source.getUsername(), source.getPassword(), 
+		DefaultUserDTO dto = new DefaultUserDTO(source.getId(), source.getUsername(), null, 
 				source.getFirstName(), source.getLastName(), source.getEmail(), source.getPhoneNumber(), 
 				institutionConverter.convertToDTO(source.getInstitution()), authorities);
 		
@@ -141,7 +141,7 @@ public class UserConverter implements DtoConverter<User, UserDTO, DefaultUserDTO
 			User user = new User();
 	//		user.setId(source.getId());
 			user.setUsername(source.getUsername());
-			user.setPassword(passwordEncoder.encode(source.getPassword()));
+			user.setPassword(passwordEncoder.encode(source.getPassword() == null ? NewUserConverter.DEFAULT_PASSWORD : source.getPassword()));
 			user.setFirstName(source.getFirstName());
 			user.setLastName(source.getLastName());
 			user.setEmail(source.getEmail());

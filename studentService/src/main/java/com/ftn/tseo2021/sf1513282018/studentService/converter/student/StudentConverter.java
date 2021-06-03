@@ -12,13 +12,14 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.Financi
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
-import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.user.UserRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.AuthorityService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
@@ -29,23 +30,19 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.User;
 public class StudentConverter implements DtoConverter<Student, StudentDTO, DefaultStudentDTO> {
 
 	@Autowired
-	DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
+	private DtoConverter<Institution, InstitutionDTO, DefaultInstitutionDTO> institutionConverter;
 	
 	@Autowired
-	DtoConverter<User, UserDTO, DefaultUserDTO> userConverter;
+	private DtoConverter<User, UserDTO, DefaultUserDTO> userConverter;
 	
 	@Autowired
-	DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> financialCardConverter;
+	private DtoConverter<FinancialCard, FinancialCardDTO, DefaultFinancialCardDTO> financialCardConverter;
 	
 	@Autowired
-	InstitutionRepository institutionRepo;
+	private InstitutionRepository institutionRepo;
 	
 	@Autowired
-	UserRepository userRepo;
-	
-	@Autowired
-	FinancialCardRepository financialCardRepo;
-	
+	private AuthorityService authorityService;
 	
 	@Override
 	public Student convertToJPA(StudentDTO source) {
@@ -124,18 +121,30 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 	}
 	
 	private Student convertToJPA(DefaultStudentDTO source) {
-		if (source == null) return null;
-		
-		if (source.getInstitution() == null || source.getUser() == null ||
+		if (source == null || source.getInstitution() == null || source.getUser() == null ||
 				!institutionRepo.existsById(source.getInstitution().getId()))
 			throw new EntityValidationException();
 		
-		Institution institution = institutionRepo.getOne(source.getInstitution().getId());
-		DefaultInstitutionDTO iDTO = new DefaultInstitutionDTO();
-		iDTO.setId(source.getInstitution().getId());
-		source.getUser().setInstitution(iDTO);
-		User user = userConverter.convertToJPA(source.getUser());
+		source.getUser().setFirstName(source.getFirstName());
+		source.getUser().setLastName(source.getLastName());
+		source.getUser().setInstitution(source.getInstitution());
 		
+		if (source.getUser().getAuthorities() == null) source.getUser().setAuthorities(new ArrayList<DefaultAuthorityDTO>());
+		
+		try {
+			DefaultAuthorityDTO studentAuth = authorityService.getAuthorityByName("STUDENT");
+			
+			boolean studentAuthorityExists = false;
+			for (DefaultAuthorityDTO a : source.getUser().getAuthorities()) {
+				if (a.getName().equals("ADMIN") || a.getName().equals("TEACHER"))
+					throw new EntityValidationException();
+				
+				if (a.getId() == studentAuth.getId()) studentAuthorityExists = true;
+			}
+			if (!studentAuthorityExists) source.getUser().getAuthorities().add(studentAuth);
+		} catch (ResourceNotFoundException e) { throw new RuntimeException(); }
+		
+		User user = userConverter.convertToJPA(source.getUser());
 		
 		Student student = new Student();
 //		student.setId(source.getId());
@@ -145,7 +154,7 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 		student.setAddress(source.getAddress());
 		student.setDateOfBirth(source.getDateOfBirth());
 		student.setGeneration(source.getGeneration());
-		student.setInstitution(institution);
+		student.setInstitution(institutionRepo.getOne(source.getInstitution().getId()));
 		student.setUser(user);
 		FinancialCard fCard = new FinancialCard();
 		fCard.setStudent(student);

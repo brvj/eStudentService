@@ -94,7 +94,12 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 		
 		return userConverter.convertToDTO(user);
 	}
-
+	
+	@AuthorizeAny
+	@Override
+	public boolean existsByUsername(String username) {
+		return userRepo.existsByUsername(username);
+	}
 
 	@AuthorizeAdmin
 	@Override
@@ -104,9 +109,10 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 		else
 			dto.setInstitutionId(getPrincipal().getInstitutionId());
 		
-		if (dto.getAuthorities() == null) dto.setAuthorities(new ArrayList<DefaultAuthorityDTO>());
+		if (userRepo.existsByUsername(dto.getUsername()))
+			throw new EntityValidationException("Username already taken");
 		
-		userRepo.findByUsername(dto.getUsername()).ifPresent(u -> { throw new EntityValidationException("Username already taken"); });
+		if (dto.getAuthorities() == null) dto.setAuthorities(new ArrayList<DefaultAuthorityDTO>());
 		
 		try {
 			DefaultAuthorityDTO adminAuth = authorityService.getAuthorityByName("ADMIN");
@@ -140,6 +146,9 @@ public class NewUserService implements com.ftn.tseo2021.sf1513282018.studentServ
 		
 		if (getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(u.getInstitution().getId(), PersonalizedAccessDeniedException.class);
+		
+		if (!dto.getUsername().equals(u.getUsername()) && userRepo.existsByUsername(dto.getUsername()))
+			throw new EntityValidationException("Username already taken");
 		
 		User uNew = userConverter.convertToJPA(dto);
 		

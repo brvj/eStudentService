@@ -33,7 +33,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.user.UserAuthority
 @Component
 public class NewUserConverter implements DtoConverter<User, UserDTO, UserView> {
 	
-	private static final String DEFAULT_PASSWORD = "fakultet";
+	public static final String DEFAULT_PASSWORD = "fakultet";
 	
 	@Autowired
 	private InstitutionRepository institutionRepo;

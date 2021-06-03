@@ -93,5 +93,12 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@GetMapping(value = "/reloadJwt")
+	public ResponseEntity<String> reloadJwt(@CurrentPrincipal CustomPrincipal principal) {
+		UserDetails details = userService.loadUserByUsername(principal.getUsername());
+		String jwt = tokenUtils.generateToken(details);
+		return new ResponseEntity<>(jwt, HttpStatus.OK);
+	}
 
 }

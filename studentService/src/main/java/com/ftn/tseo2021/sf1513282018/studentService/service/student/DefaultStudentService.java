@@ -18,9 +18,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.NewUserService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.InstitutionStudentDTO;
@@ -48,6 +50,9 @@ public class DefaultStudentService implements StudentService {
 	private FinancialCardService financialCardService;
 	
 	@Autowired
+	private NewUserService userService;
+	
+	@Autowired
 	private DtoConverter<Student, StudentDTO, DefaultStudentDTO> studentConverter;
 	
 	@Autowired
@@ -59,8 +64,8 @@ public class DefaultStudentService implements StudentService {
 	@Override
 	public DefaultStudentDTO getOne(Integer id) {
 		if (!getPrincipal().isAdmin() && 
-				(getPrincipal().isAdmin() || getPrincipal().isStudent()))
-			authorizator.assertPrincipalIdIs(id, PersonalizedAccessDeniedException.class);
+				getPrincipal().isStudent())
+			authorizator.assertPrincipalStudentIdIs(id, PersonalizedAccessDeniedException.class);
 		
 		Student student = studentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		
@@ -73,7 +78,16 @@ public class DefaultStudentService implements StudentService {
 	@AuthorizeAdmin
 	@Override
 	public Integer create(DefaultStudentDTO dto) {
-		authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), EntityValidationException.class);
+		if (dto.getInstitution() != null && dto.getInstitution().getId() != null)
+			authorizator.assertPrincipalIsFromInstitution(dto.getInstitution().getId(), EntityValidationException.class);
+		else
+			dto.setInstitution(new DefaultInstitutionDTO(getPrincipal().getInstitutionId(), null, null, null));
+		
+		if (studentRepo.existsByStudentCard(dto.getStudentCard()))
+			throw new EntityValidationException("Student Card already taken");
+		
+		if (userService.existsByUsername(dto.getUser().getUsername()))
+			throw new EntityValidationException("Username already taken");
 		
 		Student student = studentConverter.convertToJPA(dto);
 		
@@ -85,26 +99,43 @@ public class DefaultStudentService implements StudentService {
 	@AuthorizeStudentOrAdmin
 	@Override
 	public void update(Integer id, DefaultStudentDTO dto) throws EntityNotFoundException {
-		
 		if (!getPrincipal().isAdmin() && 
-				(getPrincipal().isAdmin() || getPrincipal().isStudent()))
-			authorizator.assertPrincipalIdIs(id, PersonalizedAccessDeniedException.class);
+				getPrincipal().isStudent())
+			authorizator.assertPrincipalStudentIdIs(id, PersonalizedAccessDeniedException.class);
 		
 		Student s = studentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		
 		if (getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(s.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		
-		if (dto.getInstitution().getId() != s.getInstitution().getId()) throw new EntityValidationException();
+		if (dto.getInstitution() != null && dto.getInstitution().getId() != s.getInstitution().getId()) 
+			throw new EntityValidationException("Cannot change institution");
+		else if (dto.getInstitution() == null)
+			dto.setInstitution(new DefaultInstitutionDTO(s.getInstitution().getId(), null, null, null));
 
+		if (!s.getStudentCard().equals(dto.getStudentCard()))
+			throw new EntityValidationException("Cannot change Student Card");
+		
+		if (s.getGeneration() != dto.getGeneration())
+			throw new EntityValidationException("Cannot change generation");
+		
+		if (!s.getUser().getUsername().equals(dto.getUser().getUsername()) && 
+				userService.existsByUsername(dto.getUser().getUsername()))
+			throw new EntityValidationException("Username already taken");
+		
 		Student sNew = studentConverter.convertToJPA(dto);
 		
 		s.setFirstName(sNew.getFirstName());
 		s.setLastName(sNew.getLastName());
-		s.setStudentCard(sNew.getStudentCard());
+//		s.setStudentCard(sNew.getStudentCard());
 		s.setAddress(sNew.getAddress());
 		s.setDateOfBirth(sNew.getDateOfBirth());
-		s.setGeneration(sNew.getGeneration());
+//		s.setGeneration(sNew.getGeneration());
+		s.getUser().setFirstName(sNew.getFirstName());
+		s.getUser().setLastName(sNew.getLastName());
+		s.getUser().setUsername(sNew.getUser().getUsername());
+		s.getUser().setEmail(sNew.getUser().getEmail());
+		s.getUser().setPhoneNumber(sNew.getUser().getPhoneNumber());
 		studentRepo.save(s);		
 	}
 

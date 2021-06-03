@@ -72,7 +72,6 @@ public class DefaultUserService implements UserService {
 		if (getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(user.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		
-		user.setPassword(null);
 		return userConverter.convertToDTO(user);
 	}
 

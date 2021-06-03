@@ -42,12 +42,12 @@ public class Teacher {
     @JoinColumn(name = "teacher_title_id", referencedColumnName = "teacher_title_id", nullable = false)
     private TeacherTitle teacherTitle;
 
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "teacher")
-    private Set<Teaching> teacherTeachingCourses;
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, fetch = FetchType.LAZY, mappedBy = "teacher")
+    private Set<Teaching> teachings;
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinColumn(name = "institution_id", referencedColumnName = "institution_id", nullable = false)

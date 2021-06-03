@@ -8,8 +8,12 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.Teacher
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.UserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.institution.InstitutionRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.teacher.TeacherTitleRepository;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.AuthorityService;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
+import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherTitleDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultAuthorityDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.institution.Institution;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherTitle;
@@ -41,9 +45,12 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 
 	@Autowired
 	private InstitutionRepository institutionRepo;
+	
+	@Autowired
+	private AuthorityService authorityService;
 
 	@Override
-	public Teacher convertToJPA(TeacherDTO source) throws IllegalArgumentException {
+	public Teacher convertToJPA(TeacherDTO source) {
 		if (source instanceof DefaultTeacherDTO) {
 			return convertToJPA((DefaultTeacherDTO) source);
 		}
@@ -54,7 +61,7 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 	}
 
 	@Override
-	public List<Teacher> convertToJPA(List<? extends TeacherDTO> sources) throws IllegalArgumentException {
+	public List<Teacher> convertToJPA(List<? extends TeacherDTO> sources) {
 		List<Teacher> result = new ArrayList<Teacher>();
 		
 		if (sources.get(0) instanceof DefaultTeacherDTO) {
@@ -71,7 +78,7 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends TeacherDTO> T convertToDTO(Teacher source, Class<? extends TeacherDTO> returnType) throws IllegalArgumentException {
+	public <T extends TeacherDTO> T convertToDTO(Teacher source, Class<? extends TeacherDTO> returnType) {
 		if (returnType == DefaultTeacherDTO.class) {
 			return (T) convertToDefaultTeacherDTO(source);
 		}
@@ -85,7 +92,7 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 	}
 	
 	@Override
-	public List<? extends TeacherDTO> convertToDTO(List<Teacher> sources, Class<? extends TeacherDTO> returnType) throws IllegalArgumentException {
+	public List<? extends TeacherDTO> convertToDTO(List<Teacher> sources, Class<? extends TeacherDTO> returnType) {
 		if (returnType == DefaultTeacherDTO.class) {
 			List<DefaultTeacherDTO> result = new ArrayList<>();
 			for (Teacher jpa : sources) {
@@ -118,21 +125,32 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 		return (List<DefaultTeacherDTO>)convertToDTO(sources, DefaultTeacherDTO.class);
 	}
 	
-	private Teacher convertToJPA(DefaultTeacherDTO source) throws IllegalArgumentException {
-		if (source == null) return null;
-		
-		if (source.getInstitution() == null || source.getTeacherTitle() == null 
+	private Teacher convertToJPA(DefaultTeacherDTO source) {
+		if (source == null || source.getInstitution() == null || source.getTeacherTitle() == null 
 				|| source.getUser() == null
 				|| !institutionRepo.existsById(source.getInstitution().getId())
 				|| !teacherTitleRepo.existsById(source.getTeacherTitle().getId()))
-			throw new IllegalArgumentException();
+			throw new EntityValidationException();
+		
+		source.getUser().setFirstName(source.getFirstName());
+		source.getUser().setLastName(source.getLastName());
+		source.getUser().setInstitution(source.getInstitution());
+		
+		if (source.getUser().getAuthorities() == null) source.getUser().setAuthorities(new ArrayList<DefaultAuthorityDTO>());
+		
+		try {
+			DefaultAuthorityDTO teacherAuth = authorityService.getAuthorityByName("TEACHER");
+			
+			boolean teacherAuthorityExists = false;
+			for (DefaultAuthorityDTO a : source.getUser().getAuthorities()) {
+				if (a.getName().equals("STUDENT"))
+					throw new EntityValidationException();
+				
+				if (a.getId() == teacherAuth.getId()) teacherAuthorityExists = true;
+			}
+			if (!teacherAuthorityExists) source.getUser().getAuthorities().add(teacherAuth);
+		} catch (ResourceNotFoundException e) { throw new RuntimeException(); }
 
-
-		Institution institution = institutionRepo.getOne(source.getInstitution().getId());
-		TeacherTitle teacherTitle = teacherTitleRepo.getOne(source.getTeacherTitle().getId());
-		DefaultInstitutionDTO iDTO = new DefaultInstitutionDTO();
-		iDTO.setId(source.getInstitution().getId());
-		source.getUser().setInstitution(iDTO);
 		User user = userConverter.convertToJPA(source.getUser());
 
 		Teacher teacher = new Teacher();
@@ -141,9 +159,9 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 		teacher.setLastName(source.getLastName());
 		teacher.setAddress(source.getAddress());
 		teacher.setDateOfBirth(source.getDateOfBirth());
-		teacher.setTeacherTitle(teacherTitle);
+		teacher.setTeacherTitle(teacherTitleRepo.getOne(source.getTeacherTitle().getId()));
 		teacher.setUser(user);
-		teacher.setInstitution(institution);
+		teacher.setInstitution(institutionRepo.getOne(source.getInstitution().getId()));
 
 		return teacher;
 	}

@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeacherService;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/teachers")

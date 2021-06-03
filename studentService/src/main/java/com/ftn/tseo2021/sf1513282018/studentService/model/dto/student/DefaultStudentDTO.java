@@ -17,8 +17,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DefaultStudentDTO implements StudentDTO{
 
-	private static final long serialVersionUID = 8367475670755410932L;
-	
 	private Integer id;
 	private String firstName;
 	private String lastName;

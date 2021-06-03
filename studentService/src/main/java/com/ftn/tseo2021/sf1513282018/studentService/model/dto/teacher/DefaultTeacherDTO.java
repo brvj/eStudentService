@@ -16,8 +16,6 @@ import java.time.LocalDate;
 @Setter
 public class DefaultTeacherDTO implements TeacherDTO {
 
-	private static final long serialVersionUID = 2264720562718253956L;
-	
 	private Integer id;
     private String firstName;
     private String lastName;

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
@@ -17,9 +18,18 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     @Query("SELECT t from Teacher t WHERE " +
             "t.institution.id = :institutionId AND " +
-            "(:teacherTitleId is null OR t.teacherTitle.id = :teacherTitleId) AND " +
             "(:firstName is null OR lower(t.firstName) LIKE lower(CONCAT('%', :firstName,'%'))) AND " +
-            "(:lastName is null OR lower(t.lastName) LIKE lower(CONCAT('%', :lastName,'%')))")
-    Page<Teacher> filterTeachers(@Param("institutionId") int institutionId, @Param("teacherTitleId") Integer teacherTitleId,
-                                 @Param("firstName") String firstName, @Param("lastName") String lastName, Pageable pageable);
+            "(:lastName is null OR lower(t.lastName) LIKE lower(CONCAT('%', :lastName,'%'))) AND " +
+            "(:address is null OR lower(t.address) LIKE lower(CONCAT('%', :address, '%'))) AND " +
+            "(:teacherTitleName is null OR lower(t.teacherTitle.name) LIKE lower(CONCAT('%', :teacherTitleName, '%'))) AND " +
+            "(:startBirthDate is null OR t.dateOfBirth >= :startBirthDate) AND " +
+            "(:endBirthDate is null OR t.dateOfBirth <= :endBirthDate) AND " +
+            "(:username is null OR lower(t.user.username) LIKE lower(CONCAT('%', :username, '%'))) AND " +
+            "(:email is null OR lower(t.user.email) LIKE lower(CONCAT('%', :email, '%'))) AND " +
+            "(:phoneNumber is null OR lower(t.user.phoneNumber) LIKE lower(CONCAT('%', :phoneNumber, '%')))")
+    Page<Teacher> filterTeachers(@Param("institutionId") int institutionId,
+                                 @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("address") String address,
+                                 @Param("teacherTitleName") String teacherTitleName, @Param("startBirthDate") LocalDate startBirthDate,
+                                 @Param("endBirthDate") LocalDate endBirthDate, @Param("username") String username, @Param("email") String email,
+                                 @Param("phoneNumber") String phoneNumber, Pageable pageable);
 }

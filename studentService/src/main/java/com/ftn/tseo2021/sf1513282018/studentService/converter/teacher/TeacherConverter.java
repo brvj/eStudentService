@@ -179,7 +179,7 @@ public class TeacherConverter implements DtoConverter<Teacher, TeacherDTO, Defau
 		if (source == null) return null;
 		
 		InstitutionTeacherDTO dto = new InstitutionTeacherDTO(source.getId(), source.getFirstName(), source.getLastName(), source.getAddress(), 
-				source.getDateOfBirth(), teacherTitleConverter.convertToDTO(source.getTeacherTitle()));
+				source.getDateOfBirth(), teacherTitleConverter.convertToDTO(source.getTeacherTitle()), userConverter.convertToDTO(source.getUser()));
 		
 		return dto;
 	}

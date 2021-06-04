@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
 
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,5 @@ public class InstitutionTeacherDTO implements TeacherDTO {
     private String address;
     private LocalDate dateOfBirth;
     private DefaultTeacherTitleDTO teacherTitle;
-
+    private DefaultUserDTO user;
 }

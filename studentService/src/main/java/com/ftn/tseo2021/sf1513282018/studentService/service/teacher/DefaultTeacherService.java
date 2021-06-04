@@ -2,6 +2,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.teacher.TeachingService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.NewUserService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
@@ -142,7 +143,7 @@ public class DefaultTeacherService implements TeacherService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public Page<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, DefaultTeacherDTO filterOptions) {
+	public Page<InstitutionTeacherDTO> filterTeachers(int institutionId, Pageable pageable, TeacherFilterOptions filterOptions) {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 
 		Page<Teacher> page;
@@ -151,8 +152,9 @@ public class DefaultTeacherService implements TeacherService {
 			page = teacherRepo.findByInstitution_Id(institutionId, pageable);
 		}
 		else {
-			page = teacherRepo.filterTeachers(institutionId, filterOptions.getTeacherTitle().getId(),
-					filterOptions.getFirstName(), filterOptions.getLastName(), pageable);
+			page = teacherRepo.filterTeachers(institutionId, filterOptions.firstName, filterOptions.lastName, filterOptions.address,
+					filterOptions.teacherTitleName, filterOptions.dateOfBirthFrom, filterOptions.dateOfBirthTo, filterOptions.username,
+					filterOptions.email, filterOptions.phoneNumber, pageable);
 		}
 
 		return page.map(new Function<Teacher, InstitutionTeacherDTO>() {

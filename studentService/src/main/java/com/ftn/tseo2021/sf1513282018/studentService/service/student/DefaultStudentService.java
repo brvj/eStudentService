@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.StudentRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.StudentService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.user.NewUserService;
@@ -157,10 +158,9 @@ public class DefaultStudentService implements StudentService {
 		return studentConverter.convertToDTO(student.orElseThrow(() -> new ResourceNotFoundException()));
 	}
 
-	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public Page<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions)  {
+	public Page<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, StudentFilterOptions filterOptions)  {
 		authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
 
 		Page<Student> page;
@@ -169,9 +169,9 @@ public class DefaultStudentService implements StudentService {
 			page = studentRepo.findByInstitution_Id(institutionId, pageable);
 		}
 		else {
-			page = studentRepo.filterStudent(institutionId, filterOptions.getFirstName(),
-					filterOptions.getLastName(), filterOptions.getStudentCard(), filterOptions.getAddress(),
-					null, null, null, null, pageable);
+			page = studentRepo.filterStudent(institutionId, filterOptions.firstName, filterOptions.lastName, filterOptions.studentCard, 
+					filterOptions.address, filterOptions.dateOfBirthFrom, filterOptions.dateOfBirthTo, filterOptions.generationFrom, 
+					filterOptions.generationTo, filterOptions.username, filterOptions.email, filterOptions.phoneNumber, pageable);
 		}
 		return page.map(new Function<Student, InstitutionStudentDTO>() {
 			@Override

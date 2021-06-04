@@ -5,6 +5,7 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
@@ -17,7 +18,7 @@ public interface StudentService extends BaseService<DefaultStudentDTO, Integer> 
 	
 	DefaultStudentDTO getByUserId(int userId);
 	
-	Page<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, DefaultStudentDTO filterOptions) throws PersonalizedAccessDeniedException;
+	Page<InstitutionStudentDTO> filterStudents(int institutionId, Pageable pageable, StudentFilterOptions filterOptions);
 	
 	Page<StudentEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) throws EntityNotFoundException;
 	

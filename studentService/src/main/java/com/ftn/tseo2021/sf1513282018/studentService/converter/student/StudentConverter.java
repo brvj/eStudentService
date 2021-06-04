@@ -115,7 +115,7 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 		if (source == null) return null;
 		
 		InstitutionStudentDTO dto = new InstitutionStudentDTO(source.getId(), source.getFirstName(), source.getLastName(), 
-				source.getStudentCard(), source.getAddress(), source.getGeneration(), source.getDateOfBirth());
+				source.getStudentCard(), source.getAddress(), source.getGeneration(), source.getDateOfBirth(), userConverter.convertToDTO(source.getUser()));
 		
 		return dto;
 	}

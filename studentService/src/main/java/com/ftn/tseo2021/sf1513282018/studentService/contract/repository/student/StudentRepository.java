@@ -30,10 +30,14 @@ public interface StudentRepository extends JpaRepository<Student, Integer>{
 			"(:startBirthDate is null OR s.dateOfBirth >= :startBirthDate) AND " + 
 			"(:endBirthDate is null OR s.dateOfBirth <= :endBirthDate) AND " +
 			"(:startGeneration is null OR s.generation >= :startGeneration) AND " + 
-			"(:endGeneration is null OR s.generation <= :endGeneration)")
+			"(:endGeneration is null OR s.generation <= :endGeneration) AND " +
+			"(:username is null OR lower(s.user.username) LIKE lower(CONCAT('%', :username, '%'))) AND " +
+			"(:email is null OR lower(s.user.email) LIKE lower(CONCAT('%', :email, '%'))) AND " +
+			"(:phoneNumber is null OR lower(s.user.phoneNumber) LIKE lower(CONCAT('%', :phoneNumber, '%')))")
 	Page<Student> filterStudent(@Param("institutionId") int institutionId,
             @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("studentCard") String studentCard,
             @Param("address") String address, @Param("startBirthDate") LocalDate startBirthDate, @Param("endBirthDate") LocalDate endBirthDate,
-            @Param("startGeneration") Integer startGeneration, @Param("endGeneration") Integer endGeneration, Pageable pageable);
+            @Param("startGeneration") Integer startGeneration, @Param("endGeneration") Integer endGeneration, 
+            @Param("username") String username, @Param("email") String email, @Param("phoneNumber") String phoneNumber, Pageable pageable);
 
 }

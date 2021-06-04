@@ -1,6 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.ExamPeriodFilterOptions;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentFilterOptions;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,12 +21,12 @@ public interface InstitutionService extends BaseService<DefaultInstitutionDTO, I
 	
 	Page<InstitutionTeacherDTO> getInstitutionTeachers(int institutionId, Pageable pageable);
 	
-	Page<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable);
+	Page<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable, StudentFilterOptions filterOptions);
 	
 	Page<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable);
 	
 	Page<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable, ExamPeriodFilterOptions filterOptions);
 
 	Page<InstitutionUserDTO> getInstitutionAdmins(int institutionId, Pageable pageable, UserFilterOptions filterOptions);
-	
+
 }

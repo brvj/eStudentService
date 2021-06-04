@@ -48,7 +48,6 @@ public class StudentController {
 	public ResponseEntity<Void> deleteStudent(@PathVariable("id") int id) {
 		studentService.delete(id); 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping(value = "/{id}", produces = "application/json")

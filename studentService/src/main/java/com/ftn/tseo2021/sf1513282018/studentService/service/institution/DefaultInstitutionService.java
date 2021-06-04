@@ -3,6 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.institution;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.ExamPeriodFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.institution.InstitutionDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.user.user.UserFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.ExamPeriodService;
@@ -30,9 +31,6 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.Institutio
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.InstitutionUserDTO;
 
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.function.Function;
 
 @Service
 public class DefaultInstitutionService implements InstitutionService {
@@ -131,10 +129,10 @@ public class DefaultInstitutionService implements InstitutionService {
 	}
 
 	@Override
-	public Page<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable) {
+	public Page<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable, StudentFilterOptions filterOptions) {
 		if(!institutionRepo.existsById(institutionId)) throw new ResourceNotFoundException();
 
-		Page<InstitutionStudentDTO> students = studentService.filterStudents(institutionId, pageable, null);
+		Page<InstitutionStudentDTO> students = studentService.filterStudents(institutionId, pageable, filterOptions);
 
 		return students;
 	}

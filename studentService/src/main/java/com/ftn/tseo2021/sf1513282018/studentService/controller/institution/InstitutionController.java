@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.institution;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.ExamPeriodFilterOptions;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionExamPeriodDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
@@ -82,8 +83,33 @@ public class InstitutionController {
 	}
 
 	@GetMapping(value = "/{id}/students", produces = "application/json")
-	public ResponseEntity<Page<InstitutionStudentDTO>> getInstitutionStudents(@PathVariable("id") int id, Pageable pageable){
-		Page<InstitutionStudentDTO> students = institutionService.getInstitutionStudents(id, pageable);
+	public ResponseEntity<Page<InstitutionStudentDTO>> getInstitutionStudents(@PathVariable("id") int id, Pageable pageable, 
+			@RequestParam(name = "firstName", required = false) String firstName, 
+			@RequestParam(name = "lastName", required = false) String lastName, 
+			@RequestParam(name = "studentCard", required = false) String studentCard, 
+			@RequestParam(name = "address", required = false) String address, 
+			@RequestParam(name = "generationFrom", required = false) Integer generationFrom, 
+			@RequestParam(name = "generationTo", required = false) Integer generationTo,
+			@RequestParam(name = "dateOfBirthFrom", required = false) String dateOfBirthFromString, 
+			@RequestParam(name = "dateOfBirthTo", required = false) String dateOfBirthToString, 
+			@RequestParam(name = "username", required = false) String username, 
+			@RequestParam(name = "email", required = false) String email, 
+			@RequestParam(name = "phoneNumber", required = false) String phoneNumber
+			){
+		
+		LocalDate dateOfBirthFrom = null;
+		LocalDate dateOfBirthTo = null;
+		try {
+			dateOfBirthFrom = LocalDate.parse(dateOfBirthFromString);
+		} catch (Exception e) {}
+		try {
+			dateOfBirthTo = LocalDate.parse(dateOfBirthToString);
+		} catch (Exception e) {}
+		
+		StudentFilterOptions filterOptions = new StudentFilterOptions(firstName, lastName, studentCard, address, generationFrom, 
+				generationTo, dateOfBirthFrom, dateOfBirthTo, username, email, phoneNumber);
+		
+		Page<InstitutionStudentDTO> students = institutionService.getInstitutionStudents(id, pageable, filterOptions);
 		return new ResponseEntity<>(students, HttpStatus.OK);
 	}
 

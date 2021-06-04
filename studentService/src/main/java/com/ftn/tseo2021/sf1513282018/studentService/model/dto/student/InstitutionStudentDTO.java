@@ -3,6 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.model.dto.student;
 import java.time.LocalDate;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.user.DefaultUserDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,8 +16,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InstitutionStudentDTO implements StudentDTO {
 
-	private static final long serialVersionUID = 7365304514024301820L;
-	
 	private Integer id;
 	private String firstName;
 	private String lastName;
@@ -24,5 +23,6 @@ public class InstitutionStudentDTO implements StudentDTO {
 	private String address;
 	private int generation;
 	private LocalDate dateOfBirth;
+	private DefaultUserDTO user;
 
 }

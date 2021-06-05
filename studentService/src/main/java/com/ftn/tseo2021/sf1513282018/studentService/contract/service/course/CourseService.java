@@ -1,6 +1,7 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.course;
 
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.CourseFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.common.BaseService;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseEnrollmentDTO;
@@ -17,7 +18,7 @@ import javax.persistence.EntityNotFoundException;
 
 public interface CourseService extends BaseService<DefaultCourseDTO, Integer> {
 
-	Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions) throws PersonalizedAccessDeniedException;
+	Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, CourseFilterOptions filterOptions) throws PersonalizedAccessDeniedException;
 	
 	Page<CourseTeachingDTO> getCourseTeachings(int courseId, Pageable pageable) throws EntityNotFoundException;
 	

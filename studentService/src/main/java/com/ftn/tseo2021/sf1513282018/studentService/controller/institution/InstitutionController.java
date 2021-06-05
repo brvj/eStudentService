@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.institution;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.CourseFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.ExamPeriodFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherFilterOptions;
@@ -134,8 +135,12 @@ public class InstitutionController {
 	}
 
 	@GetMapping(value = "/{id}/courses", produces = "application/json")
-	public ResponseEntity<Page<InstitutionCourseDTO>> getInstitutionCourses(@PathVariable("id") int id, Pageable pageable){
-		Page<InstitutionCourseDTO> courses = institutionService.getInstitutionCourses(id, pageable);
+	public ResponseEntity<Page<InstitutionCourseDTO>> getInstitutionCourses(@PathVariable("id") int id, Pageable pageable,
+																			@RequestParam(name = "name", required = false) String name){
+
+		CourseFilterOptions filterOptions = new CourseFilterOptions(name);
+
+		Page<InstitutionCourseDTO> courses = institutionService.getInstitutionCourses(id, pageable, filterOptions);
 		return new ResponseEntity<>(courses, HttpStatus.OK);
 	}
 

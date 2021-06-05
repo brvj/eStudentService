@@ -2,6 +2,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.CourseDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.CourseFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution.InstitutionService;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.InstitutionCourseDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.institution.DefaultInstitutionDTO;
@@ -128,7 +129,7 @@ public class DefaultCourseService implements CourseService {
 	@SuppressWarnings("unchecked")
 	@AuthorizeAdmin
 	@Override
-	public Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, InstitutionCourseDTO filterOptions)
+	public Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, CourseFilterOptions filterOptions)
 		throws PersonalizedAccessDeniedException {
 		if(getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(institutionId, PersonalizedAccessDeniedException.class);
@@ -143,7 +144,7 @@ public class DefaultCourseService implements CourseService {
 			});
 		}
 		else {
-			Page<Course> page = courseRepo.filterCourses(institutionId, filterOptions.name, pageable);
+			Page<Course> page = courseRepo.filterCourses(institutionId, filterOptions.getName(), pageable);
 			return page.map(new Function<Course, InstitutionCourseDTO>() {
 				@Override
 				public InstitutionCourseDTO apply(Course course) {

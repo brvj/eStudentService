@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.contract.service.institution;
 
+import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.CourseFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.course.ExamPeriodFilterOptions;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.StudentFilterOptions;
 
@@ -24,7 +25,7 @@ public interface InstitutionService extends BaseService<DefaultInstitutionDTO, I
 	
 	Page<InstitutionStudentDTO> getInstitutionStudents(int institutionId, Pageable pageable, StudentFilterOptions filterOptions);
 	
-	Page<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable);
+	Page<InstitutionCourseDTO> getInstitutionCourses(int institutionId, Pageable pageable, CourseFilterOptions filterOptions);
 	
 	Page<InstitutionExamPeriodDTO> getInstitutionExamPeriods(int institutionId, Pageable pageable, ExamPeriodFilterOptions filterOptions);
 

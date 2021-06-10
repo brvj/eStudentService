@@ -2,6 +2,8 @@ package com.ftn.tseo2021.sf1513282018.studentService.controller.teacher;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.teacher.DefaultTeacherRoleDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +41,11 @@ public class TeacherRoleController {
 	public ResponseEntity<DefaultTeacherRoleDTO> getTeacherRoleById(@PathVariable("id") int id){
 		DefaultTeacherRoleDTO teacherRoleDTO = roleService.getOne(id);
 		return new ResponseEntity<>(teacherRoleDTO, HttpStatus.OK);
+	}
+
+	@GetMapping(produces = "application/json")
+	public ResponseEntity<Page<DefaultTeacherRoleDTO>> getAll(Pageable pageable){
+		Page<DefaultTeacherRoleDTO> teacherRolesDTO = roleService.getAll(pageable);
+		return new ResponseEntity<>(teacherRolesDTO, HttpStatus.OK);
 	}
 }

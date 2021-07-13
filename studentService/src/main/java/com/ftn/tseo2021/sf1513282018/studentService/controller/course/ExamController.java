@@ -1,5 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,8 @@ public class ExamController {
 	ExamService examService;
 
 	@PostMapping(consumes = "application/json")
+	@JsonDeserialize(using = LocalDateDeserializer.class)
+	@JsonFormat(pattern="dd/MM/yyyy hh:mm")
 	public ResponseEntity<Integer> createExam(@RequestBody DefaultExamDTO examDTO){
 		try{
 			int id = examService.create(examDTO);

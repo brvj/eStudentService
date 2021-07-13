@@ -1,5 +1,8 @@
 package com.ftn.tseo2021.sf1513282018.studentService.service.course;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.course.ExamDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.course.CourseService;
@@ -78,7 +81,7 @@ public class DefaultExamService implements ExamService {
 	@Override
 	public Integer create(DefaultExamDTO dto) throws IllegalArgumentException, PersonalizedAccessDeniedException {
 		if(getPrincipal().isAdmin())
-			authorizator.assertPrincipalIsFromInstitution(dto.getExamPeriod().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalIsFromInstitution(dto.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		else if(getPrincipal().isTeacher())
 			authorizator.assertTeacherIsTeachingCourse(dto.getCourse().getId(), PersonalizedAccessDeniedException.class);
 
@@ -92,7 +95,7 @@ public class DefaultExamService implements ExamService {
 	@AuthorizeTeacherOrAdmin
 	@Override
 	public void update(Integer id, DefaultExamDTO dto) throws EntityNotFoundException, IllegalArgumentException, PersonalizedAccessDeniedException {
-		DefaultInstitutionDTO institution = institutionService.getOne(dto.getExamPeriod().getInstitution().getId());
+		DefaultInstitutionDTO institution = institutionService.getOne(dto.getCourse().getInstitution().getId());
 		if(getPrincipal().isAdmin())
 			authorizator.assertPrincipalIsFromInstitution(institution.getId(), PersonalizedAccessDeniedException.class);
 		else if(getPrincipal().isTeacher())
@@ -107,6 +110,7 @@ public class DefaultExamService implements ExamService {
 		e.setClassroom(eNew.getClassroom());
 		e.setPoints(eNew.getPoints());
 		e.setDescription(eNew.getDescription());
+		e.setExamPeriod(eNew.getExamPeriod());
 		examRepo.save(e);
 	}
 
@@ -115,7 +119,7 @@ public class DefaultExamService implements ExamService {
 	public void delete(Integer id) throws PersonalizedAccessDeniedException {
 		Exam exam = examRepo.getOne(id);
 		if(getPrincipal().isAdmin())
-			authorizator.assertPrincipalIsFromInstitution(exam.getExamPeriod().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalIsFromInstitution(exam.getCourse().getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		else if(getPrincipal().isTeacher())
 			authorizator.assertTeacherIsTeachingCourse(exam.getCourse().getId(), PersonalizedAccessDeniedException.class);
 

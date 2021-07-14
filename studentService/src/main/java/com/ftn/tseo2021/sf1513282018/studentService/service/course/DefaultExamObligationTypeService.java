@@ -6,6 +6,8 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.course.ExamObligat
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.course.ExamObligationTypeRepository;
@@ -14,6 +16,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExam
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class DefaultExamObligationTypeService implements ExamObligationTypeService {
@@ -59,5 +62,17 @@ public class DefaultExamObligationTypeService implements ExamObligationTypeServi
 		if(!examObligationTypeRepo.existsById(id)) {}
 
 		examObligationTypeRepo.deleteById(id);
+	}
+
+	@Override
+	public Page<DefaultExamObligationTypeDTO> getAll(Pageable pageable) {
+		Page<ExamObligationType> page = examObligationTypeRepo.findAll(pageable);
+
+		return page.map(new Function<ExamObligationType, DefaultExamObligationTypeDTO>() {
+			@Override
+			public DefaultExamObligationTypeDTO apply(ExamObligationType examObligationType) {
+				return examObligationTypeConverter.convertToDTO(examObligationType, DefaultExamObligationTypeDTO.class);
+			}
+		});
 	}
 }

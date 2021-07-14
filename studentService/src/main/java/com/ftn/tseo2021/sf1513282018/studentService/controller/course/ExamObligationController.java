@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.CourseExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.ExamOblExamObligationTakingDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.ExamObligationTaking;
@@ -60,5 +61,13 @@ public class ExamObligationController {
 
 		if(examObligationTakingList == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<>(examObligationTakingList, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/{id}/course",produces = "application/json")
+	public ResponseEntity<Page<CourseExamObligationDTO>> getCourseExamObligations(@PathVariable("id") int id, Pageable pageable){
+		Page<CourseExamObligationDTO> page = examObligationService.filterExamObligations(id, pageable, null);
+
+		if(page == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
 }

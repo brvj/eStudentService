@@ -2,6 +2,8 @@ package com.ftn.tseo2021.sf1513282018.studentService.controller.course;
 
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.course.DefaultExamObligationTypeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,5 +69,11 @@ public class ExamObligationTypeController {
 		} catch (PersonalizedAccessDeniedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+	}
+
+	@GetMapping(produces = "application/json")
+	public ResponseEntity<Page<DefaultExamObligationTypeDTO>> getAllExamObligationTypes(Pageable pageable){
+		Page<DefaultExamObligationTypeDTO> page = examObligationTypeService.getAll(Pageable.unpaged());
+		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
 }

@@ -14,6 +14,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.security.PrincipalHolder;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeTeacherOrAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -127,7 +128,7 @@ public class DefaultCourseService implements CourseService {
 	}
 
 	@SuppressWarnings("unchecked")
-	@AuthorizeAdmin
+	@AuthorizeTeacherOrAdmin
 	@Override
 	public Page<InstitutionCourseDTO> filterCourses(int institutionId, Pageable pageable, CourseFilterOptions filterOptions)
 		throws PersonalizedAccessDeniedException {

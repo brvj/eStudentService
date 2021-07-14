@@ -3,6 +3,7 @@ package com.ftn.tseo2021.sf1513282018.studentService.service.teacher;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConverter;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.teacher.TeacherRoleDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.teacher.TeacherRole;
+import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAdmin;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeAny;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeSuperadmin;
 
@@ -36,7 +37,7 @@ public class DefaultTeacherRoleService implements TeacherRoleService {
 		return teacherRoleConverter.convertToDTO(teacherRole.orElse(null));
 	}
 
-	@AuthorizeSuperadmin
+	@AuthorizeAdmin
 	@Override
 	public Integer create(DefaultTeacherRoleDTO dto) throws IllegalArgumentException {
 		TeacherRole teacherRole = teacherRoleConverter.convertToJPA(dto);

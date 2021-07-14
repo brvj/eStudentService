@@ -19,6 +19,8 @@ public interface StudentRepository extends JpaRepository<Student, Integer>{
 	
 	boolean existsByStudentCard(String studentCard);
 	
+	Optional<Student> findByFinancialCard_Id(int fCardId);
+	
 	Page<Student> findByInstitution_Id(int institutionId, Pageable pageable);
 	
 	@Query("SELECT s from Student s WHERE " +

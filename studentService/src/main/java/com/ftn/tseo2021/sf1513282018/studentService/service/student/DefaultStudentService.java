@@ -180,6 +180,13 @@ public class DefaultStudentService implements StudentService {
 			}
 		});
 	}
+	
+	@Override
+	public DefaultStudentDTO getByFinancialCardId(int fCardId) {
+		Optional<Student> student = studentRepo.findByFinancialCard_Id(fCardId);
+
+		return studentConverter.convertToDTO(student.orElseThrow(() -> new ResourceNotFoundException()));
+	}
 
 	@Override
 	public Page<StudentEnrollmentDTO> getStudentEnrollments(int studentId, Pageable pageable) {

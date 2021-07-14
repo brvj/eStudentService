@@ -17,9 +17,11 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.converter.DtoConver
 import com.ftn.tseo2021.sf1513282018.studentService.contract.dto.student.FinancialCardDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.repository.student.FinancialCardRepository;
 import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.FinancialCardService;
+import com.ftn.tseo2021.sf1513282018.studentService.model.common.TransactionType;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
-
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
+import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.Transaction;
 import com.ftn.tseo2021.sf1513282018.studentService.security.PersonalizedAuthorizator;
 import com.ftn.tseo2021.sf1513282018.studentService.security.annotations.AuthorizeStudentOrAdmin;
 
@@ -68,6 +70,22 @@ public class DefaultFinancialCardService implements FinancialCardService {
 //		Nothing to change...
 //		financialCardRepo.save(f);
 		
+	}
+	
+	@Override
+	public void update(Transaction transaction) {
+		FinancialCard fCard = transaction.getFinancialCard();
+		
+		if (transaction.getTransactionType().equals(TransactionType.PAYMENT)) {
+			fCard.setCurrentAmmout(fCard.getCurrentAmmout() - transaction.getAmmount());
+			fCard.setTotalSpent(fCard.getTotalSpent() + transaction.getAmmount());
+		}
+		else if (transaction.getTransactionType().equals(TransactionType.DEPOSIT)) {
+			fCard.setCurrentAmmout(fCard.getCurrentAmmout() + transaction.getAmmount());
+			fCard.setTotalDeposit(fCard.getTotalDeposit() + transaction.getAmmount());
+		}
+		
+		financialCardRepo.save(fCard);
 	}
 
 	@Override

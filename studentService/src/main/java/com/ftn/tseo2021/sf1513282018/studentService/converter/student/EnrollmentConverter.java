@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.student;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,7 +137,7 @@ public class EnrollmentConverter implements DtoConverter<Enrollment, EnrollmentD
 		
 		Enrollment enrollment = new Enrollment();
 //		enrollment.setId(source.getId());
-		enrollment.setStartDate(source.getStartDate());
+		enrollment.setStartDate(LocalDate.now());
 //		enrollment.setPassed(source.isPassed());
 //		enrollment.setScore(source.getScore());
 //		enrollment.setGrade(source.getGrade());

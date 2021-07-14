@@ -19,7 +19,9 @@ import com.ftn.tseo2021.sf1513282018.studentService.converter.student.FinancialC
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.EntityValidationException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.PersonalizedAccessDeniedException;
 import com.ftn.tseo2021.sf1513282018.studentService.exceptions.ResourceNotFoundException;
+import com.ftn.tseo2021.sf1513282018.studentService.model.common.TransactionType;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultFinancialCardDTO;
+import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultStudentDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.FinancialCardTransactionDTO;
 import com.ftn.tseo2021.sf1513282018.studentService.model.jpa.student.FinancialCard;
@@ -72,16 +74,16 @@ public class DefaultTransactionService implements TransactionService {
 	@Override
 	public Integer create(DefaultTransactionDTO dto) {
 		try {
-			DefaultFinancialCardDTO fCardDTO = financialCardService.getOne(dto.getFinancialCard().getId());
+			DefaultStudentDTO studentDTO = studentService.getByFinancialCardId(dto.getFinancialCard().getId());
 
-			FinancialCard card = cardConverter.convertToJPA(fCardDTO);		
 			if (getPrincipal().isAdmin())
-				authorizator.assertPrincipalIsFromInstitution(card.getStudent().getInstitution().getId(), EntityValidationException.class);
+				authorizator.assertPrincipalIsFromInstitution(studentDTO.getInstitution().getId(), EntityValidationException.class);
 		} 
 		catch (ResourceNotFoundException | NullPointerException e) {throw new EntityValidationException();}
 		Transaction transaction = transactionConverter.convertToJPA(dto);
 		
 		transaction = transactionRepo.save(transaction);
+		financialCardService.update(transaction);
 
 		return transaction.getId();
 	}
@@ -117,13 +119,12 @@ public class DefaultTransactionService implements TransactionService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Page<FinancialCardTransactionDTO> filterTransactions(int financialCardId, Pageable pageable, FinancialCardTransactionDTO filterOptions) {
-		DefaultFinancialCardDTO fCard = financialCardService.getOne(financialCardId);
+		DefaultStudentDTO studentDTO = studentService.getByFinancialCardId(financialCardId);
 		
-		FinancialCard financialCard = cardConverter.convertToJPA(fCard);
 		if (getPrincipal().isStudent())
-			authorizator.assertPrincipalStudentIdIs(financialCard.getStudent().getId(), PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalStudentIdIs(studentDTO.getId(), PersonalizedAccessDeniedException.class);
 		else if (getPrincipal().isAdmin()) {
-			authorizator.assertPrincipalIsFromInstitution(financialCard.getStudent().getInstitution().getId(), PersonalizedAccessDeniedException.class);
+			authorizator.assertPrincipalIsFromInstitution(studentDTO.getInstitution().getId(), PersonalizedAccessDeniedException.class);
 		}
 
 		Page<Transaction> page;

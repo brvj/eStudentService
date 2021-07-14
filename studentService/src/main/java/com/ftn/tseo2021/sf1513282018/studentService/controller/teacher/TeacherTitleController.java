@@ -44,8 +44,8 @@ public class TeacherTitleController {
 	}
 
 	@GetMapping(produces = "application/json")
-	public ResponseEntity<Page<DefaultTeacherTitleDTO>> getAll(Pageable pageable){
-		Page<DefaultTeacherTitleDTO> titles = titleService.getAll(pageable);
+	public ResponseEntity<Page<DefaultTeacherTitleDTO>> getAll(){
+		Page<DefaultTeacherTitleDTO> titles = titleService.getAll(Pageable.unpaged());
 		return new ResponseEntity<>(titles, HttpStatus.OK);
 	}
 }

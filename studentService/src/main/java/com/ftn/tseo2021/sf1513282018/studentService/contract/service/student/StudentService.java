@@ -25,4 +25,6 @@ public interface StudentService extends BaseService<DefaultStudentDTO, Integer> 
 	Page<StudentDocumentDTO> getStudentDocuments(int studentId, Pageable pageable) throws EntityNotFoundException;
 	
 	DefaultFinancialCardDTO getStudentFinancialCard(int studentId) throws EntityNotFoundException;
+
+	DefaultStudentDTO getByFinancialCardId(int fCardId);
 }

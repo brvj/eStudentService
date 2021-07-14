@@ -16,7 +16,7 @@ import com.ftn.tseo2021.sf1513282018.studentService.contract.service.student.Tra
 import com.ftn.tseo2021.sf1513282018.studentService.model.dto.student.DefaultTransactionDTO;
 
 @RestController
-@RequestMapping(value = "api/transactionTypes")
+@RequestMapping(value = "api/transactions")
 public class TransactionController {
 	
 	@Autowired

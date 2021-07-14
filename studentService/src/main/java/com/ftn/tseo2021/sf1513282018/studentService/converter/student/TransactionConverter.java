@@ -1,5 +1,6 @@
 package com.ftn.tseo2021.sf1513282018.studentService.converter.student;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,15 +104,16 @@ public class TransactionConverter implements DtoConverter<Transaction, Transacti
 	}
 
 	private Transaction convertToJPA(DefaultTransactionDTO source) {
-		if (source == null) return null;
-		
-		if (source.getFinancialCard() == null || 
-				!financialCardRepo.existsById(source.getFinancialCard().getId()))
+		if (source == null || source.getFinancialCard() == null || !financialCardRepo.existsById(source.getFinancialCard().getId())) 
 			throw new EntityValidationException();
 		
-		Transaction transaction = new Transaction(source.getId(), source.getAmmount(), source.getDate(), 
-				source.getDescription(), source.getType(), 
-				financialCardRepo.getOne(source.getFinancialCard().getId()));
+		Transaction transaction = new Transaction();
+//		transaction.setId(source.getId());
+		transaction.setAmmount(source.getAmmount());
+		transaction.setDate(LocalDate.now());
+		transaction.setDescription(source.getDescription());
+		transaction.setTransactionType(source.getType());
+		transaction.setFinancialCard(financialCardRepo.getOne(source.getFinancialCard().getId()));
 		
 		return transaction;
 	}

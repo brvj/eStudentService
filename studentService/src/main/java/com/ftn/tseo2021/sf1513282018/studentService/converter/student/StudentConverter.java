@@ -158,7 +158,7 @@ public class StudentConverter implements DtoConverter<Student, StudentDTO, Defau
 		student.setUser(user);
 		FinancialCard fCard = new FinancialCard();
 		fCard.setStudent(student);
-		student.setFinancialCard(new FinancialCard());
+		student.setFinancialCard(fCard);
 		
 		return student;
 	}
